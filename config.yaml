@@ -31,8 +31,8 @@ params:
     compact: false
     avatar:
       enabled: true
-      local: false       # assume using static folder
-      src: img/zazu_hat.png
+      local: true       # assume using static folder
+      src: img/pfpme.png
 
   article:
     readingTime: false
