@@ -1,4 +1,4 @@
-baseURL: "/"
+baseURL: "https://saan-volta.github.io/"
 title: Saan
 theme: hugo-theme-stack
 
