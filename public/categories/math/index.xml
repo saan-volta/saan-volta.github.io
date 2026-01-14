@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Math on Saan</title>
+        <link>//localhost:1313/categories/math/</link>
+        <description>Recent content in Math on Saan</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 30 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/categories/math/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>How to Measure</title>
+        <link>//localhost:1313/post/how_to_measure/</link>
+        <pubDate>Tue, 30 Dec 2025 00:00:00 +0000</pubDate>
+        
+        <guid>//localhost:1313/post/how_to_measure/</guid>
+        <description>&lt;h3 id=&#34;0-what-is-this&#34;&gt;0. What is this?
+&lt;/h3&gt;&lt;p&gt;This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &amp;ldquo;machine code&amp;rdquo; to probability problems. I&amp;rsquo;ve put together some explanations and examples that would&amp;rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp;amp; probability.&lt;/p&gt;
+&lt;h3 id=&#34;1-heres-what-you-have-to-know&#34;&gt;1. Here&amp;rsquo;s what you have to know
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[!info] Definition: Measure space
+$(\Omega,\mathcal{F},\mu)$ is a measure (probability) space, where:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\Omega$ is a set (of outcomes);&lt;/li&gt;
+&lt;li&gt;$\mathcal{F}$ is a $\sigma$-algebra on $\Omega$, consisting of subsets of $\Omega$ and satisfying the following:
+&lt;ol&gt;
+&lt;li&gt;$\varnothing,\Omega\in\mathcal{F}$;&lt;/li&gt;
+&lt;li&gt;$A\in\mathcal{F}\Rightarrow A^{c}\in\mathcal{F}$ (stable under complement);&lt;/li&gt;
+&lt;li&gt;$\set{A_{n}}\in\mathcal{F}\Rightarrow \bigcup_{n}A_{n}\in\mathcal{F}$ (stable under countable union);&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;In probability, this is the event space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;$\mu:\mathcal{F}\rightarrow [0,\infty]$ is the measure function
+&lt;ul&gt;
+&lt;li&gt;$\mu$ satisfies $\sigma$-additivity, i.e.: $\mu(\bigsqcup_{n}A_{n})=\sum_{n}\mu(A_{n})$;&lt;/li&gt;
+&lt;li&gt;$\mu(\varnothing)=0$;&lt;/li&gt;
+&lt;li&gt;In probability, the measure is written as $P$, has codomain $[0,1]$, and $P(\Omega)=1$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
+&lt;p&gt;Comments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\mathcal{F}$ is stable by (countable) intersection;&lt;/li&gt;
+&lt;li&gt;$P(\varnothing)=0$ and $P(\Omega)=1$ mean that &lt;em&gt;something&lt;/em&gt; must happen;&lt;/li&gt;
+&lt;li&gt;The trivial (coarsest) $\sigma$-algebra over $\Omega$ is $\set{\Omega,\varnothing}$, and the fullest (finest) is $\mathcal{P}(\Omega)$ (if $\Omega$ is countable).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!info] Definition: Random variable
+A (real-valued) random variable in a probability space $(\Omega,\mathcal{F},P)$ is a function $X:\Omega\rightarrow \mathbb{R}$ that is measurable, i.e., satisfies:
+&lt;/p&gt;
+$$\forall B\in\mathcal{B}(\mathbb{R})\quad X^{-1}(B)\in\mathcal{F}.$$&lt;p&gt;
+where $\mathcal{B}(\mathbb{R})$ is the Borel $\sigma$-algebra of the real line.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;If you have no measure theory background, $\mathcal{B}(\mathbb{R})$ might be hard to conceptualize. It is not the powerset of $\mathbb{R}$, but it may be useful to think of it that way. The subsets of $\mathbb{R}$ which do not fall in it require nontrivial and fairly contrived constructions that will never come up in a probability application.&lt;/p&gt;
+&lt;p&gt;Here are some useful identities/definitions about expectation:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!note]&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$E[X\mid Y]=E[X\mid\sigma(Y)]$ (this is just a shorthand)&lt;/li&gt;
+&lt;li&gt;$E[X]=E[E[X\mid \mathcal{A}]]$ (law of total expectation)&lt;/li&gt;
+&lt;li&gt;$E[\mathbb{1}_{A}X]=E[\mathbb{1}_{A}E[X\mid\mathcal{A}]]\quad \forall A\in\mathcal{A}\quad$ (def. of conditional expectation)&lt;/li&gt;
+&lt;li&gt;$E[aX+bY]=aE[X]+bE[Y]$ (linearity of expectation)&lt;/li&gt;
+&lt;li&gt;$E[X\mid \mathcal{A}]=X$ when $X$ is $\mathcal{A}$-measurable and $E[X]$ when $X,\mathcal{A}$  indep.&lt;/li&gt;
+&lt;li&gt;$E[XY\mid\mathcal{A}]=XE[Y\mid\mathcal{A}]$ when $X$ is $\mathcal{A}$-measurable&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;2-the-conditioner&#34;&gt;2. The conditioner
+&lt;/h3&gt;&lt;p&gt;Let $(\Omega,\mathcal{F},P)$ be a probability space and let $A\in\mathcal{F}$ be an event. In this segment, we will examine what it means to condition $P(A\mid \cdot)$ on a $\sigma$-algebra.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!note] Note
+I want to emphasize that when we write $P(A)$, what we mean mathematically is $E[\mathbb{1}_{A}]=\int_{\Omega}\mathbb{1}_{A}dP$, and more explicitly $\int_{\Omega}\mathbb{1}_{A}(\omega)dP(\omega)$, where $\mathbb{1}_{A}(\cdot)$ is in fact a random variable.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Let&amp;rsquo;s look at the easiest case: suppose $B\in\mathcal{F}$ is another event, then $P(A\mid B)$ is just a number. Here, we simply condition on the realization that $B$ occurs.&lt;/p&gt;
+&lt;p&gt;What if we don&amp;rsquo;t know whether it does? In such a case, we would condition on $\sigma(B)$, the $\sigma$-algebra generated by this event. The interesting thing is that $P(A\mid\sigma(B))$ is in fact a random variable (a measurable function of $\omega$). Intuitively, $\sigma(B)$ gives us some information about $A$, but the information is random and dependent on where $\omega$ lands.
+Since $\sigma(B)=\set{\varnothing,B,B^{c},\Omega}$ has two nontrivial possibilities, the value of $P(A\mid\sigma(B))(\omega)$ depends on whether $\omega\in B$ or $\in B^{c}$:
+&lt;/p&gt;
+$$P(A\mid\sigma(B))=\mathbb{1}_{B}P(A|B)+\mathbb{1}_{B^{c}}P(A|B^{c}).$$&lt;p&gt;
+This works out nicely because $\set{B,B^{c}}$ is a partition of the outcome space.
+We can easily extend this &amp;ndash; let $\set{B_{n}}$ be a partition, i.e., a collection of disjoint subsets of $\Omega$ that add up to the whole set. Then:
+&lt;/p&gt;
+$$P(A\mid\sigma\set{B_{n}})=\sum\limits_{n}\mathbb{1}_{B_{n}}P(A\mid B_{n}).$$&lt;p&gt;
+We extend this further to compute the expectation of a general random variable:
+&lt;/p&gt;
+$$E[X\mid\sigma\set{B_{n}}]=\sum\limits_{n}\mathbb{1}_{B_{n}} E[X\mid B_{n}]=\sum\limits_{n}\mathbb{1}_{B_{n}} \frac{1}{P(B_{n})}\int_{B_{n}}XdP.$$&lt;h3 id=&#34;3-measurability&#34;&gt;3. Measurability
+&lt;/h3&gt;&lt;p&gt;Let $\mathcal{H}\subset \mathcal{F}$ and $A\in \mathcal{F}$. The definition of measurable functions tells us that $A$ being $\mathcal{H}$-measurable means that $\forall B\in\mathcal{B}(\mathbb{R}), \mathbb{1}_{A}^{-1}(B)\in \mathcal{H}$. There are four cases, dictated by whether $0$ and $1$ are in $B$. If they both are or aren&amp;rsquo;t, we get that the preimage is respectively $\Omega$ or $\varnothing$, which is trivially true as $\mathcal{H}$ contains them by definition. If only $1\in B$, then the preimage is $\set{\omega\in A}$, and if $0\in B$ it is $\set{\omega\notin A}$. Note that it is sufficient for one of these to be in $\mathcal{H}$, since the other will be contained automatically as complement. Since $\sigma(A)\subseteq \mathcal{H}$, $A$ is thus completely determinable. So we have:
+&lt;/p&gt;
+$$A\in\mathcal{H}\Leftrightarrow \mathbb{1}_{A}(\cdot)\; \mathcal{H}\text{-measurable }\Leftrightarrow P(A\mid\mathcal{H})=E[\mathbb{1}_{A}\mid\mathcal{H}]=\mathbb{1}_{A}\in \set{0,1}\text{ a.s. }$$&lt;p&gt;Let&amp;rsquo;s now consider that $0&lt;P(A\mid\mathcal{H})&lt;1 \text{ a.s.}$ This is a fairly strong statement about the relationship of $A$ and $\mathcal{H}$; intuitively it means that the occurrence of $A$ cannot be deterministically established by any event in $\mathcal{H}$:
+&lt;/p&gt;
+$$\forall B\in\mathcal{H}\text{ with }P(B)&gt;0, P(A\cap B)\neq 0,1.$$&lt;p&gt;
+Define $\mathcal{H&#39;}=\mathcal{H}\lor \sigma(A)$, the $\sigma$-algebra generated by including $A$ into $\mathcal{H}$. What does a $A&#39;\in\mathcal{H&#39;}$ look like? Here, $\set{A,A^{c}}$ partitions the outcomes in two, so $A&#39;$ will consists of the union of some set $B\in\mathcal{H}$ intersecting with one part, and some other set $C$ intersecting with the other: $A&#39;=(B\cap A)\cup (C\cap A^{c})\text{ with }B,C\in\mathcal{H}$. We can view the extension by $\sigma(A)$ as adding one bit of information into the event space.&lt;/p&gt;
+&lt;p&gt;![[Pasted image 20251225190318.png]]
+$A&#39;$ aligns exactly with $B$ in $A$, and with $C$ in $A^{c}$.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s a result that simplifies the form for indeterminate events in $\mathcal{H}&#39;$:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!tip] Proposition 1
+Suppose $P(A\mid\mathcal{H})\in(0,1)\text{ a.s.}$, $\mathcal{H&#39;}=\mathcal{H}\lor\sigma(A)$, and $A&#39;\in\mathcal{H&#39;}$. Then:
+&lt;/p&gt;
+$$P(A&#39;\mid\mathcal{H})\in (0,1)\text{ a.s.}\iff \exists B\in\mathcal{H}\text{ s.t. }A&#39;=(B\cap  A)\cup  (B^{c}\cap A^{c}).$$&lt;/blockquote&gt;
+&lt;p&gt;This gives us a characterization that an event in $\mathcal{H&#39;}$ has $0&lt;P(A&#39;\mid\mathcal{H})&lt;1$, meaning that its occurrence can never be determined from an event in $\mathcal{H}$, exactly IFF you can find $B$ and $C$ to represent $A&#39;$ with the property $B^{c}=C$. Since $B\mapsto (B\cap  A)\cup  (B^{c}\cap A^{c})$ is a bijective map, there are exactly $|\mathcal{H}|$ such indeterminate events.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!proof]-
+$(\Rightarrow )$ Given $0&lt;P(A&#39;\mid\mathcal{H})&lt;1\text{ a.s.}$, take $B,C\in\mathcal{H}\text{ s.t. }A&#39;=(B\cap A)\cup (C\cap A^{c})$. Then:
+&lt;/p&gt;
+$$\begin{align*}
+P(A&#39;\mid\mathcal{H})
+&amp;= P((B\cap A)\sqcup (C\cap A^{c})\mid\mathcal{H})\\
+&amp;= E[\mathbb{1}_{A}\mathbb{1}_B\mid\mathcal{H}]+E[\mathbb{1}_{C}\mathbb{1}_{A^{c}}\mid\mathcal{H}]\\
+&amp;= \mathbb{1}_{B}P(A\mid\mathcal{H})+\mathbb{1}_{C}P(A^{c}\mid\mathcal{H})\\
+&amp;\in (0,1).
+\end{align*}$$&lt;p&gt;
+The $&gt;0$ implies that $B\cup C=\Omega$, and $&lt;1$ gives us $B\cap C=\varnothing$, thus they are complements.
+$(\Leftarrow )$ is easy.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;4-change-of-measure-and-independence&#34;&gt;4. Change of measure and independence
+&lt;/h3&gt;&lt;p&gt;Let&amp;rsquo;s examine another angle of the property $0&lt;P(A\mid\mathcal{H})&lt;1 \text{ a.s.}$ Since $\mathcal{H}$ is an arbitrary sub-$\sigma$-algebra (not necessarily formed by a nice partition), we can&amp;rsquo;t really tell how the probability is changed by the conditioning.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!info] Definition: Equivalence of measures
+Let $\mu,\nu:\mathcal{F}\rightarrow \mathbb{R}_{\geq0}$. They are considered equivalent if their null sets are the same, i.e., $\forall F\in\mathcal{F},\; \mu(F)=0\iff \nu(F)=0.$&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;We can construct a measure $Q:\mathcal{F}\rightarrow [0,1]$ that is structurally equivalent to $P$, but under which $A$ is independent of $\mathcal{H}$. For this, we will &amp;ldquo;re-weigh&amp;rdquo; the measures for events in a way that gives us $Q(A\mid\mathcal{H})=Q(A)=\alpha$ for some $\alpha\in(0,1)$ of our choosing.&lt;/p&gt;
+&lt;p&gt;Consider the function
+&lt;/p&gt;
+$$f_\alpha:\Omega\rightarrow [0,1]\text{ with }f_{\alpha}= \left(\alpha \frac{\mathbb{1}_{A}}{P(A\mid\mathcal{H})} + \left(1-\alpha\right)\frac{\mathbb{1}_{A^{c}}}{P(A^{c}\mid\mathcal{H})}\right).$$&lt;p&gt;
+What does this function do? When $\omega$ lands in $A$, we scale the it by the fixed constant $\alpha$ and normalize by $P(A\mid\mathcal{H})$, which is just a &amp;ldquo;fixed&amp;rdquo; function; when it lands outside we likewise scale and normalize by the complements. With this $f$, we can construct our weighted measure of interest:
+&lt;/p&gt;
+$$\forall B\in\mathcal{F},\quad Q_\alpha(B):=\int_{B}fdP=E_{P}\left[\alpha \frac{\mathbb{1}_{A\cap B}}{P(A\mid\mathcal{H})} + \left(1-\alpha\right)\frac{\mathbb{1}_{A^{c}\cap B}}{P(A^{c}\mid\mathcal{H})}\right].$$&lt;p&gt;
+Equivalently, this means that $f=\frac{dQ}{dP}$, the Radon-Nikodym derivative.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!tip] Proposition 2
+$Q_{\alpha}$ is a probability measure.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!proof]
+We show that $E_{P}[\mathbb{1}_{A}/P(A\mid\mathcal{H})] =E_{P}[1/P(A\mid\mathcal{H})E_{P}[\mathbb{1}_{A}]]=1$, and the second term is likewise $1-\alpha$. Thus $Q_{\alpha}(\Omega)=\alpha+1-\alpha=1$.&lt;/p&gt;&lt;/blockquote&gt;&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!tip] Proposition 3
+$Q_{\alpha}$ is equivalent to $P$.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!proof]
+$(\Rightarrow )$ Let $N\in \mathcal{F}\text{ with }Q_{\alpha}(N)=0$. Both terms of $f$ are nonnegative, so by $0&lt;P(A\mid\mathcal{H})&lt;1$, each of them must be $0$. $P(A\cap  N)=0\land P(A^{c}\cap N)=0\Rightarrow P(N)=0$.
+$(\Leftarrow )$  is trivial.&lt;/p&gt;&lt;/blockquote&gt;&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!tip] Proposition 4
+$Q_{\alpha}(A\mid\mathcal{H})=Q_{\alpha}(A)$.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!proof]
+First:
+&lt;/p&gt;
+$$Q_{\alpha}(A)=\alpha E\left[\frac{\mathbb{1}_{A}}{P(A\mid\mathcal{H})}\right]=\alpha E\left[ \frac{1}{P(A\mid\mathcal{H})}E[\mathbb{1}_{A}\mid\mathcal{H}] \right]=\alpha.$$&lt;p&gt;
+Second, let $B\in\mathcal{H}$.
+Observe that $E_{P}\left[\alpha \frac{\mathbb{1}_{A\cap B}}{P(A\mid\mathcal{H})}\right] = \alpha E\left[\frac{\mathbb{1}_{B}}{P(A\mid\mathcal{H})}E[P(A\mid\mathcal{H})] \right]=\alpha P(B)$ by law of total expectation; and the second term similarly evaluates to $(1-\alpha)P(B)$. Thus $Q_{\alpha}(B)=P(B)$.
+Third, $Q_{\alpha}(A\cap B)=\alpha P(B)$, since the first term evaluates as above, and the second is $0$ since $A^{c}\cap A\cap B=\varnothing$.
+Finally, $Q(A\mid B)= Q(A\cap B)/Q(B) =\alpha P(B)/P(B)=\alpha$ by definition.&lt;/p&gt;&lt;/blockquote&gt;&lt;/blockquote&gt;
+&lt;p&gt;This construction gives us the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$Q(A)=Q(A\mid B)=\alpha\in(0,1)\;\forall B\in\mathcal{H}$, so $A$ is independent of $\mathcal{H}$ under $Q$;&lt;/li&gt;
+&lt;li&gt;$Q(B)=P(B)\;\forall B\in\mathcal{H}$, so all events in $\mathcal{H}$ are invariant under this scaling;&lt;/li&gt;
+&lt;li&gt;All events that happen a.s. or a.s. never are maintained (equality of measures).&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

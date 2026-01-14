@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Intro: This is a write-up of my solution to the Chess challenge from the HackMIT_2025 entry CTF contest. This challenge was the highlight of the contest for me, but not by design. The actual intended solution was fairly unremarkable and dull. What made this fun, however, was the fact that it did not work. I&rsquo;m serious, the challenge was broken. It took them about a week to review the complaints and drop a patch.\n">
+<title>HackMIT_2025 Chess</title>
+
+<link rel='canonical' href='//localhost:1313/post/mypost/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="HackMIT_2025 Chess">
+<meta property='og:description' content="Intro: This is a write-up of my solution to the Chess challenge from the HackMIT_2025 entry CTF contest. This challenge was the highlight of the contest for me, but not by design. The actual intended solution was fairly unremarkable and dull. What made this fun, however, was the fact that it did not work. I&rsquo;m serious, the challenge was broken. It took them about a week to review the complaints and drop a patch.\n">
+<meta property='og:url' content='//localhost:1313/post/mypost/'>
+<meta property='og:site_name' content='Anton [Ильич] Sazonov'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-09-30T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-09-30T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="HackMIT_2025 Chess">
+<meta name="twitter:description" content="Intro: This is a write-up of my solution to the Chess challenge from the HackMIT_2025 entry CTF contest. This challenge was the highlight of the contest for me, but not by design. The actual intended solution was fairly unremarkable and dull. What made this fun, however, was the fact that it did not work. I&rsquo;m serious, the challenge was broken. It took them about a week to review the complaints and drop a patch.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/this_cannot_continue_hu_11794add34a998a3.jpg" width="300"
+                            height="285" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="//localhost:1313/">Anton [Ильич] Sazonov</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/cryptography/" style="background-color: #4a92ff; color: #fff;">
+                Cryptography
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/mypost/">HackMIT_2025 Chess</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 30, 2025</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="intro">Intro:
+</h3><p>This is a write-up of my solution to the Chess challenge from the HackMIT_2025 entry CTF contest. This challenge was the highlight of the contest for me, but not by design. The actual intended solution was fairly unremarkable and dull. What made this fun, however, was the fact that it did not work. I&rsquo;m serious, the challenge was broken. It took them about a week to review the complaints and drop a patch.</p>
+<p>The reason the organizers took so long to double-check this challenge and find the bug was because they saw that one person has solved it &ndash; me, as it happens. The authors designed the solution to be a long clue chase that step by step led the players to decrypt the flag in the last part of the message, but an error made somewhere in the middle of the process made that flag unreachable. So, instead of following a trail of hints that led nowhere, I ended up cracking the encryption scheme itself and reconstructing the flag byte by byte. This solve won me first blood on a broken challenge, secured the leaderboard, and even got me a cheating accusation, which may have been worth more.</p>
+<h3 id="description">Description
+</h3><p><img src="/post/mypost/chess_desc.png"
+	width="1032"
+	height="850"
+	srcset="/post/mypost/chess_desc_hu_1b3a90f033536a2b.png 480w, /post/mypost/chess_desc_hu_4812c656d10ebd0.png 1024w"
+	loading="lazy"
+	
+		alt="Description"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="121"
+		data-flex-basis="291px"
+	
+></p>
+<h3 id="solution">Solution:
+</h3><p>In this challenge, we are given a ciphertext, as well as a chessboard .png in mate position that contains a hidden chess game PGN. We will not be using that; rather, we observe that the last 64 bytes of the 383-byte text are unique and determined by the userID<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. It is assumed that the userID is hashed to produce the flag, with the bytes of the output being i.i.d. and uniform. We create 30 GitHub accounts, log in through them, and collect the associated ciphertexts.</p>
+<p><img src="/post/mypost/chess_email.png"
+	width="764"
+	height="376"
+	srcset="/post/mypost/chess_email_hu_3d394db5111a333f.png 480w, /post/mypost/chess_email_hu_e766b721e0a7b9fa.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="203"
+		data-flex-basis="487px"
+	
+></p>
+<p>Since only the last 64 bytes ever change, we predict it is a 1-to-1 cipher that individually maps each byte of the plaintext to a byte of the ciphertext.
+Then $\exists K$ with $pt_{i}[j]\oplus K[j] =ct_{i}[j]$ for all byte indices $j \in [0,63]$ for all userIDs $i\in [0,30]$.<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>
+The challenge is reduced to solving a many-time pad.</p>
+<p>We observe further that for any fixed $j\in[63]$, for all $i_{1},i_{2}\in [30]$,
+</p>
+$$ct_{i_{1}}[j] \oplus ct_{i_{2}}[j]=pt_{i_{1}}[j]\oplus pt_{i_{2}}[j]\in [\text{0x00, 0x0f}] \cup [\text{0x50,0x5f}].$$<p>This is the distribution of XORed bytes:
+<img src="/post/mypost/chess_xors1.png"
+	width="765"
+	height="363"
+	srcset="/post/mypost/chess_xors1_hu_fdc34add29963334.png 480w, /post/mypost/chess_xors1_hu_4c45a0e0590bc902.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="210"
+		data-flex-basis="505px"
+	
+></p>
+<p>Let $H=[\text{0x00, 0x0f}]\cup [\text{0x50, 0x5f}]$ be a subgroup of $([\text{0x00, 0xff}],\oplus)$. Then for each fixed index $j$, $pt_{i}[j] \in g_{j}H$, the coset associated with that index formed by &ldquo;shifting&rdquo; $H$.
+This limits the set of values from which $pt_{i}[j]$ bytes are drawn to 32. Next we identify the specific set, and show that it is the same for all $j$, and in fact smaller than the full coset.</p>
+<p>In other challenges, the flag has length of 32 bytes, or 64 hex digits. We claim that in this chall, the generated flag is viewed as a string directly, and then encoded into bytes. As a result, each byte is the encoding of a hex digit, of which there are only 16. Consider the distribution of pairwise XORs of the byte encodings of hex digits:</p>
+<p><img src="/post/mypost/chess_xors2.png"
+	width="765"
+	height="348"
+	srcset="/post/mypost/chess_xors2_hu_251bc5c4fa4982f4.png 480w, /post/mypost/chess_xors2_hu_a3c9f8e1c1577d50.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="219"
+		data-flex-basis="527px"
+	
+></p>
+<p>This empirically shows that for all $j$, the set of potential bytes is the encodings of the hex digits. Let this set be called $S$.</p>
+<p>For the last step, we construct a XOR-SAT problem, finding valid values of $K$ under the constraints:
+</p>
+$$K[j]\in \bigcap^{n}_{i}\{ct_{i}[j]\oplus s|s\in S\}.$$<p>
+As more non-repeating ciphertexts are given, the intersection tightens. A solver like z3 is able to efficiently find valid keys, but how much data is required for strong constraints? We can estimate the number of ciphertexts needed to converge to a manually searchable keyspace.<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></p>
+<p>I will drop indices to consider a single a.b.f byte of the key $k$.
+Let:
+</p>
+$$
+\begin{flalign*}
+&A_{n}=\bigcap_{i}^{n}\{ct_{i}\oplus s | s \in S\} \\
+&B_{n}=\{a\oplus k | a\in A_{n}\}=\bigcap_{i}^{n}\{ pt_{i}\oplus s|s\in S \}\\
+\end{flalign*}
+$$<p>
+Observe that, given the solvable key exists, $0\in B_{n}$, since $pt_{i}\in S$. We will have solved the problem when only $0$ remains in $B_{n}$, and all the other values have been eliminated. Define the random variable that gives us the smallest satisfying $n$:
+</p>
+$$X=\inf\{n|B_{n}=\{0\} \}$$<p>We will estimate $P(X>n)$, the tail probability. Consider a fixed $y$. What is $P(y\in B_{n})$, the probability that $y$ is not eliminated in $n$ ciphertexts? Since we assume the bytes of the plaintexts to be independent, then $P(y\in B_{n})=P(y\in B_{1})^{n}$. Observe following about the event $\{y\in B_{1} \}$:
+</p>
+$$
+\{y\in B_{1}\} \iff \{\exists s \in S, pt=y\oplus s \} \iff \{ pt\in y\oplus S= \{y\oplus s |s\in S\}  \}.
+$$<p>
+Recall that $pt\in S$. Then: $P(pt\in y\oplus S)= \frac{|S\cap y\oplus S|}{|S|}$. For convenience, define $f_{\oplus}$, the &ldquo;autocorrelation&rdquo; function between $S$ and the XOR-shifted $S$ by $f_{\oplus}(y)= |S\cap y\oplus S|$.
+Then for all $y$,
+</p>
+$$P(y\in B_{1})= \frac{{f_{\oplus}(y)}}{|S|}, \text{ and } P(y\in B_{n})= \left( \frac{{f_{\oplus}(y)}}{|S|} \right) ^{n}.$$<p>Finally:
+</p>
+$$
+\begin{align*}
+P(X>n) &= P \left( \bigcup_{y\neq 0} \{y\in B_{n}\} \right) \quad \text{some y is not eliminated}\\
+&\leq \sum\limits_{y\neq 0} P(y\in B_{n}) \qquad \text{  by sigma-additivity}\\
+&= \sum\limits_{y\neq0} \left( \frac{{f_{\oplus}(y)}}{|S|} \right)^{n} \\&= \frac{255}{|S|^{n}} \sum\limits_{y\neq0}f_{\oplus}(y)^{n}
+\end{align*}
+$$<p>
+The outcome depends on the structure of $f_\oplus$, which is in turn determined by the contents of S. A fun consequence of $S\subset gH$ is that $f_{\oplus}(y)>0 \iff y\in H$. The proof is an exercise for the reader. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup> In practice, this means the distribution of $f_{\oplus}$ is heavily skewed towards 0, giving us a relatively small value in the sum.</p>
+$$
+\begin{align*}
+E[X]&=\sum\limits_{n=0}^{\infty} P(X>n)\\
+&= P(X>0)+P(X>1) + \sum\limits_{n=2}^{\infty} P(X>n)\\
+&\leq 2+ \sum\limits_{n=2}^{\infty} \sum\limits_{y\in H\setminus0} (f_\oplus(y)|S|^{-1})^{n}\\
+&= 2+\sum\limits_{y\in H\setminus0} \sum\limits_{n=2}^{\infty} (f_\oplus(y)|S|^{-1})^{n}\\
+&= 2+\sum\limits_{y\in H\setminus0} \frac{(f_\oplus(y)|S|^{-1})^{2}}{1-f_\oplus(y)|S|^{-1}} \qquad \text{geometric series}\\
+&=2+ \frac{31}{|S|^{2}} \sum\limits_{y\in H\setminus 0} \frac{f_{\oplus}(y)^{2}}{ 1-f_\oplus(y)|S|^{-1}} \\ 
+&\approx 44.57 \quad \text{ciphertexts needed to reduce keyspace to 1.}
+\end{align*}
+$$<p>I used 30 ciphertexts to solve for the key, with $P(X>30)\leq 0.0387$. This is the probability an a.b.f. key byte fails to converge to a single value. Since all bytes are independent, the number of bytes that fail to converge out of 64 follows a binomial distribution $\text{Bin}(64, 0.0387)$, and has $E[\cdot]\approx 2.48$. In my actual case, 4 bytes failed to converge (with 2 candidate bytes each), giving 16 possible keys.</p>
+<p>From there it is trivial to compute the flag by taking XOR with the key.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>The hint for this is in the webpage&rsquo;s ciphertext retrieval endpoint.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>This makes the assumption that the encryption scheme can be expressed as a XOR against some consistent implicit key. It would not be true in, for example, a permutation cipher. I suspected the moves in the chess game were used as the encryption key, which would satisfy this. The next observation effectively confirmed it, as the common key was being cancelled out in the XOR.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>I did the math post factum. At the time of solving, I simply generated new cts until it was few enough keys to brute force, but I was curious what the theoretical expected num of cts was, so I went back to solve for it afterwards.&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p>How it feels to write this 🔥✍️&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Anton [Ильич] Sazonov
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

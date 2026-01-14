@@ -1,0 +1,38 @@
+baseURL: "/"
+title: Saan
+theme: hugo-theme-stack
+
+
+    
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+          inline:
+          - - \(
+            - \)
+          - - $
+            - $
+        enable: true
+
+
+params:
+  math: true  # if you still want global math
+  favicon: /favicon1.ico
+
+  sidebar:
+    subtitle: « one plus one equals three for significantly large values of one. »
+    compact: false
+    avatar:
+      enabled: true
+      local: true       # assume using static folder
+      src: img/this_cannot_continue.jpg
+
+  article:
+    readingTime: false

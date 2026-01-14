@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="0. What is this? This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &ldquo;machine code&rdquo; to probability problems. I&rsquo;ve put together some explanations and examples that would&rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp; probability.\n">
+<title>How to Measure</title>
+
+<link rel='canonical' href='//localhost:1313/post/how_to_measure/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="How to Measure">
+<meta property='og:description' content="0. What is this? This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &ldquo;machine code&rdquo; to probability problems. I&rsquo;ve put together some explanations and examples that would&rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp; probability.\n">
+<meta property='og:url' content='//localhost:1313/post/how_to_measure/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-30T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-12-30T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="How to Measure">
+<meta name="twitter:description" content="0. What is this? This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &ldquo;machine code&rdquo; to probability problems. I&rsquo;ve put together some explanations and examples that would&rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp; probability.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/this_cannot_continue_hu_11794add34a998a3.jpg" width="300"
+                            height="285" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="//localhost:1313/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/math/" style="background-color: #4a92ff; color: #fff;">
+                Math
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/how_to_measure/">How to Measure</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 30, 2025</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="0-what-is-this">0. What is this?
+</h3><p>This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &ldquo;machine code&rdquo; to probability problems. I&rsquo;ve put together some explanations and examples that would&rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp; probability.</p>
+<h3 id="1-heres-what-you-have-to-know">1. Here&rsquo;s what you have to know
+</h3><blockquote>
+<p>[!info] Definition: Measure space
+$(\Omega,\mathcal{F},\mu)$ is a measure (probability) space, where:</p>
+<ul>
+<li>$\Omega$ is a set (of outcomes);</li>
+<li>$\mathcal{F}$ is a $\sigma$-algebra on $\Omega$, consisting of subsets of $\Omega$ and satisfying the following:
+<ol>
+<li>$\varnothing,\Omega\in\mathcal{F}$;</li>
+<li>$A\in\mathcal{F}\Rightarrow A^{c}\in\mathcal{F}$ (stable under complement);</li>
+<li>$\set{A_{n}}\in\mathcal{F}\Rightarrow \bigcup_{n}A_{n}\in\mathcal{F}$ (stable under countable union);</li>
+</ol>
+<ul>
+<li>In probability, this is the event space.</li>
+</ul>
+</li>
+<li>$\mu:\mathcal{F}\rightarrow [0,\infty]$ is the measure function
+<ul>
+<li>$\mu$ satisfies $\sigma$-additivity, i.e.: $\mu(\bigsqcup_{n}A_{n})=\sum_{n}\mu(A_{n})$;</li>
+<li>$\mu(\varnothing)=0$;</li>
+<li>In probability, the measure is written as $P$, has codomain $[0,1]$, and $P(\Omega)=1$.</li>
+</ul>
+</li>
+</ul></blockquote>
+<p>Comments:</p>
+<ul>
+<li>$\mathcal{F}$ is stable by (countable) intersection;</li>
+<li>$P(\varnothing)=0$ and $P(\Omega)=1$ mean that <em>something</em> must happen;</li>
+<li>The trivial (coarsest) $\sigma$-algebra over $\Omega$ is $\set{\Omega,\varnothing}$, and the fullest (finest) is $\mathcal{P}(\Omega)$ (if $\Omega$ is countable).</li>
+</ul>
+<blockquote>
+<p>[!info] Definition: Random variable
+A (real-valued) random variable in a probability space $(\Omega,\mathcal{F},P)$ is a function $X:\Omega\rightarrow \mathbb{R}$ that is measurable, i.e., satisfies:
+</p>
+$$\forall B\in\mathcal{B}(\mathbb{R})\quad X^{-1}(B)\in\mathcal{F}.$$<p>
+where $\mathcal{B}(\mathbb{R})$ is the Borel $\sigma$-algebra of the real line.</p></blockquote>
+<p>If you have no measure theory background, $\mathcal{B}(\mathbb{R})$ might be hard to conceptualize. It is not the powerset of $\mathbb{R}$, but it may be useful to think of it that way. The subsets of $\mathbb{R}$ which do not fall in it require nontrivial and fairly contrived constructions that will never come up in a probability application.</p>
+<p>Here are some useful identities/definitions about expectation:</p>
+<blockquote>
+<p>[!note]</p>
+<ul>
+<li>$E[X\mid Y]=E[X\mid\sigma(Y)]$ (this is just a shorthand)</li>
+<li>$E[X]=E[E[X\mid \mathcal{A}]]$ (law of total expectation)</li>
+<li>$E[\mathbb{1}_{A}X]=E[\mathbb{1}_{A}E[X\mid\mathcal{A}]]\quad \forall A\in\mathcal{A}\quad$ (def. of conditional expectation)</li>
+<li>$E[aX+bY]=aE[X]+bE[Y]$ (linearity of expectation)</li>
+<li>$E[X\mid \mathcal{A}]=X$ when $X$ is $\mathcal{A}$-measurable and $E[X]$ when $X,\mathcal{A}$  indep.</li>
+<li>$E[XY\mid\mathcal{A}]=XE[Y\mid\mathcal{A}]$ when $X$ is $\mathcal{A}$-measurable</li>
+</ul></blockquote>
+<h3 id="2-the-conditioner">2. The conditioner
+</h3><p>Let $(\Omega,\mathcal{F},P)$ be a probability space and let $A\in\mathcal{F}$ be an event. In this segment, we will examine what it means to condition $P(A\mid \cdot)$ on a $\sigma$-algebra.</p>
+<blockquote>
+<p>[!note] Note
+I want to emphasize that when we write $P(A)$, what we mean mathematically is $E[\mathbb{1}_{A}]=\int_{\Omega}\mathbb{1}_{A}dP$, and more explicitly $\int_{\Omega}\mathbb{1}_{A}(\omega)dP(\omega)$, where $\mathbb{1}_{A}(\cdot)$ is in fact a random variable.</p></blockquote>
+<p>Let&rsquo;s look at the easiest case: suppose $B\in\mathcal{F}$ is another event, then $P(A\mid B)$ is just a number. Here, we simply condition on the realization that $B$ occurs.</p>
+<p>What if we don&rsquo;t know whether it does? In such a case, we would condition on $\sigma(B)$, the $\sigma$-algebra generated by this event. The interesting thing is that $P(A\mid\sigma(B))$ is in fact a random variable (a measurable function of $\omega$). Intuitively, $\sigma(B)$ gives us some information about $A$, but the information is random and dependent on where $\omega$ lands.
+Since $\sigma(B)=\set{\varnothing,B,B^{c},\Omega}$ has two nontrivial possibilities, the value of $P(A\mid\sigma(B))(\omega)$ depends on whether $\omega\in B$ or $\in B^{c}$:
+</p>
+$$P(A\mid\sigma(B))=\mathbb{1}_{B}P(A|B)+\mathbb{1}_{B^{c}}P(A|B^{c}).$$<p>
+This works out nicely because $\set{B,B^{c}}$ is a partition of the outcome space.
+We can easily extend this &ndash; let $\set{B_{n}}$ be a partition, i.e., a collection of disjoint subsets of $\Omega$ that add up to the whole set. Then:
+</p>
+$$P(A\mid\sigma\set{B_{n}})=\sum\limits_{n}\mathbb{1}_{B_{n}}P(A\mid B_{n}).$$<p>
+We extend this further to compute the expectation of a general random variable:
+</p>
+$$E[X\mid\sigma\set{B_{n}}]=\sum\limits_{n}\mathbb{1}_{B_{n}} E[X\mid B_{n}]=\sum\limits_{n}\mathbb{1}_{B_{n}} \frac{1}{P(B_{n})}\int_{B_{n}}XdP.$$<h3 id="3-measurability">3. Measurability
+</h3><p>Let $\mathcal{H}\subset \mathcal{F}$ and $A\in \mathcal{F}$. The definition of measurable functions tells us that $A$ being $\mathcal{H}$-measurable means that $\forall B\in\mathcal{B}(\mathbb{R}), \mathbb{1}_{A}^{-1}(B)\in \mathcal{H}$. There are four cases, dictated by whether $0$ and $1$ are in $B$. If they both are or aren&rsquo;t, we get that the preimage is respectively $\Omega$ or $\varnothing$, which is trivially true as $\mathcal{H}$ contains them by definition. If only $1\in B$, then the preimage is $\set{\omega\in A}$, and if $0\in B$ it is $\set{\omega\notin A}$. Note that it is sufficient for one of these to be in $\mathcal{H}$, since the other will be contained automatically as complement. Since $\sigma(A)\subseteq \mathcal{H}$, $A$ is thus completely determinable. So we have:
+</p>
+$$A\in\mathcal{H}\Leftrightarrow \mathbb{1}_{A}(\cdot)\; \mathcal{H}\text{-measurable }\Leftrightarrow P(A\mid\mathcal{H})=E[\mathbb{1}_{A}\mid\mathcal{H}]=\mathbb{1}_{A}\in \set{0,1}\text{ a.s. }$$<p>Let&rsquo;s now consider that $0<P(A\mid\mathcal{H})<1 \text{ a.s.}$ This is a fairly strong statement about the relationship of $A$ and $\mathcal{H}$; intuitively it means that the occurrence of $A$ cannot be deterministically established by any event in $\mathcal{H}$:
+</p>
+$$\forall B\in\mathcal{H}\text{ with }P(B)>0, P(A\cap B)\neq 0,1.$$<p>
+Define $\mathcal{H'}=\mathcal{H}\lor \sigma(A)$, the $\sigma$-algebra generated by including $A$ into $\mathcal{H}$. What does a $A'\in\mathcal{H'}$ look like? Here, $\set{A,A^{c}}$ partitions the outcomes in two, so $A'$ will consists of the union of some set $B\in\mathcal{H}$ intersecting with one part, and some other set $C$ intersecting with the other: $A'=(B\cap A)\cup (C\cap A^{c})\text{ with }B,C\in\mathcal{H}$. We can view the extension by $\sigma(A)$ as adding one bit of information into the event space.</p>
+<p>![[Pasted image 20251225190318.png]]
+$A'$ aligns exactly with $B$ in $A$, and with $C$ in $A^{c}$.</p>
+<p>Here&rsquo;s a result that simplifies the form for indeterminate events in $\mathcal{H}'$:</p>
+<blockquote>
+<p>[!tip] Proposition 1
+Suppose $P(A\mid\mathcal{H})\in(0,1)\text{ a.s.}$, $\mathcal{H'}=\mathcal{H}\lor\sigma(A)$, and $A'\in\mathcal{H'}$. Then:
+</p>
+$$P(A'\mid\mathcal{H})\in (0,1)\text{ a.s.}\iff \exists B\in\mathcal{H}\text{ s.t. }A'=(B\cap  A)\cup  (B^{c}\cap A^{c}).$$</blockquote>
+<p>This gives us a characterization that an event in $\mathcal{H'}$ has $0<P(A'\mid\mathcal{H})<1$, meaning that its occurrence can never be determined from an event in $\mathcal{H}$, exactly IFF you can find $B$ and $C$ to represent $A'$ with the property $B^{c}=C$. Since $B\mapsto (B\cap  A)\cup  (B^{c}\cap A^{c})$ is a bijective map, there are exactly $|\mathcal{H}|$ such indeterminate events.</p>
+<blockquote>
+<p>[!proof]-
+$(\Rightarrow )$ Given $0<P(A'\mid\mathcal{H})<1\text{ a.s.}$, take $B,C\in\mathcal{H}\text{ s.t. }A'=(B\cap A)\cup (C\cap A^{c})$. Then:
+</p>
+$$\begin{align*}
+P(A'\mid\mathcal{H})
+&= P((B\cap A)\sqcup (C\cap A^{c})\mid\mathcal{H})\\
+&= E[\mathbb{1}_{A}\mathbb{1}_B\mid\mathcal{H}]+E[\mathbb{1}_{C}\mathbb{1}_{A^{c}}\mid\mathcal{H}]\\
+&= \mathbb{1}_{B}P(A\mid\mathcal{H})+\mathbb{1}_{C}P(A^{c}\mid\mathcal{H})\\
+&\in (0,1).
+\end{align*}$$<p>
+The $>0$ implies that $B\cup C=\Omega$, and $<1$ gives us $B\cap C=\varnothing$, thus they are complements.
+$(\Leftarrow )$ is easy.</p></blockquote>
+<h3 id="4-change-of-measure-and-independence">4. Change of measure and independence
+</h3><p>Let&rsquo;s examine another angle of the property $0<P(A\mid\mathcal{H})<1 \text{ a.s.}$ Since $\mathcal{H}$ is an arbitrary sub-$\sigma$-algebra (not necessarily formed by a nice partition), we can&rsquo;t really tell how the probability is changed by the conditioning.</p>
+<blockquote>
+<p>[!info] Definition: Equivalence of measures
+Let $\mu,\nu:\mathcal{F}\rightarrow \mathbb{R}_{\geq0}$. They are considered equivalent if their null sets are the same, i.e., $\forall F\in\mathcal{F},\; \mu(F)=0\iff \nu(F)=0.$</p></blockquote>
+<p>We can construct a measure $Q:\mathcal{F}\rightarrow [0,1]$ that is structurally equivalent to $P$, but under which $A$ is independent of $\mathcal{H}$. For this, we will &ldquo;re-weigh&rdquo; the measures for events in a way that gives us $Q(A\mid\mathcal{H})=Q(A)=\alpha$ for some $\alpha\in(0,1)$ of our choosing.</p>
+<p>Consider the function
+</p>
+$$f_\alpha:\Omega\rightarrow [0,1]\text{ with }f_{\alpha}= \left(\alpha \frac{\mathbb{1}_{A}}{P(A\mid\mathcal{H})} + \left(1-\alpha\right)\frac{\mathbb{1}_{A^{c}}}{P(A^{c}\mid\mathcal{H})}\right).$$<p>
+What does this function do? When $\omega$ lands in $A$, we scale the it by the fixed constant $\alpha$ and normalize by $P(A\mid\mathcal{H})$, which is just a &ldquo;fixed&rdquo; function; when it lands outside we likewise scale and normalize by the complements. With this $f$, we can construct our weighted measure of interest:
+</p>
+$$\forall B\in\mathcal{F},\quad Q_\alpha(B):=\int_{B}fdP=E_{P}\left[\alpha \frac{\mathbb{1}_{A\cap B}}{P(A\mid\mathcal{H})} + \left(1-\alpha\right)\frac{\mathbb{1}_{A^{c}\cap B}}{P(A^{c}\mid\mathcal{H})}\right].$$<p>
+Equivalently, this means that $f=\frac{dQ}{dP}$, the Radon-Nikodym derivative.</p>
+<blockquote>
+<p>[!tip] Proposition 2
+$Q_{\alpha}$ is a probability measure.</p>
+<blockquote>
+<p>[!proof]
+We show that $E_{P}[\mathbb{1}_{A}/P(A\mid\mathcal{H})] =E_{P}[1/P(A\mid\mathcal{H})E_{P}[\mathbb{1}_{A}]]=1$, and the second term is likewise $1-\alpha$. Thus $Q_{\alpha}(\Omega)=\alpha+1-\alpha=1$.</p></blockquote></blockquote>
+<blockquote>
+<p>[!tip] Proposition 3
+$Q_{\alpha}$ is equivalent to $P$.</p>
+<blockquote>
+<p>[!proof]
+$(\Rightarrow )$ Let $N\in \mathcal{F}\text{ with }Q_{\alpha}(N)=0$. Both terms of $f$ are nonnegative, so by $0<P(A\mid\mathcal{H})<1$, each of them must be $0$. $P(A\cap  N)=0\land P(A^{c}\cap N)=0\Rightarrow P(N)=0$.
+$(\Leftarrow )$  is trivial.</p></blockquote></blockquote>
+<blockquote>
+<p>[!tip] Proposition 4
+$Q_{\alpha}(A\mid\mathcal{H})=Q_{\alpha}(A)$.</p>
+<blockquote>
+<p>[!proof]
+First:
+</p>
+$$Q_{\alpha}(A)=\alpha E\left[\frac{\mathbb{1}_{A}}{P(A\mid\mathcal{H})}\right]=\alpha E\left[ \frac{1}{P(A\mid\mathcal{H})}E[\mathbb{1}_{A}\mid\mathcal{H}] \right]=\alpha.$$<p>
+Second, let $B\in\mathcal{H}$.
+Observe that $E_{P}\left[\alpha \frac{\mathbb{1}_{A\cap B}}{P(A\mid\mathcal{H})}\right] = \alpha E\left[\frac{\mathbb{1}_{B}}{P(A\mid\mathcal{H})}E[P(A\mid\mathcal{H})] \right]=\alpha P(B)$ by law of total expectation; and the second term similarly evaluates to $(1-\alpha)P(B)$. Thus $Q_{\alpha}(B)=P(B)$.
+Third, $Q_{\alpha}(A\cap B)=\alpha P(B)$, since the first term evaluates as above, and the second is $0$ since $A^{c}\cap A\cap B=\varnothing$.
+Finally, $Q(A\mid B)= Q(A\cap B)/Q(B) =\alpha P(B)/P(B)=\alpha$ by definition.</p></blockquote></blockquote>
+<p>This construction gives us the following:</p>
+<ul>
+<li>$Q(A)=Q(A\mid B)=\alpha\in(0,1)\;\forall B\in\mathcal{H}$, so $A$ is independent of $\mathcal{H}$ under $Q$;</li>
+<li>$Q(B)=P(B)\;\forall B\in\mathcal{H}$, so all events in $\mathcal{H}$ are invariant under this scaling;</li>
+<li>All events that happen a.s. or a.s. never are maintained (equality of measures).</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

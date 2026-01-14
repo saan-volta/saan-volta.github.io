@@ -1,0 +1,33 @@
+{{ define "main" }}
+
+  {{/* all posts in mainSections not hidden */}}
+  {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
+  {{ $notHidden := where $pages "Params.hidden" "!=" true }}
+
+  {{/* pinned posts first */}}
+  {{ $pinned := where $notHidden "Params.pinned" true }}
+  {{ $unpinned := where $notHidden "Params.pinned" "!=" true }}
+
+  <section class="article-list">
+
+    {{/* display pinned posts if any */}}
+    {{ if gt (len $pinned) 0 }}
+      {{ range $pinned.ByDate.Reverse }}
+        {{ partial "article-list/default" . }}
+      {{ end }}
+    {{ end }}
+
+    {{/* then unpinned posts */}}
+    {{ range $unpinned.ByDate.Reverse }}
+      {{ partial "article-list/default" . }}
+    {{ end }}
+
+  </section>
+
+  {{ partial "footer/footer" . }}
+
+{{ end }}
+
+{{ define "right-sidebar" }}
+  {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}
