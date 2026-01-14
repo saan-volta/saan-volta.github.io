@@ -32,7 +32,7 @@ params:
     avatar:
       enabled: true
       local: true       # assume using static folder
-      src: img/this_cannot_continue.jpg
+      src: img/pfpme.png
 
   article:
     readingTime: false
