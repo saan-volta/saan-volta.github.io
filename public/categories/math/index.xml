@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Math on Saan</title>
-        <link>//localhost:1313/categories/math/</link>
+        <link>http://localhost:1313/categories/math/</link>
         <description>Recent content in Math on Saan</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <lastBuildDate>Tue, 30 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/categories/math/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 30 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/math/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>How to Measure</title>
-        <link>//localhost:1313/post/how_to_measure/</link>
+        <link>http://localhost:1313/post/how_to_measure/</link>
         <pubDate>Tue, 30 Dec 2025 00:00:00 +0000</pubDate>
         
-        <guid>//localhost:1313/post/how_to_measure/</guid>
+        <guid>http://localhost:1313/post/how_to_measure/</guid>
         <description>&lt;h3 id=&#34;0-what-is-this&#34;&gt;0. What is this?
 &lt;/h3&gt;&lt;p&gt;This is intended to be an in-detail walkthrough of how measure-theoretic probability works under the hood. When I took my first course on this topic, I found that there was not a lot of material that actually connected the measure theory &amp;ldquo;machine code&amp;rdquo; to probability problems. I&amp;rsquo;ve put together some explanations and examples that would&amp;rsquo;ve been useful to me when I first learned about it. This assumes knowledge of (very) basic measure theory &amp;amp; probability.&lt;/p&gt;
 &lt;h3 id=&#34;1-heres-what-you-have-to-know&#34;&gt;1. Here&amp;rsquo;s what you have to know
