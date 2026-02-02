@@ -20,20 +20,23 @@ With this it is easy to see how the mean recurrence time can be computed, all it
 What's cool here is that the graph is not only undirected and unweighted, but also highly structurally symmetric. If we begin in the red pentagon in the picture and take two steps to the purple pentagon, it is the same as being in any of the 4 other colored pentagons that are 2 steps away from red. 
 
 All we need to notice here is that the football graph is "radial", consisting of concentric layers around the origin. 
-!['Here, the black dots are the hexagon vertices.'](20260201164240.png)
+![Here, the black dots are the hexagon vertices](20260201164240.png)
 
 
 Here's the trick: call $F=(V,E)$ the graph (for football) and let $\text{Aut}(F)$ be the automorphism group of the graph. A graph automorphism is a function $f:V\rightarrow V$ that preserves vertex adjacency, i.e. $\{v_{1}v_{2}\}\in E\Rightarrow \{f(v_{1})f(v_{2})\}\in E$. In other words, such a function simply relabels the vertices, maintaining the structure of the graph.
 
-$\text{Aut}(F)$ consists of all such functions, but for our purposes we only need some of them. We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgroup of $0$ (the origin pentagon vertex). What this means is any $f\in G_{0}$ is an automorphism of the graph that fixes the origin in place. The desired consequence of this is that it also fixes the relative distances of all vertices to the origin, since the adjacencies are preserved. 
+$\text{Aut}(F)$ consists of all such functions, but for our purposes we only need some of them. 
+We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgroup of $0$ (the origin pentagon vertex). What this means is any $f\in G_{0}$ is an automorphism of the graph that fixes the origin in place. The desired consequence of this is that it also fixes the relative distances of all vertices to the origin, since the adjacencies are preserved. 
 
 For instance, consider the hexagon vertex between the red, blue, and green pentagon vertices on the image above; call this point $w$. An $f\in G_{0}$ must fix the origin, so $f(\text{red})=\text{red}$, but the preservation of adjacencies means that $f(w)$ is linked to $\text{red}$ under the automorphism, so $w$ must be mapped to one of the $5$ neighboring vertices around $\text{red}$.
 
 With this, we consider the orbits of the action of $G_{0}$ on $F$: two vertices $v_{1},v_{2}$ are in the same orbit if $\exists f\in G_{0}\text{ s.t. }f(v_{1})=v_{2}$. As we see in the example above, the group action cleanly partitions the vertices of the graph into these orbits based on the "layer" they're in away from the origin.
-!['It's kinda cute that in this graph they are literal orbits due to the radial structure.'](20260201170336.png)
+![It's kinda cute that in this graph they are literal orbits due to the radial structure](20260201170336.png)
 
 We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain on orbits $F/G_{0}$.
-!['Markov chain on orbits'](20260201171351.png)
+
+![Markov chain on orbits](20260201171351.png)
+
 There are in total 8 orbits, with each having 5 vertices in each, except for 0th and 8th, which have only 1 each.
 
 ### 3. Conclusion
