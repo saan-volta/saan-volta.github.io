@@ -20,7 +20,7 @@ With this it is easy to see how the mean recurrence time can be computed, all it
 What's cool here is that the graph is not only undirected and unweighted, but also highly structurally symmetric. If we begin in the red pentagon in the picture and take two steps to the purple pentagon, it is the same as being in any of the 4 other colored pentagons that are 2 steps away from red. 
 
 All we need to notice here is that the football graph is "radial", consisting of concentric layers around the origin. 
-![Here, the black dots are the hexagon vertices](20260201164240.png)
+![The black dots are the hexagon vertices](20260201164240.png)
 
 
 Here's the trick: call $F=(V,E)$ the graph (for football) and let $\text{Aut}(F)$ be the automorphism group of the graph. A graph automorphism is a function $f:V\rightarrow V$ that preserves vertex adjacency, i.e. $\{v_{1}v_{2}\}\in E\Rightarrow \{f(v_{1})f(v_{2})\}\in E$. In other words, such a function simply relabels the vertices, maintaining the structure of the graph.
@@ -35,7 +35,7 @@ With this, we consider the orbits of the action of $G_{0}$ on $F$: two vertices 
 
 It's kinda cute that in this graph, due to the radial structure, they are literal orbits around the origin.
 
-We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain on orbits $F/G_{0}$.
+We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain $F/G_{0}$. What we have done, essentially, is reduce the chain on the original graph (the surfaces of the football) to a chain on orbits under radial symmetry.
 
 ![Markov chain on orbits](20260201171351.png)
 
