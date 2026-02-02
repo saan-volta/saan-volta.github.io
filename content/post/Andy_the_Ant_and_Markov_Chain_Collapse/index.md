@@ -31,7 +31,9 @@ We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgr
 For instance, consider the hexagon vertex between the red, blue, and green pentagon vertices on the image above; call this point $w$. An $f\in G_{0}$ must fix the origin, so $f(\text{red})=\text{red}$, but the preservation of adjacencies means that $f(w)$ is linked to $\text{red}$ under the automorphism, so $w$ must be mapped to one of the $5$ neighboring vertices around $\text{red}$.
 
 With this, we consider the orbits of the action of $G_{0}$ on $F$: two vertices $v_{1},v_{2}$ are in the same orbit if $\exists f\in G_{0}\text{ s.t. }f(v_{1})=v_{2}$. As we see in the example above, the group action cleanly partitions the vertices of the graph into these orbits based on the "layer" they're in away from the origin.
-![It's kinda cute that in this graph they are literal orbits due to the radial structure](20260201170336.png)
+![](20260201170336.png)
+
+It's kinda cute that in this graph, due to the radial structure, they are literal orbits around the origin.
 
 We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain on orbits $F/G_{0}$.
 
