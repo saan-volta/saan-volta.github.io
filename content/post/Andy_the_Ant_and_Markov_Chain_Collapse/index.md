@@ -28,18 +28,18 @@ Here's the trick: call $F=(V,E)$ the graph (for football) and let $\text{Aut}(F)
 $\text{Aut}(F)$ consists of all such functions, but for our purposes we only need some of them. 
 We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgroup of $0$ (the origin pentagon vertex). What this means is any $f\in G_{0}$ is an automorphism of the graph that fixes the origin in place. The desired consequence of this is that it also fixes the relative distances of all vertices to the origin, since the adjacencies are preserved. 
 
-For instance, consider the hexagon vertex between the red, blue, and green pentagon vertices on the image above; call this point $w$. An $f\in G_{0}$ must fix the origin, so $f(\text{red})=\text{red}$, but the preservation of adjacencies means that $f(w)$ is linked to $\text{red}$ under the automorphism, so $w$ must be mapped to one of the $5$ neighboring vertices around $\text{red}$.
+For instance, consider the hexagon vertex between the red, blue, and green pentagon vertices on the image above; call this point $w$. An $f\in G_{0}$ must fix the origin, so $f(\text{red})=\text{red}$, but the preservation of adjacencies means that $f(w)$ is linked to $\text{red}$ under the automorphism, so $w$ must be mapped to one of the $5$ neighboring vertices around $\text{red}$. In other words, under such a relabelling, $w$ remains in the same layer.
 
 With this, we consider the orbits of the action of $G_{0}$ on $F$: two vertices $v_{1},v_{2}$ are in the same orbit if $\exists f\in G_{0}\text{ s.t. }f(v_{1})=v_{2}$. As we see in the example above, the group action cleanly partitions the vertices of the graph into these orbits based on the "layer" they're in away from the origin.
 ![](20260201170336.png)
 
-It's kinda cute that in this graph, due to the radial structure, they are literal orbits around the origin.
+It's kinda cute that in this graph, due to the radial structure, the group action orbits are literal orbits around the origin vertex.
 
 We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain $F/G_{0}$. What we have done, essentially, is reduce the chain on the original graph (the surfaces of the football) to a chain on orbits under radial symmetry.
 
 ![Markov chain on orbits](20260201171351.png)
 
-There are in total 8 orbits, with each having 5 vertices in each, except for 0th and 8th, which have only 1 each.
+There are in total 8 orbits, with each having 5 vertices, except for 0th and 7th, which have only 1.
 
 ### 3. Conclusion
 This reduces our 32x32 transition matrix to an 8x8 one basically for free! The $F/G_{0}$ chain gives us an easy eigenvector calculation (the answer to the puzzle is $E_{0}[T_{0}]=14$ btw). Of course, the initial problem has a small enough state space that it is not difficult at all to solve it directly (we only save on time inputting the matrix), but it is clear that on a large Markov chain a symmetry-exploiting simplification like this can reduce the required compute by orders of magnitude. 
