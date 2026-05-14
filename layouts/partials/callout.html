@@ -1,0 +1,9 @@
+<div class="callout callout-{{ .type }}">
+  <div class="callout-title">
+    <span class="callout-icon">{{ .icon }}</span>
+    <span class="callout-label">{{ .label }}{{ if .name }}: <em>{{ .name }}</em>{{ end }}</span>
+  </div>
+  <div class="callout-content">
+    {{ .content | markdownify }}
+  </div>
+</div>

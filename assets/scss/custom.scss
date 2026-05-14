@@ -1,0 +1,96 @@
+/* Callout boxes */
+
+.callout {
+    border-radius: 6px;
+    margin: 1.5em 0;
+    overflow: hidden;
+    border-inline-start: 4px solid var(--callout-color);
+
+    .callout-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        padding: 8px 16px;
+        background-color: var(--callout-bg-title);
+        font-weight: 600;
+        font-size: 0.95em;
+        color: var(--callout-color-dark);
+
+        .callout-icon {
+            font-style: normal;
+        }
+
+        em {
+            font-weight: 400;
+        }
+    }
+
+    .callout-content {
+        padding: 12px 16px;
+        background-color: var(--callout-bg-body);
+
+        > *:first-child { margin-top: 0; }
+        > *:last-child  { margin-bottom: 0; }
+    }
+}
+
+.callout-theorem {
+    --callout-color:       #4a90d9;
+    --callout-color-dark:  #2b5ea7;
+    --callout-bg-title:    rgba(74, 144, 217, 0.18);
+    --callout-bg-body:     rgba(74, 144, 217, 0.06);
+}
+
+.callout-lemma,
+.callout-proposition {
+    --callout-color:       #4a90d9;
+    --callout-color-dark:  #2b5ea7;
+    --callout-bg-title:    rgba(74, 144, 217, 0.18);
+    --callout-bg-body:     rgba(74, 144, 217, 0.06);
+}
+
+.callout-proof {
+    --callout-color:       #6b7280;
+    --callout-color-dark:  #374151;
+    --callout-bg-title:    rgba(107, 114, 128, 0.18);
+    --callout-bg-body:     rgba(107, 114, 128, 0.06);
+}
+
+.callout-definition {
+    --callout-color:       #22c55e;
+    --callout-color-dark:  #15803d;
+    --callout-bg-title:    rgba(34, 197, 94, 0.18);
+    --callout-bg-body:     rgba(34, 197, 94, 0.06);
+}
+
+.callout-problem {
+    --callout-color:       #f97316;
+    --callout-color-dark:  #c2410c;
+    --callout-bg-title:    rgba(249, 115, 22, 0.18);
+    --callout-bg-body:     rgba(249, 115, 22, 0.06);
+}
+
+.callout-example {
+    --callout-color:       #14b8a6;
+    --callout-color-dark:  #0f766e;
+    --callout-bg-title:    rgba(20, 184, 166, 0.18);
+    --callout-bg-body:     rgba(20, 184, 166, 0.06);
+}
+
+.callout-note {
+    --callout-color:       #eab308;
+    --callout-color-dark:  #a16207;
+    --callout-bg-title:    rgba(234, 179, 8, 0.18);
+    --callout-bg-body:     rgba(234, 179, 8, 0.06);
+}
+
+[data-scheme="dark"] {
+    .callout-theorem,
+    .callout-lemma,
+    .callout-proposition { --callout-color-dark: #93c5fd; }
+    .callout-proof     { --callout-color-dark: #d1d5db; }
+    .callout-definition{ --callout-color-dark: #86efac; }
+    .callout-problem   { --callout-color-dark: #fdba74; }
+    .callout-example   { --callout-color-dark: #5eead4; }
+    .callout-note      { --callout-color-dark: #fde047; }
+}
