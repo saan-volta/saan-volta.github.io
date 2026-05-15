@@ -36,7 +36,7 @@ As above, we can see that $X_{0}=E[f(G)]$ and $X_{n}=f(G)$.
 Next, to bound the concentration of the chromatic number, we need, well, a concentration bound.
 {{< lemma name="Azuma-Hoeffding inequality" >}}
 For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon>0$:
-$$P\bigg(|X_{T}-X_{0}|>\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+$$P\bigg(|X_{T}-X_{0}|>\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{t\leq T}c_{t}^{2}}\right).$$
 {{< /lemma >}}
 
 Finally, we have all the tools in place.

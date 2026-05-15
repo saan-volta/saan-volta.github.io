@@ -1,5 +1,5 @@
 ---
-title: Graph Coloring through Rings
+title: Graph Coloring via Rings
 date: 2026-04-22
 categories:
   - Math

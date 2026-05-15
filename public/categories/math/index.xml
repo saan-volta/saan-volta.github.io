@@ -139,7 +139,7 @@ Now $\mathbb{C}[V]/I_{k}=\mathbb{C}^{k}\otimes_\mathbb{C} ...\otimes_\mathbb{C} 
         
         <guid>http://localhost:1313/post/chrom_num_rand_graph/</guid>
         <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction
-&lt;/h3&gt;&lt;p&gt;This is a really clean result I quite like about bounding the deviation from expectation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;the-tricks&#34;&gt;The Tricks
 &lt;/h3&gt;&lt;div class=&#34;callout callout-definition&#34;&gt;

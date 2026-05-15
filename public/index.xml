@@ -6,8 +6,24 @@
         <description>Recent content on Saan</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <lastBuildDate>Wed, 22 Apr 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Graph Coloring through Rings</title>
+        <lastBuildDate>Fri, 15 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Trace Reconstruction</title>
+        <link>http://localhost:1313/post/trace-reconstruction/</link>
+        <pubDate>Fri, 15 May 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/trace-reconstruction/</guid>
+        <description>&lt;p&gt;This is my final project report as part of CSE 552 Randomized &amp;amp; Approximation Algorithms taught by Dr. Andrea Richa at ASU.&lt;/p&gt;
+&lt;iframe
+  src=&#34;SAZONOV_CIOTINGA_CSE_552_Report__Reconstruction_Algorithms.pdf&#34;
+  class=&#34;pdf-embed&#34;
+  type=&#34;application/pdf&#34;&gt;
+  &lt;p&gt;Your browser does not support embedded PDFs. &lt;a href=&#34;SAZONOV_CIOTINGA_CSE_552_Report__Reconstruction_Algorithms.pdf&#34;&gt;Download the PDF&lt;/a&gt;.&lt;/p&gt;
+&lt;/iframe&gt;
+
+</description>
+        </item>
+        <item>
+        <title>Graph Coloring via Rings</title>
         <link>http://localhost:1313/post/graph_coloring_in_ring_theory/</link>
         <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
         
@@ -200,7 +216,7 @@ Next, to bound the concentration of the chromatic number, we need, well, a conce
   &lt;div class=&#34;callout-content&#34;&gt;
     &lt;p&gt;For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon&gt;0$:
 &lt;/p&gt;
-$$P\bigg(|X_{T}-X_{0}|&gt;\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+$$P\bigg(|X_{T}-X_{0}|&gt;\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{t\leq T}c_{t}^{2}}\right).$$
   &lt;/div&gt;
 &lt;/div&gt;
 

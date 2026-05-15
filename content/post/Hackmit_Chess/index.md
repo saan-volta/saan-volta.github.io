@@ -4,7 +4,7 @@ title: "HackMIT_2025 Chess"
 date: 2025-09-30
 draft: false
 params:
-    pinned: true
+    pinned: false
 categories:
     - Cryptography
     - Featured

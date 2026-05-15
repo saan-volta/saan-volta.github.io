@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='http://localhost:1313/post/chrom_num_rand_graph/'>
 
-<link rel="stylesheet" href="/scss/style.min.6bbbbebb2ebb034ba545797e1ae46716a2b169db7bc9d1d8cc7974c95f62a379.css"><meta property='og:title' content="Chromatic Number of a Random Graph">
+<link rel="stylesheet" href="/scss/style.min.747a28e82ef255add43973329a838befc820c75a5d3b65f7dec1c01026c93a06.css"><meta property='og:title' content="Chromatic Number of a Random Graph">
 <meta property='og:description' content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
 <meta property='og:url' content='http://localhost:1313/post/chrom_num_rand_graph/'>
 <meta property='og:site_name' content='Saan'>
@@ -303,7 +303,7 @@ Next, to bound the concentration of the chromatic number, we need, well, a conce
   <div class="callout-content">
     <p>For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon>0$:
 </p>
-$$P\bigg(|X_{T}-X_{0}|>\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+$$P\bigg(|X_{T}-X_{0}|>\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{t\leq T}c_{t}^{2}}\right).$$
   </div>
 </div>
 
