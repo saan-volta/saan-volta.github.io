@@ -69,7 +69,7 @@ Here, we think of the variables as the assigned colors of vertices. It is easy t
 
 
 &lt;p&gt;&lt;em&gt;Proof $(\Rightarrow  )$.&lt;/em&gt; $f_{G}\in I_{k}$ implies $f_{G}$ vanishes on $\mathbf{V}(I_{k})$; let $a=(a_{1},...,a_{n})$ be a point of the variety, then $0=f_{G}(a)$ implies that for some edge $(v_{i}v_{j})$ we get $a_{i}=a_{j}$. Since $a$ was an arbitrary point corresponding to a $k$-coloring of $G$, all $k$-colorings fail to be proper.&lt;/p&gt;
-&lt;p&gt;For the reverse direction, we will need to invoke Hilbert&amp;rsquo;s Nullstellensatz and another auxiliary lemma.
+&lt;p&gt;For the reverse direction, we will need to invoke Hilbert&amp;rsquo;s Nullstellensatz.
 &lt;div class=&#34;callout callout-theorem&#34;&gt;
   &lt;div class=&#34;callout-title&#34;&gt;
     &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
@@ -111,7 +111,7 @@ Here, we think of the variables as the assigned colors of vertices. It is easy t
     &lt;span class=&#34;callout-label&#34;&gt;Lemma&lt;/span&gt;
   &lt;/div&gt;
   &lt;div class=&#34;callout-content&#34;&gt;
-    Ideal $I\subset R$ is radical if and only if quotient ring $R/I$ satisfies $a^{2}=0\Rightarrow a=0$ for all its elements $a$ (this is called being a reduced ring).
+    Ideal $I\subset R$ is radical if and only if quotient ring $R/I$ satisfies $a^{2}=0\Rightarrow a=0$ for all its elements $a$ (this is called a reduced ring).
   &lt;/div&gt;
 &lt;/div&gt;
 
@@ -130,6 +130,105 @@ Now $\mathbb{C}[V]/I_{k}=\mathbb{C}^{k}\otimes_\mathbb{C} ...\otimes_\mathbb{C} 
 &lt;hr&gt;
 &lt;h3 id=&#34;the-second-construction&#34;&gt;The second construction
 &lt;/h3&gt;&lt;p&gt;# todo :D&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>Chromatic Number of a Random Graph</title>
+        <link>http://localhost:1313/post/chrom_num_rand_graph/</link>
+        <pubDate>Sat, 14 Mar 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/chrom_num_rand_graph/</guid>
+        <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-tricks&#34;&gt;The Tricks
+&lt;/h3&gt;&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Doob martingale&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $X$ be a random variable with $E(X)&lt;\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
+Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;$(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.&lt;/li&gt;
+&lt;li&gt;This is also called an exposure martingale, since the filtration &amp;ldquo;exposes&amp;rdquo; information about $X$ sequentially.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$.
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Edge exposure martingale&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $m=\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\mathbb{1}_{\set{e_{i}\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then:
+&lt;/p&gt;
+$$X_{i}=E[f(G)\mid \sigma(A_{1},...,A_{i})]\quad\text{ for }i\in[0,m]$$&lt;p&gt;
+is the edge exposure martingale.&lt;/p&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Note that at $i=0$, there is no information, $X_{0}=E[f(G)]$, and at $i=m$, every edge is revealed, $\sigma(A_{1},...,A_{m})=\sigma(G)$, so $X_{m}=f(G)$.&lt;/p&gt;
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Vertex exposure martingale&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Fix an arbitrary ordering of vertices $v_{1},...,v_{n}$. Then for $i\in[1,n]$ define
+&lt;/p&gt;
+$$X_{i}=E\bigg[f(G)\mid \sigma(G[v_{1},...,v_{i}])\bigg],$$&lt;p&gt;
+where $G[S]$ for $S\subseteq V$ is the induced subgraph of $S$.&lt;/p&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;As above, we can see that $X_{0}=E[f(G)]$ and $X_{n}=f(G)$.
+Next, to bound the concentration of the chromatic number, we need, well, a concentration bound.
+&lt;div class=&#34;callout callout-lemma&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Lemma: &lt;em&gt;Azuma-Hoeffding inequality&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon&gt;0$:
+&lt;/p&gt;
+$$P\bigg(|X_{T}-X_{0}|&gt;\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Finally, we have all the tools in place.
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem: &lt;em&gt;Theorem 1&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $G\sim\mathcal{G}(n,p)$. Then
+&lt;/p&gt;
+$$|E[\chi(G)]-\chi(G)|\leq \sqrt{\frac{n}{2}\ln n}\quad \text{a.a.s.}$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Let $X_{i}$ be the vertex exposure martingale with $\chi$  as our function. Check that
+&lt;/p&gt;
+$$|X_{i+1}-X_{i}|=E[\chi(G)\mid \sigma(G[v_{1},.,,,v_{i},v_{i+1}])]-E[\chi(G)\mid\sigma(G[v_{1},...,v_{i}])]\leq 1$$&lt;p&gt;
+since the inclusion of a single vertex can change the chromatic number by at most $1$ (i.e., it will require a new color). Thus we get our bound, and all that&amp;rsquo;s left is to put Azuma at the wheel:
+&lt;/p&gt;
+$$P(|E[\chi(G)]-\chi(G)|&gt;\varepsilon)=P(|X_{0}-X_{n}|&gt;\varepsilon)\leq 2\exp\left(\frac{-2\varepsilon^{2}}{n}\right).$$&lt;p&gt;
+Using $\varepsilon=\sqrt{(n/2)\ln n}$ gives us $P(\cdot &gt;\varepsilon)\leq 2\exp(-\ln n)=2/n$, which means the statement holds asymptotically almost surely as $n\rightarrow \infty$. $\square$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;conclusion&#34;&gt;Conclusion
+&lt;/h3&gt;&lt;p&gt;In fact there are results which give a much stricter bound, but they&amp;rsquo;re not as clean as this. I first learned about this during HackMIT hackathon; when we were looking for an open classroom to stay in overnight, the one we wandered into had this theorem written on the chalkboard from, I&amp;rsquo;m assuming, an earlier lecture. So I guess this is now my good luck charm theorem.&lt;/p&gt;
 </description>
         </item>
         <item>

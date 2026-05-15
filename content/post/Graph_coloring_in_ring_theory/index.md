@@ -37,7 +37,7 @@ $G$ is $k$-colorable if and only if $f_{G}\notin I_{k}$.
 
 *Proof $(\Rightarrow  )$.* $f_{G}\in I_{k}$ implies $f_{G}$ vanishes on $\mathbf{V}(I_{k})$; let $a=(a_{1},...,a_{n})$ be a point of the variety, then $0=f_{G}(a)$ implies that for some edge $(v_{i}v_{j})$ we get $a_{i}=a_{j}$. Since $a$ was an arbitrary point corresponding to a $k$-coloring of $G$, all $k$-colorings fail to be proper.
 
-For the reverse direction, we will need to invoke Hilbert's Nullstellensatz and another auxiliary lemma.
+For the reverse direction, we will need to invoke Hilbert's Nullstellensatz.
 {{< theorem name="Hilbert's Nullstellensatz." >}}
 If $f\in F[x_{1},...,x_{n}]$ vanishes on $\mathbf{V}(I)$ for some ideal $I$ then $f^{m}\in I$ for some integer $m$.
 {{< /theorem >}}
@@ -53,7 +53,7 @@ $I_{k}$ is a radical ideal.
 
 To prove this, a bit of machinery is needed. Feel free to skip this if you are content to take the above as fact. First, we use a lemma that gives an alternative characterization of radical ideals; second, I very cautiously introduce tensor product between two rings. I am by no means an expert on this, but for this proof we only need the most basic idea. 
 {{< lemma >}}
-Ideal $I\subset R$ is radical if and only if quotient ring $R/I$ satisfies $a^{2}=0\Rightarrow a=0$ for all its elements $a$ (this is called being a reduced ring).
+Ideal $I\subset R$ is radical if and only if quotient ring $R/I$ satisfies $a^{2}=0\Rightarrow a=0$ for all its elements $a$ (this is called a reduced ring).
 {{< /lemma >}}
 
 A tensor product of two polynomial rings $R[x]$ and $R[y]$ over $R$ essentially combines them into a single ring that incorporates both $x$ and $y$: $R[x]\otimes_{R}R[y]\cong R[x,y]$. Moreover, if we have $f(x)\in R[x],\;g(y)\in R[y]$, then $R[x]/\langle f\rangle \otimes_{R}R[y]/\langle g\rangle \cong R[x,y]/\langle f,g\rangle$. This can be thought of by considering the latter's basis being composed of the product of the bases $\set{1,x,...,x^{\text{deg}(f)-1}}$ and $\set{1,y,...,y^{\text{deg}(g)-1}}$. 

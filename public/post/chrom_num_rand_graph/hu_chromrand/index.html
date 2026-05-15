@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Introduction This is a really clean result I quite like about bounding the deviation from expectation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+<title>Chromatic Number of a Random Graph</title>
+
+<link rel='canonical' href='http://localhost:1313/post/chrom_num_rand_graph/hu_chromrand/'>
+
+<link rel="stylesheet" href="/scss/style.min.6bbbbebb2ebb034ba545797e1ae46716a2b169db7bc9d1d8cc7974c95f62a379.css"><meta property='og:title' content="Chromatic Number of a Random Graph">
+<meta property='og:description' content="Introduction This is a really clean result I quite like about bounding the deviation from expectation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+<meta property='og:url' content='http://localhost:1313/post/chrom_num_rand_graph/hu_chromrand/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-14T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Chromatic Number of a Random Graph">
+<meta name="twitter:description" content="Introduction This is a really clean result I quite like about bounding the deviation from expectation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/cat_hu_cd8598b6a0df9f32.png" width="300"
+                            height="249" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/math/" style="background-color: #4a92ff; color: #fff;">
+                Math
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/chrom_num_rand_graph/hu_chromrand/">Chromatic Number of a Random Graph</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Mar 14, 2026</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="introduction">Introduction
+</h3><p>This is a really clean result I quite like about bounding the deviation from expectation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.</p>
+<hr>
+<h3 id="the-tricks">The Tricks
+</h3><div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Doob martingale</em></span>
+  </div>
+  <div class="callout-content">
+    Let $X$ be a random variable with $E(X)<\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
+Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+  </div>
+</div>
+
+
+<ul>
+<li>$(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.</li>
+<li>This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially.</li>
+</ul>
+<p>In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$.
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Edge exposure martingale</em></span>
+  </div>
+  <div class="callout-content">
+    <p>Let $m=\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\mathbb{1}_{\set{e_{i}\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then:
+</p>
+$$X_{i}=E[f(G)\mid \sigma(A_{1},...,A_{i})]\quad\text{ for }i\in[0,m]$$<p>
+is the edge exposure martingale.</p>
+
+  </div>
+</div>
+
+</p>
+<p>Note that at $i=0$, there is no information, $X_{0}=E[f(G)]$, and at $i=m$, every edge is revealed, $\sigma(A_{1},...,A_{m})=\sigma(G)$, so $X_{m}=f(G)$.</p>
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Vertex exposure martingale</em></span>
+  </div>
+  <div class="callout-content">
+    <p>Fix an arbitrary ordering of vertices $v_{1},...,v_{n}$. Then for $i\in[1,n]$ define
+</p>
+$$X_{i}=E\bigg[f(G)\mid \sigma(G[v_{1},...,v_{i}])\bigg],$$<p>
+where $G[S]$ for $S\subseteq V$ is the induced subgraph of $S$.</p>
+
+  </div>
+</div>
+
+
+<p>As above, we can see that $X_{0}=E[f(G)]$ and $X_{n}=f(G)$.
+Next, to bound the concentration of the chromatic number, we need, well, a concentration bound.
+<div class="callout callout-lemma">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Lemma: <em>Azuma-Hoeffding inequality</em></span>
+  </div>
+  <div class="callout-content">
+    <p>For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon>0$:
+</p>
+$$P\bigg(|X_{T}-X_{0}|>\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+  </div>
+</div>
+
+</p>
+<p>Finally, we have all the tools in place.
+<div class="callout callout-theorem">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Theorem: <em>Theorem 1</em></span>
+  </div>
+  <div class="callout-content">
+    <p>Let $G\sim\mathcal{G}(n,p)$. Then
+</p>
+$$|E[\chi(G)]-\chi(G)|\leq \sqrt{\frac{n}{2}\ln n}\quad \text{a.a.s.}$$
+  </div>
+</div>
+
+</p>
+<p>Let $X_{i}$ be the vertex exposure martingale with $\chi$  as our function. Check that
+</p>
+$$|X_{i+1}-X_{i}|=E[\chi(G)\mid \sigma(G[v_{1},.,,,v_{i},v_{i+1}])]-E[\chi(G)\mid\sigma(G[v_{1},...,v_{i}])]\leq 1$$<p>
+since the inclusion of a single vertex can change the chromatic number by at most $1$ (i.e., it will require a new color). Thus we get our bound, and all that&rsquo;s left is to put Azuma at the wheel:
+</p>
+$$P(|E[\chi(G)]-\chi(G)|>\varepsilon)=P(|X_{0}-X_{n}|>\varepsilon)\leq 2\exp\left(\frac{-2\varepsilon^{2}}{n}\right).$$<p>
+Using $\varepsilon=\sqrt{(n/2)\ln n}$ gives us $P(\cdot >\varepsilon)\leq 2\exp(-\ln n)=2/n$, which means the statement holds asymptotically almost surely as $n\rightarrow \infty$. $\square$</p>
+<hr>
+<h3 id="conclusion">Conclusion
+</h3><p>In fact there are results which give a much stricter bound, but they&rsquo;re not as clean as this. I first learned about this during HackMIT hackathon; when we were looking for an open classroom to stay in overnight, the one we wandered into had this theorem written on the chalkboard from, I&rsquo;m assuming, an earlier lecture. So I guess this is now my good luck charm theorem.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
