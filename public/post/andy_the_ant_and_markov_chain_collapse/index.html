@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="1. The problem (and the solution) This is a puzzle on 3Blue1Brown&rsquo;s talent page posted by Jane Street. It&rsquo;s uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), to which we apply the standard formula for mean recurrence time $E[T_x]=2m/d(x)$, where $m$ is the number of edges.\n">
+<title>Andy the Ant and Markov Chain Collapse</title>
+
+<link rel='canonical' href='http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/'>
+
+<link rel="stylesheet" href="/scss/style.min.6bbbbebb2ebb034ba545797e1ae46716a2b169db7bc9d1d8cc7974c95f62a379.css"><meta property='og:title' content="Andy the Ant and Markov Chain Collapse">
+<meta property='og:description' content="1. The problem (and the solution) This is a puzzle on 3Blue1Brown&rsquo;s talent page posted by Jane Street. It&rsquo;s uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), to which we apply the standard formula for mean recurrence time $E[T_x]=2m/d(x)$, where $m$ is the number of edges.\n">
+<meta property='og:url' content='http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-01-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-01-31T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Andy the Ant and Markov Chain Collapse">
+<meta name="twitter:description" content="1. The problem (and the solution) This is a puzzle on 3Blue1Brown&rsquo;s talent page posted by Jane Street. It&rsquo;s uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), to which we apply the standard formula for mean recurrence time $E[T_x]=2m/d(x)$, where $m$ is the number of edges.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/cat_hu_cd8598b6a0df9f32.png" width="300"
+                            height="249" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/math/" style="background-color: #4a92ff; color: #fff;">
+                Math
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/andy_the_ant_and_markov_chain_collapse/">Andy the Ant and Markov Chain Collapse</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 31, 2026</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="1-the-problem-and-the-solution">1. The problem (and the solution)
+</h3><p><img src="/post/andy_the_ant_and_markov_chain_collapse/20260201160934.png"
+	width="1920"
+	height="1080"
+	srcset="/post/andy_the_ant_and_markov_chain_collapse/20260201160934_hu_576db34597b3cc60.png 480w, /post/andy_the_ant_and_markov_chain_collapse/20260201160934_hu_686e53a04aab1d5d.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="177"
+		data-flex-basis="426px"
+	
+>
+This is a puzzle on 3Blue1Brown&rsquo;s talent page posted by Jane Street. It&rsquo;s uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), to which we apply the standard formula for mean recurrence time $E[T_x]=2m/d(x)$, where $m$ is the number of edges.</p>
+<p>If the problem was not so easy (directed or infinite graph, etc), we would have to build the transition matrix $M$ and solve for the stationary distribution (eigenvector) $\pi M =\pi$. This is also not hard, in principle, though we&rsquo;d spent some time computing it if the number of vertices is large. This post is about a way to make it quite a bit simpler still by exploiting the structure of the problem (but really I wanted an excuse to apply group theory).</p>
+<h3 id="2-and-the-other-part">2. And the other part
+</h3><p>What&rsquo;s cool here is that the graph is not only undirected and unweighted, but also highly structurally symmetric. If we begin in the red pentagon in the picture and take two steps to the purple pentagon, it is the same as being in any of the 4 other colored pentagons that are 2 steps away from red.</p>
+<p>All we need to notice here is that the football graph is &ldquo;radial&rdquo;, consisting of concentric layers around the origin.
+<img src="/post/andy_the_ant_and_markov_chain_collapse/20260201164240.png"
+	width="794"
+	height="694"
+	srcset="/post/andy_the_ant_and_markov_chain_collapse/20260201164240_hu_b4734e72f927b61b.png 480w, /post/andy_the_ant_and_markov_chain_collapse/20260201164240_hu_963b7a8901c53830.png 1024w"
+	loading="lazy"
+	
+		alt="The black dots are the hexagon vertices"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="114"
+		data-flex-basis="274px"
+	
+></p>
+<p>Here&rsquo;s the trick: call $F=(V,E)$ the graph (for football) and let $\text{Aut}(F)$ be the automorphism group of the graph. A graph automorphism is a function $f:V\rightarrow V$ that preserves vertex adjacency, i.e. $\{v_{1}v_{2}\}\in E\Rightarrow \{f(v_{1})f(v_{2})\}\in E$. In other words, such a function simply relabels the vertices, maintaining the structure of the graph.</p>
+<p>$\text{Aut}(F)$ consists of all such functions, but for our purposes we only need some of them.
+We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgroup of $0$ (the origin pentagon vertex). What this means is any $f\in G_{0}$ is an automorphism of the graph that fixes the origin in place. The desired consequence of this is that it also fixes the relative distances of all vertices to the origin, since the adjacencies are preserved.</p>
+<p>For instance, consider the hexagon vertex between the red, blue, and green pentagon vertices on the image above; call this point $w$. An $f\in G_{0}$ must fix the origin, so $f(\text{red})=\text{red}$, but the preservation of adjacencies means that $f(w)$ is linked to $\text{red}$ under the automorphism, so $w$ must be mapped to one of the $5$ neighboring vertices around $\text{red}$. In other words, under such a relabelling, $w$ remains in the same layer.</p>
+<p>With this, we consider the orbits of the action of $G_{0}$ on $F$: two vertices $v_{1},v_{2}$ are in the same orbit if $\exists f\in G_{0}\text{ s.t. }f(v_{1})=v_{2}$. As we see in the example above, the group action cleanly partitions the vertices of the graph into these orbits based on the &ldquo;layer&rdquo; they&rsquo;re in away from the origin.
+<img src="/post/andy_the_ant_and_markov_chain_collapse/20260201170336.png"
+	width="699"
+	height="668"
+	srcset="/post/andy_the_ant_and_markov_chain_collapse/20260201170336_hu_f6f60a80f389bce7.png 480w, /post/andy_the_ant_and_markov_chain_collapse/20260201170336_hu_401f76d892fe65ed.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="104"
+		data-flex-basis="251px"
+	
+></p>
+<p>It&rsquo;s kinda cute that in this graph, due to the radial structure, the group action orbits are literal orbits around the origin vertex.</p>
+<p>We can finally collapse the graph by factoring out the symmetries and obtain the resulting Markov chain $F/G_{0}$. What we have done, essentially, is reduce the chain on the original graph (the surfaces of the football) to a chain on orbits under radial symmetry.</p>
+<p><img src="/post/andy_the_ant_and_markov_chain_collapse/20260201171351.png"
+	width="788"
+	height="387"
+	srcset="/post/andy_the_ant_and_markov_chain_collapse/20260201171351_hu_6500a7f7e4fb5564.png 480w, /post/andy_the_ant_and_markov_chain_collapse/20260201171351_hu_e95b423114078ada.png 1024w"
+	loading="lazy"
+	
+		alt="Markov chain on orbits"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="203"
+		data-flex-basis="488px"
+	
+></p>
+<p>There are in total 8 orbits, with each having 5 vertices, except for 0th and 7th, which have only 1.</p>
+<h3 id="3-conclusion">3. Conclusion
+</h3><p>This reduces our 32x32 transition matrix to an 8x8 one basically for free! The $F/G_{0}$ chain gives us an easy eigenvector calculation (the answer to the puzzle is $E_{0}[T_{0}]=36$ btw). Of course, the initial problem has a small enough state space that it is not difficult at all to solve it directly (we only save on time inputting the matrix), but it is clear that on a large Markov chain a symmetry-exploiting simplification like this can reduce the required compute by orders of magnitude.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

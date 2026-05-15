@@ -7,6 +7,7 @@ params:
     pinned: true
 categories:
     - Cryptography
+    - Featured
 ---
 
 ### Intro: 

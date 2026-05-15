@@ -12,9 +12,9 @@ categories:
 
 ### 1. The problem (and the solution)
 ![](20260201160934.png)
-This is a puzzle on 3Blue1Brown's talent page posted by Jane Street. It's uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), which immediately makes it an ergodic Markov chain with a fairly simple transition kernel. The Fundamental Theorem of Markov chains gives us $\pi(x)=1/E_{x}[T_{x}]$, where $\pi$ is the unique stationary distribution and $E_{x}[T_{x}]$ is the mean recurrence time of state $x$ (exactly what we want); $\pi$ being the 1-eigenvector of the Markov kernel $M$, i.e., satisfying $\pi M=\pi$.
+This is a puzzle on 3Blue1Brown's talent page posted by Jane Street. It's uncharacteristically easy for JS, being pretty much a textbook ergodic Markov chain problem. Essentially all it takes is to observe this is a symmetric random walk on a finite undirected aperiodic graph (the pentagons and hexagons are the vertices), to which we apply the standard formula for mean recurrence time $E[T_x]=2m/d(x)$, where $m$ is the number of edges. 
 
-With this it is easy to see how the mean recurrence time can be computed, all it really takes is to fill in the 32x32 transition matrix and use any sort of linear algebra computation tool to find the eigenvector. But it is actually even simpler than that.
+If the problem was not so easy (directed or infinite graph, etc), we would have to build the transition matrix $M$ and solve for the stationary distribution (eigenvector) $\pi M =\pi$. This is also not hard, in principle, though we'd spent some time computing it if the number of vertices is large. This post is about a way to make it quite a bit simpler still by exploiting the structure of the problem (but really I wanted an excuse to apply group theory).
 
 ### 2. And the other part
 What's cool here is that the graph is not only undirected and unweighted, but also highly structurally symmetric. If we begin in the red pentagon in the picture and take two steps to the purple pentagon, it is the same as being in any of the 4 other colored pentagons that are 2 steps away from red. 

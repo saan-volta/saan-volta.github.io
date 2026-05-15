@@ -32,7 +32,7 @@ params:
     avatar:
       enabled: true
       local: true       # assume using static folder
-      src: img/zazu_hat.png
+      src: img/cat.png
 
   article:
     readingTime: false
