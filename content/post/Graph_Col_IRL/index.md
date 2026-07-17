@@ -2,7 +2,7 @@
 title: Graph Coloring via Rings IRL
 date: 2026-07-15
 categories:
-  - Algorithm
+	- Algorithms
 	- Math
 	- Project
 ---
