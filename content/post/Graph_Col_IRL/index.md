@@ -1,10 +1,10 @@
 ---
-title: Graph Coloring via Rings IRL
+title: Graph Coloring via Rings IRL (II)
 date: 2026-07-15
 categories:
+- Project
 - Algorithms
 - Math
-- Project
 ---
 
 ### Introduction
@@ -36,16 +36,17 @@ For a given graph $G=(V,E)$ and integer $k$, compute the adjacency polynomial $f
 ---
 #### Examples
 Before we begin, here are some examples of graphs and their corresponding polynomials, just to get a feel for it:
-![[graphcol1.png]]
+![](graphcol1.png)
+
 $$\begin{align}
 &P_{2}\rightarrow \quad x_{1}-x_{2}.\\
 &P_{3}\rightarrow \quad x_{1}x_{2}-x_{1}x_{3}-x_{2}^{2}+x_{2}x_{3}.\\
 &C_{3}\rightarrow \quad -x_1^2 x_2 + x_1 x_2^2 + x_1^2 x_3 - x_2^2 x_3 - x_1 x_3^2 + x_2 x_3^2.\\
 &S_{4}\rightarrow \quad x_1^4 - x_1^3 x_2 - x_1^3 x_3 + x_1^2 x_2 x_3 - x_1^3 x_4 + x_1^2 x_2 x_4 + x_1^2 x_3 x_4 - x_1 x_2 x_3 x_4 \\&- x_1^3 x_5 + x_1^2 x_2 x_5 + x_1^2 x_3 x_5 - x_1 x_2 x_3 x_5 + x_1^2 x_4 x_5 - x_1 x_2 x_4 x_5 \\&- x_1 x_3 x_4 x_5 + x_2 x_3 x_4 x_5.\\
 &C_{4}\rightarrow \quad x_1^2 x_2 x_3 - x_1 x_2^2 x_3 - x_1^2 x_3^2 + x_1 x_2 x_3^2 - x_1^2 x_2 x_4 + x_1 x_2^2 x_4 + x_1^2 x_3 x_4 \\&-2 x_1 x_2 x_3 x_4 + x_2^2 x_3 x_4 + x_1 x_3^2 x_4 - x_2 x_3^2 x_4 + x_1 x_2 x_4^2 - x_2^2 x_4^2 \\&- x_1 x_3 x_4^2 + x_2 x_3 x_4^2.\\
-& K_{4}\rightarrow \quad x_1^3 x_2^2 x_3 - x_1^2 x_2^3 x_3 - x_1^3 x_2 x_3^2 + x_1 x_2^3 x_3^2 + x_1^2 x_2 x_3^3 - x_1 x_2^2 x_3^3 \\&- x_1^3 x_2^2 x_4 + x_1^2 x_2^3 x_4 + x_1^3 x_3^2 x_4 - x_2^3 x_3^2 x_4 - x_1^2 x_3^3 x_4 + x_2^2 x_3^3 x_4 + x_1^3 x_2 x_4^2\\& - x_1 x_2^3 x_4^2 - x_1^3 x_3 x_4^2 + x_2^3 x_3 x_4^2 + x_1 x_3^3 x_4^2 - x_2 x_3^3 x_4^2 - x_1^2 x_2 x_4^3 \\&+ x_1 x_2^2 x_4^3 + x_1^2 x_3 x_4^3 - x_2^2 x_3 x_4^3 - x_1 x_3^2 x_4^3 + x_2 x_3^2 x_4^3.
-
+&K_{4}\rightarrow \quad x_1^3 x_2^2 x_3 - x_1^2 x_2^3 x_3 - x_1^3 x_2 x_3^2 + x_1 x_2^3 x_3^2 + x_1^2 x_2 x_3^3 - x_1 x_2^2 x_3^3 \\&- x_1^3 x_2^2 x_4 + x_1^2 x_2^3 x_4 + x_1^3 x_3^2 x_4 - x_2^3 x_3^2 x_4 - x_1^2 x_3^3 x_4 + x_2^2 x_3^3 x_4 + x_1^3 x_2 x_4^2\\& - x_1 x_2^3 x_4^2 - x_1^3 x_3 x_4^2 + x_2^3 x_3 x_4^2 + x_1 x_3^3 x_4^2 - x_2 x_3^3 x_4^2 - x_1^2 x_2 x_4^3 \\&+ x_1 x_2^2 x_4^3 + x_1^2 x_3 x_4^3 - x_2^2 x_3 x_4^3 - x_1 x_3^2 x_4^3 + x_2 x_3^2 x_4^3.
 \end{align}$$
+
 As you can see, these get large rather quickly.
 
 ---
@@ -148,10 +149,10 @@ The Mycielski graph $M_{k}$ is specifically designed to have chromatic number $k
 
 ---
 ### 3. Eliminating Exponent Vector Storage
-The Zobrist hash trick allows us to compare monomials' exponent vectors via their hashes, as well as update these hashes incrementally. However, the memory footprint remains: to update a hash by incrementing $a_{j}$, we actually have to know the current value, because the value we set is $a_{j}+1$ if $a_{j}<k$ and $0$ otherwise; there is a branch involved. We cannot perform a "blind" incrementation mod $k$ on the hash, so we must store the entire vector. 
+The Zobrist hash trick allows us to compare monomials' exponent vectors via their hashes, as well as update these hashes incrementally. However, the memory footprint remains: to update a hash by incrementing $a_{j}$, we actually have to know the current value, because the value we set is $a_{j}+1$ if $a_{j} < k$ and $0$ otherwise; there is a branch involved. We cannot perform a "blind" incrementation mod $k$ on the hash, so we must store the entire vector. 
 
 This was a glaring inefficiency that didn't let me sleep at night for some time.
-{{< problem name="The Cyclic Incremental Hash Problem" >}}
+{{< problem name="Cyclic Incremental Hash" >}}
 Let $A=[a_{1},...,a_{n}]$ be an $n$-vector with $a_{i}\in\set{0,...,k-1}$, and let $A'$ be the same vector in all coordinates except $j$, where it is $a'_{j}=a_{j}+1 \mod k$. Find a hash $h:\mathbb{Z}_{k}^{n}\rightarrow \set{0,1}^{128}$ such that $h(A')=f(h(A),j)$ for some computable function $f$, that is, $h(A')$ can be computed directly knowing only $h(A)$ and $j$.
 {{< /problem >}}
 
@@ -162,7 +163,7 @@ This idea I found in Bellare et al. (2021)[^1]. The group here would be a multip
 
 However, there's a significant problem with this approach (see if you can find it). Because we take a product over elements with $g_{i}^{k}=e$, the set of outputs is exactly the elements of the group which satisfy this. So what is the size of our hash's image?
 
-{{< lemma name="Lemma: Hash Output Space" >}}
+{{< lemma name="Hash Output Space" >}}
 Let $G(k)=\set{g\in\mathbb{Z}_{p}^{\times}\mid g^{k}=e}$. Then $|G(k)|=k$.
 *Proof:* $\mathbb{Z}_{p}^{\times}$ is a cyclic group, so $\exists x\text{ s.t. }\langle x\rangle=\mathbb{Z}_{p}^{\times}$. Then $x^{(p-1)/k}$ has order $k$, and subsequently $y_{t}:=x^{t(p-1)/k}$ satisfies $y_{t}^{k}=e$ for $t\in 1,...,k$. This means $|G(k)|\geq k$.
 On the other hand, we can note that $\mathbb{Z}_{p}$ is a field and the elements of $G(k)$ are $k$-th roots of unity in it, in other words, the roots of $x^{k}-1$. A degree $k$ polynomial has at most $k$ roots. Having bounded above and below, we get $|G(k)|=k$. 
@@ -191,7 +192,7 @@ This yields a hash with image size $k^{2}$ but in practice this is still far too
 $$C_{k}^{d}=\langle h_{1}\rangle\times ...\times \langle h_{d}\rangle \cong \langle \phi(h_{1},e,e,...,e), \phi(e,h_{2},e,...,e),...\rangle\leq \mathbb{Z}_{N}^{\times}$$
 to make $w_{1},...,w_{n}$ span $d$ dimensions, resulting in the image size $k^{d}$. Since the operations in $\mathbb{Z}_{N}^{\times}$ happen modulo $N$, this is the bottleneck - the product of our $d$ distinct special primes must fit in an (128-bit) integer data type. To maximize $d$, we choose the primes to be as small as possible, but on average, we can get $\approx 18$. Still, this gives us a very sizable output space.
 
-A key step I've skipped is producing a generator $g$ of $\mathbb{Z}_{p}^{\times}$. There's not a known closed form solution for this problem, but (for any $p$) on average about a third of the elements of $\mathbb{Z}_{p}^{\times}$ are generators, so a guess-and-check algorithm is actually quite efficient for this. We know by Lagrange's theorem that if an element $g$ has order $m<n:=p-1=|\mathbb{Z}_{p}^{\times}|$, then $m$ is a divisor of $n$. The contrapositive tells us that if for some $m\mid n,\; g^{m}=e$, then $g$ is not a generator; thus, we will pick a random element and go through all maximal divisors of $n$ to see if our candidate evaluates to $e$ with that exponent; if it doesn't for any of them, we'll have found our generator.
+A key step I've skipped is producing a generator $g$ of $\mathbb{Z}_{p}^{\times}$. There's not a known closed form solution for this problem, but (for any $p$) on average about a third of the elements of $\mathbb{Z}_{p}^{\times}$ are generators, so a guess-and-check algorithm is actually quite efficient for this. We know by Lagrange's theorem that if an element $g$ has order $m < n:=p-1=|\mathbb{Z}_{p}^{\times}|$, then $m$ is a divisor of $n$. The contrapositive tells us that if for some $m\mid n,\; g^{m}=e$, then $g$ is not a generator; thus, we will pick a random element and go through all maximal divisors of $n$ to see if our candidate evaluates to $e$ with that exponent; if it doesn't for any of them, we'll have found our generator.
 ```python
 while True:
 	x = randint(2,p-1)
@@ -218,14 +219,14 @@ As a final note, solving a CRT modular system of $d$ equations in the standard w
 The algorithm can be viewed as a process that begins with an empty graph on $n$ vertices and adds an edge at each step. The revelation of each edge $(ij)$ corresponds to multiplying the previous step's polynomial by $(x_{i}-x_{j})$. The number of terms in this polynomial grows very quickly (more or less exponentially, as you might imagine); the more terms we have at step $t$, the more we will have to process and insert at $t+1$. But not all edges give the same growth. Can we slow the term count growth by revealing edges in a clever order?
 
 The answer is yes, and here's a simple example:
-![[graphcol2.png]]![[graphcol3.png]]
+![](graphcol2.png)![](graphcol3.png)
 $f_{t}$ is the polynomial of the partial graph with edges $1,...,t$ (with respect to a particular ordering), and $\text{T}(f_{t})$ is the number of terms in the polynomial. Notice that the second ordering produces fewer terms at steps 3 and 4. Of course, the final result will be the same in any ordering as the final graph is fixed, but smaller intermediate results means less work at each subsequent step.
 
 Here's a more noticeable difference:
-![[graphcol4.png]]![[graphcol5.png]]
+![](graphcol4.png)![](graphcol5.png)
 The second ordering processes, in total, 73 fewer terms than the first. Clearly, among all orderings of edges of the graph $G$, there must be an ordering which yields the fewest intermediate terms over the course of execution. So... what is it?
 
-{{< problem name="The Minimum Cost Edge Ordering Problem" >}}
+{{< problem name="Minimum Cost Edge Ordering" >}}
 For a given graph $G$, we as usual define the polynomial $f=\prod_{ij\in E}(x_{i}-x_{j})$ and let $\text{T}(f)$  denote the number of terms in the expanded & simplified form of the polynomial. If $e_{1}\prec e_{2}\prec ...\prec e_{m}$ is any ordering of edges of $G$, we call $f_{t}^{\prec}$ the partial polynomial of the first $t$ edges: $\prod_{ij\in E \;:\; (ij)\preceq e_{t}}(x_{i}-x_{j})$; it is defined w.r.t. the ordering. Finally, define the cost of the ordering $c(\prec):=\sum_{t\in[m]}\text{T}(f_{t}^{\prec})$.  
 Find the optimal ordering $\prec^{\star}$ such that the cost $c(\prec^{\star})$ is minimum.
 {{< /problem >}}
@@ -236,7 +237,8 @@ Here's the key to why the second ordering in the both above examples wins: we cl
 
 Let's denote $G_{t}$ as the partial graph with the first $t$ edges revealed. Which edge should we pick next to maximize the closure of shortest cycles? A working strategy is to compute the distances $d_{t}(u,v)$ for all edges $uv$ remaining not revealed at step $t$ and pick the one that minimizes this distance, thereby closing a $d_{t}(u,v)+1$-long cycle. Naively this would require recomputing the distances in $G_{t}$ between the endpoints of all potential edges at every step; with BFS it comes out to $O((m+n)m^{2})$ where $m$ is the number of edges in $G$. Here, there's a clever trick we can do: observe that if we insert an edge $uv$, the distance between any two other vertices $x$ and $y$ changes in a very predictable way.
 
-![[graphcol6.png]]
+![](graphcol6.png)
+
 Here we plan to reveal the edge $uv$ and the black solid line is the shortest path between $u$ and $v$ in $G_{t}$ (prior to the insertion). What is the shortest path between $x$ and $y$ in $G_{t+1}$? There are two options: it either does not include the edge $uv$ at all (1) or includes it once (2). In the first case, $d_{t+1}(x,y)=d_{t}(x,y)$, and in the second, the route first takes the segment $x-u$, then the newly added shortcut edge, then the segment $v-y$, so $d_{t+1}(x,y)=d_{t}(x,u)+1+d_{t}(v,y)$. We also get a candidate path by swapping $u$ and $v$ in this expression. Thus, to update distances after the insertion of $uv$ we write:
 $$d_{t+1}(x,y)=\min\set{d_t(x,y),\;d_{t}(x,u)+1+d_{t}(y,v),\;d_{t}(y,u)+1+d_{t}(v,x)}.$$
 We still need to know the distances to $u$ and $v$, so we will run BFS to get them. The algorithm looks like this and runs in $O((n+m)m)$:
@@ -300,7 +302,7 @@ ui128 modmult(ui128 a, ui128 b, ui128 m)
 }
 ```
 This is awful and is essentially naive multiplication through addition in $O(\log b)$. The reason I did this initially was because 128-bit ints are the largest int data type in C++, so I could not cast the intermediate result $a\cdot b$ (which is up to 256 bits) to a larger type before taking mod. This was my next challenge.
-{{< problem name="The Max Precision Modular Multiplication Problem" >}}
+{{< problem name="Max Precision Modular Multiplication" >}}
 Compute $(a\cdot b \mod m)$ as fast as possible given that all three integers are up to $B$ bits long, and no larger data type is available.
 
 {{< /problem >}}
