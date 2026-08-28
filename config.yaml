@@ -25,6 +25,11 @@ markup:
 params:
   math: true  # if you still want global math
   favicon: /favicon1.ico
+  imageProcessing:
+    cover:
+      enabled: true
+    content:
+      enabled: false
 
   sidebar:
     subtitle: « one plus one equals three for significantly large values of one. »

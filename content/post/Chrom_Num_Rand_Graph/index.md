@@ -11,10 +11,10 @@ This is a really clean result I quite like about bounding the deviation of the c
 ---
 ### The Tricks
 {{< definition name="Doob martingale" >}}
-Let $X$ be a random variable with $E(X)<\infty$ and let $(\mathcal{F}_{n})$ be any filtration. 
-Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+Let $X$ be a random variable with $E[X)]<\infty$ and let $(\mathcal{F}_{n})$ be any filtration. 
+Define $(Y_{n})$ by $Y_{n}=E[X|\mathcal{F}_{n}]$.
 {{< /definition >}}
-- $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.
+- $(Y_{n})$ is a martingale: $$E[Y_{n+1}|\mathcal{F}_{n}]=E[E[X|\mathcal{F}_{n+1}]|\mathcal{F}_{n}]\overset{(*)}{=}E[X|\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.
 - This is also called an exposure martingale, since the filtration "exposes" information about $X$ sequentially.
 
 In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. 
