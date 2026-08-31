@@ -7,7 +7,6 @@ categories:
 ---
 
 
-
 ### Abstract
 This is the proof of correctness of the stenographic encoding algorithm described in [^1]. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.
 
@@ -45,6 +44,7 @@ $$\newcommand{\indep}{\mathrel{\perp\!\!\!\perp}}
 The second claim is that $\set{X_{i}}_{n}$ are mutually conditionally independent given $s_{1:j-1}$. We will use this statement as a sort of inventor's paradox to establish the first.
 
 *Proof.* Proceed by induction on $j$. At the start of the first iteration, $X_{i}\sim\text{Unif}[2^{b}]=\mu_{i}$ by definition. All $X_{i}$ are mutually independent, so the claims hold trivially.
+
 In the inductive case, we assume the claims hold at the start of step $j$. The maximum entropy block $i^{*}$ is chosen. 
 We prove $(i)$ first; the aim is to show that for all $i$, $\mu'_{i}$, defined to be the adjusted $\mu$ at the end of the step, satisfies
 $$\mu'_{i}(x)=P(X_{i}=x\mid s_{1:j})\quad \forall x.$$
@@ -99,8 +99,9 @@ Thus, the random vectors have equal distribution.
 
 
 
->[!corollary] 
-> The algorithm constructs a coupling between a factorable uniform distribution and the autoregressive conditional $\mathcal{C}(\cdot\mid\cdot)$.
+{{< corollary >}}
+The algorithm constructs a coupling between a factorable uniform distribution and the autoregressive conditional $\mathcal{C}(\cdot\mid\cdot)$.
+{{< /corollary >}}
 
 Let $\text{A}(\mathbf{x}, \mathbf{s})$ be the joint distribution induced by the algorithm between the space of $n$-block ciphertexts and $m$-token text samples, writing $\text{A}(\mathbf{x},\mathbf{s}):=P(\mathbf{X}=\mathbf{x},\;\mathbf{S}=\mathbf{s})$ and $\text{A}(\mathbf{s}\mid \mathbf{x})$ for probability of outputting stegotext $\mathbf{s}$ given input ciphertext $\mathbf{x}$, where $\mathbf{X}=(X_{1},...,X_{n})$  and $\mathbf{S}=(S_{1},...,S_{m})$.
 
