@@ -15,6 +15,7 @@ This is the proof of correctness of the stenographic encoding algorithm describe
 The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \ldots, X_{n}$. Each block is uniform $X_{i}\sim\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\mathcal{C}(c\mid c_{1},...,c_{m}):=P(C_{m+1}=c\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the "context" in the LLM sense and $C_{m+1}$ is the next generated "token".
 
 The algorithm proceeds as follows:
+
 0. For $i\in 1\ldots n$, initialize $\mu_{i}$ to uniform distributions $\set{0,1}^{b}\rightarrow [0,1]$.
 1. For $j\in 1\ldots m$:
 	1. $i^{*}:=\arg\max_{i}H(\mu_{i})$
