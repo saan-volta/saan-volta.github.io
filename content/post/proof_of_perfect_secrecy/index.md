@@ -112,4 +112,4 @@ Observe that for any $\mathbf{x}$ and $\mathbf{s}$, we have $\text{A}(\mathbf{x}
 The proof makes repeated use of this basic identity:
 $$P(A\mid B\cap C)=\frac{P(A\mid B)P(C\mid A\cap  B)}{P(C\mid B)}$$
 
-[^1:] https://arxiv.org/abs/2210.14889
+[^1]: https://arxiv.org/abs/2210.14889
