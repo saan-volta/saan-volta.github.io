@@ -51,6 +51,7 @@
 }
 
 .callout-lemma,
+.callout-corollary,
 .callout-proposition {
     --callout-color:       #4a90d9;
     --callout-color-dark:  #2b5ea7;
@@ -96,6 +97,7 @@
 [data-scheme="dark"] {
     .callout-theorem,
     .callout-lemma,
+    .callout-corollary,
     .callout-proposition { --callout-color-dark: #93c5fd; }
     .callout-proof     { --callout-color-dark: #d1d5db; }
     .callout-definition{ --callout-color-dark: #86efac; }
