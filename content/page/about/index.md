@@ -11,7 +11,7 @@ menu:
 
 Welcome to my page. I will get this place in order one day.
 
-My name is Anton and I'm an undergrad studying math and compsci at Arizona State university. I focus broadly in probability theory and algorithms, but I like to learn about all sorts of things.
+My name is Anton and I'm an ~~undergrad~~ graduate in math and compsci from Arizona State university. I focus broadly in probability theory and algorithms, but I like to learn about all sorts of things.
 
 I occasionally play CTF(Capture the Flag) competitions with our local uni team, CTF Academy, as well as with Shellphish.
 
