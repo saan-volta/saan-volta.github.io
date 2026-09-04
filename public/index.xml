@@ -6,7 +6,758 @@
         <description>Recent content on Saan</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <lastBuildDate>Fri, 15 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 30 Aug 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Proof of Correctness of MEC Steganography</title>
+        <link>http://localhost:1313/post/proof_of_perfect_secrecy/</link>
+        <pubDate>Sun, 30 Aug 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/proof_of_perfect_secrecy/</guid>
+        <description>&lt;h3 id=&#34;abstract&#34;&gt;Abstract
+&lt;/h3&gt;&lt;p&gt;This is the proof of correctness of the stenographic encoding algorithm described in &lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \ldots, X_{n}$. Each block is uniform $X_{i}\sim\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\mathcal{C}(c\mid c_{1},...,c_{m}):=P(C_{m+1}=c\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &amp;ldquo;context&amp;rdquo; in the LLM sense and $C_{m+1}$ is the next generated &amp;ldquo;token&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The algorithm proceeds as follows:&lt;/p&gt;
+&lt;ol start=&#34;0&#34;&gt;
+&lt;li&gt;For $i\in 1\ldots n$, initialize $\mu_{i}$ to uniform distributions $\set{0,1}^{b}\rightarrow [0,1]$.&lt;/li&gt;
+&lt;li&gt;For $j\in 1\ldots m$:
+&lt;ol&gt;
+&lt;li&gt;$i^{*}:=\arg\max_{i}H(\mu_{i})$&lt;/li&gt;
+&lt;li&gt;$\gamma_{j}:=$ MEC of $\mu_{i^{*}}$ and $\mathcal{C}(C_{j}\mid C_{1:j-1}=S_{1:j-1})$, the autoregressive distribution of next token&lt;/li&gt;
+&lt;li&gt;$S_{j}\sim \gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, the distribution of next token conditional on the $i^{*}$th block of ciphertext&lt;/li&gt;
+&lt;li&gt;$\mu_{i^{*}}\leftarrow \gamma_{j}(X_{i^{*}}\mid C_{j}=S_{j})$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The objective is to show that $(C_{1},...,C_{m})\overset{D}{=}(S_{1},\ldots S_{m})$, that is, the random vectors of $m$-sequences of tokens produced naturally and those produced by the algorithm are equivalent in distribution, i.e., the encoding does not introduce any statistical bias.&lt;/p&gt;
+&lt;p&gt;As a shorthand, I will write events $\set{S_{j}=s_{j}}$ as $\set{s_{j}}$ and $\set{S_{1:j-1}=s_{j-1}}$ as $\set{s_{1:j-1}}$. The notation $[n]$ denotes the set $\set{1,...,n}$.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;proof&#34;&gt;Proof
+&lt;/h3&gt;&lt;p&gt;The proof proceeds in two steps. First, we must show that at the beginning of each iteration $j$, for all $i\in[n]$ and all values of $x$, we have
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j-1} )=\mu_{i}(x)$$&lt;p&gt;
+that is, the $\mu_{i}$ distributions maintained by the algorithm are the accurate distributions of $X_{i}$ conditional on the previously produced tokens. This is not entirely trivial, since the $\mu_{i}$ are updated manually. Secondly, we show the equality in distributions between natural and encoded sequences of tokens.&lt;/p&gt;
+&lt;div class=&#34;callout callout-lemma&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Lemma&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;For each iteration $j$, for all $i\in[n]$ and values of $x$, the following hold:
+&lt;/p&gt;
+$$\newcommand{\indep}{\mathrel{\perp\!\!\!\perp}}
+\begin{align*}
+&amp;(i)\qquad P(X_{i}=x\mid s_{1:j-1})=\mu_{i}(x) \\
+&amp;(ii)\qquad X_{1} \indep X_{2} \indep \ldots \indep X_{n}\;\mid s_{1:j-1}
+\end{align*}$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;The second claim is that $\set{X_{i}}_{n}$ are mutually conditionally independent given $s_{1:j-1}$. We will use this statement as a sort of inventor&amp;rsquo;s paradox to establish the first.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Proof.&lt;/em&gt; Proceed by induction on $j$. At the start of the first iteration, $X_{i}\sim\text{Unif}[2^{b}]=\mu_{i}$ by definition. All $X_{i}$ are mutually independent, so the claims hold trivially.&lt;/p&gt;
+&lt;p&gt;In the inductive case, we assume the claims hold at the start of step $j$. The maximum entropy block $i^{*}$ is chosen.
+We prove $(i)$ first; the aim is to show that for all $i$, $\mu&#39;_{i}$, defined to be the adjusted $\mu$ at the end of the step, satisfies
+&lt;/p&gt;
+$$\mu&#39;_{i}(x)=P(X_{i}=x\mid s_{1:j})\quad \forall x.$$&lt;p&gt;
+Note that only for $i=i^{*}$ does the distribution actually change; the rest are left untouched. We therefore consider two cases:&lt;/p&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Case 1:&lt;!-- raw HTML omitted --&gt; $i=i^{*}$
+Breaking down the conditioning as $P(\ldots \mid s_{1:j-1}\cap s_{j})$ and rewriting, we get
+&lt;/p&gt;
+$$\begin{align*}
+P(X_{i^{*}}=x\mid s_{1:j})&amp;=\frac{P(X_{i^{*}}=x\mid s_{1:j-1})P(s_{j}\mid X_{i^{*}}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{j-1})}\\
+&amp;= \frac{\mu_{i^{*}}(x)\gamma_{j}(s_{j}\mid x)}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&amp;= \frac{\gamma_{j}(x,s_{j})}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&amp;=\gamma_{j}(x\mid s_{j})= \mu&#39;_{i^{*}}(x).
+\end{align*}$$&lt;p&gt;
+In the above derivation, the coupling $\gamma_{j}$ twice allows us to change conditioning via chain rule with its marginal (respectively $\mu_{i^{*}}$ and $\mathcal{C}$).&lt;/p&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Case 2:&lt;!-- raw HTML omitted --&gt; $i\neq i^{*}$
+Similarly, we write
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j})=\frac{P(X_{i}=x\mid s_{1:j-1})P(S_{j}=s_{j}\mid X_{i}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{1:j-1})}$$&lt;p&gt;
+Since $S_{j}\sim\gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, where the next token $C_{j}\sim\mathcal{C}(\cdot \mid s_{1:j-1})$ is independent of $X_{i}$ trivially and $X_{i^{*}}$ is conditionally independent of $X_{i}$ by the inductive hypothesis, $S_{j}$ is also conditionally independent of $X_{i}$. Thus the second term in the numerator can drop the conditioning on $X_{i}=x$, simplifying to
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j}) = \frac{\mu_{i}(x)\mathcal{C}(s_{j}\mid s_{j-1})}{\mathcal{C}(s_{j}\mid s_{j-1})}=\mu_{i}(x)=\mu&#39;_{i}(x).$$&lt;p&gt;Lastly, we show that $(ii)$ holds at the end of each step. Using the same identity and the conditional independence given $s_{1:j-1}$:
+&lt;/p&gt;
+$$\begin{align*}
+P\bigg(\bigcap_{i\in[n]}X_{i}=x_{i}\mid s_{1:j}\bigg) &amp;=\frac{P(s_{j}\mid s_{1:j-1}\cap  \bigcap_{i}X_{i}=x_{i})}{\mathcal{C}(s_{j}\mid s_{j-1})} \prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})
+\end{align*}$$&lt;p&gt;
+Once again the independence of $S_{j}$ allows us to drop the conditioning on all $X_{i}$ except $X_{i^{*}}$ and simplify:
+&lt;/p&gt;
+$$\begin{align*}
+\ldots \;&amp;= \frac{\gamma_{j}(s_{j}\mid x_{i^{*}})}{\mathcal{C}(s_{j}\mid s_{j-1})}\prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})\\
+&amp;= \frac{\gamma_{j}(x_{i^{*}}\mid s_{j})}{\mu_{i^{*}}(x_{i^{*}})}\prod_{i\in[n]}\mu_{i}(x_{i})\\
+&amp;= \mu&#39;_{i^{*}}(x_{i^{*}})\prod_{i\in[n]\setminus\set{i^{*}}} \mu&#39;_{i}(x_{i})\\
+&amp;= \prod_{i\in[n]} \mu&#39;_{i}(x_{i}) \\
+&amp;=\prod_{i\in[n]}P(X_{i}=x_{i}\mid s_{1:j}).
+\end{align*}$$&lt;p&gt;
+This concludes the proof of $(i)$ and $(ii)$ at the beginning of step $j+1$.&lt;/p&gt;
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $(S_{1},...,S_{m})$ be the random sequence of tokens produced by the algorithm (stegotext), and let $(C_{1},...,C_{m})$ be the random sequence of tokens generated naturally (covertext) in an autoregressive manner, i.e. $C_{j}\sim\mathcal{C}(\cdot \mid C_{1:j-1}=c_{1:j-1})$. Then:
+&lt;/p&gt;
+$$(S_{1},...,S_{m})\overset{D}{=}(C_{1},...,C_{m}).$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;&lt;em&gt;Proof.&lt;/em&gt;
+Let $j$ be fixed and consider some value $s$ of the next token $S_{j}$.
+&lt;/p&gt;
+$$P(S_{j}=s\mid s_{1:j-1})=\sum\limits_{x}\gamma_{j}(X_{i^{*}}=x,s)=\sum\limits_{x}\gamma_{j}(s\mid x)\mu_{i^{*}}(x)=\mathcal{C}(s\mid s_{1:j-1})$$&lt;p&gt;
+The first equality averages over all possible values of $X_{i^{*}}$ and the rest follows by definition of coupling. Now, taking the product over all $j$ with the chain rule:
+&lt;/p&gt;
+$$\begin{align*}
+P(S_{1:m}=s_{1:m})&amp;= \prod_{j\in[m]}P(S_{j}=s_{j}\mid s_{1:j-1}) \\
+&amp;= \prod_{j\in[m]}\mathcal{C}(s_{j}\mid s_{1:j-1})\\
+&amp;= P(C_{1:m}=s_{1:m}).
+\end{align*}$$&lt;p&gt;
+Thus, the random vectors have equal distribution.&lt;/p&gt;
+&lt;div class=&#34;callout callout-corollary&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Corollary&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    The algorithm constructs a coupling between a factorable uniform distribution and the autoregressive conditional $\mathcal{C}(\cdot\mid\cdot)$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Let $\text{A}(\mathbf{x}, \mathbf{s})$ be the joint distribution induced by the algorithm between the space of $n$-block ciphertexts and $m$-token text samples, writing $\text{A}(\mathbf{x},\mathbf{s}):=P(\mathbf{X}=\mathbf{x},\;\mathbf{S}=\mathbf{s})$ and $\text{A}(\mathbf{s}\mid \mathbf{x})$ for probability of outputting stegotext $\mathbf{s}$ given input ciphertext $\mathbf{x}$, where $\mathbf{X}=(X_{1},...,X_{n})$  and $\mathbf{S}=(S_{1},...,S_{m})$.&lt;/p&gt;
+&lt;p&gt;Observe that for any $\mathbf{x}$ and $\mathbf{s}$, we have $\text{A}(\mathbf{x},\mathbf{s})=\text{A}(\mathbf{s}\mid \mathbf{x})P(\mathbf{X}=\mathbf{x})=\mathcal{C}(\mathbf{s})P(\mathbf{X}=\mathbf{x})$ by above. Now fixing $\mathbf{x}$ and summing over $\mathbf{s}$ yields $P(\mathbf{X}=\mathbf{x})$, and likewise fixing $\mathbf{s}$ and summing over $\mathbf{x}$ gives $\mathcal{C}(\mathbf{s})$, which are the exact marginals, showing $\text{A}(\cdot\mid \cdot)$ is a coupling.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;appendix&#34;&gt;Appendix
+&lt;/h3&gt;&lt;p&gt;The proof makes repeated use of this basic identity:
+&lt;/p&gt;
+$$P(A\mid B\cap C)=\frac{P(A\mid B)P(C\mid A\cap  B)}{P(C\mid B)}$$&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2210.14889&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2210.14889&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
+        <title>Perfect Secrecy and Entropy Minimization</title>
+        <link>http://localhost:1313/post/perfect_secrecy/</link>
+        <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/perfect_secrecy/</guid>
+        <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&amp;rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.&lt;/p&gt;
+&lt;p&gt;This technique can also be used for the inverse task - marking LLM-generated text with a watermark embedded in the tokens themselves, rather than any metadata. Not too long ago, Anthropic introduced this feature into their models. If they relied on this algorithm, they can provably claim this will not affect their models&amp;rsquo; performance.&lt;/p&gt;
+&lt;p&gt;Another property of this encoding is that it is maximally efficient from the perspective of information theory: it takes the fewest tokens per bit of information. And more broadly, this algorithm can be used to encode data efficiently in other mediums, such as images and sample paths of RL agents.&lt;/p&gt;
+&lt;p&gt;This post is an overview of this idea, its applications, and some of the implementation logic. It is partially technical but not fully rigorous; my aim is to give an actionable introduction. Material from the following papers is adapted here: &lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:4&#34;&gt;&lt;a href=&#34;#fn:4&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;4&lt;/a&gt;&lt;/sup&gt; |.&lt;/p&gt;
+&lt;p&gt;Finally, I built a live demo you can use to try this method out: &lt;a class=&#34;link&#34; href=&#34;https://cover.markovian.net&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://cover.markovian.net&lt;/a&gt;! Here&amp;rsquo;s also my implementation of the algorithms described in this post: &lt;a class=&#34;link&#34; href=&#34;https://github.com/saan-volta/Cover&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/saan-volta/Cover&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;1-the-problem-setting&#34;&gt;1. The problem setting
+&lt;/h3&gt;&lt;h4 id=&#34;what-is-perfect-secrecy&#34;&gt;What is perfect secrecy?
+&lt;/h4&gt;&lt;p&gt;Our task is to embed a message within a random signal without disturbing its statistical properties. We define $\mathbb{C}$ to be the space of &lt;em&gt;covertexts&lt;/em&gt; - data which we will use for, well, cover, and $\mathbb{M}$ is the space of messages which we might want to encode. To reason about statistical properties, we define $\mathcal{M}$ to be the distribution of messages and $\mathcal{C}$ to be the distribution of true covertexts (over $\mathbb{C}$). For example, if we want to embed a message within text data, we&amp;rsquo;ll use a cover distribution that captures typical patterns of natural language. Meanwhile, we denote with $\mathcal{S}$ the distribution (also over $\mathbb{C}$) of &lt;em&gt;stegotexts&lt;/em&gt;: pieces of data which appear as covertexts, but in fact contain a hidden message. So the encoding is is a (randomized) map $f:\mathbb{M}\leadsto \mathbb{C}$, converting a message into a piece of stegotext (existing in the space of covertexts).&lt;/p&gt;
+&lt;p&gt;Intuitively, we achieve perfect secrecy when $\mathcal{C}$ and $\mathcal{S}$ are identical, i.e. have KL-divergence zero. Another, more technical way of saying it is when
+&lt;/p&gt;
+$$E_{M\sim\mathcal{M}}\bigg[P(f(M)=c)\bigg]=\mathcal{C}(c).$$&lt;p&gt;
+This says that on average, the probability that the random message $M$ encodes to stegotext $c$ is equivalent to the probability of $c$ appearing as an innocuous covertext.&lt;/p&gt;
+&lt;h4 id=&#34;information-and-uncertainty&#34;&gt;Information and uncertainty
+&lt;/h4&gt;&lt;p&gt;We are also concerned with the &lt;em&gt;encoding efficiency&lt;/em&gt; of our scheme: the amount of covertext data needed to embed our message. To quantify this, we introduce several definitions from information theory.
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Entropy&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $X$ be a random variable. Then its entropy is $H(X)=-E[\log p_{X}(X)]$, where $p_{X}(x)=P(X=x)$.
+If $X$ is discrete, this is equivalently $H(X)=-\sum_{x}p_{X}(x)\log p_{X}(x)$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Entropy is the measure of chaos of a random variable; it is increased with the unpredictability of its outcome.
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_1.png&#34;
+	width=&#34;1039&#34;
+	height=&#34;340&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;305&#34;
+		data-flex-basis=&#34;733px&#34;
+	
+&gt;
+The highest entropy is achieved in the uniform distribution (any outcome is equally likely), and the lowest (zero) in the Dirac delta distribution $\delta_{x}$, where the entire mass is concentrated on the single point $x$ (the outcome is fully predictable).&lt;/p&gt;
+&lt;p&gt;We consider similarly the &lt;em&gt;joint entropy&lt;/em&gt; on a vector of random variables
+&lt;/p&gt;
+$$H(X,Y)=-E[\log p_{X,Y}(X,Y)]$$&lt;p&gt;
+and the &lt;em&gt;conditional entropy&lt;/em&gt; $H(X\mid Y)$ as the uncertainty of $X$ conditioned on the realization of $Y$. These two forms are tied by the identity
+&lt;/p&gt;
+$$H(X,Y)=H(X)+H(Y\mid X)=H(Y)+H(X\mid Y).$$&lt;p&gt;
+There&amp;rsquo;s one more definition we need to state our objective.
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Mutual information&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $X,Y$ be random variables. Then $I(X;Y)=H(X)-H(X\mid Y)$ is the mutual information between $X$ and $Y$, and the expected amount of uncertainty about $X$ eliminated by knowing $Y$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Combining these formulae, we get
+&lt;/p&gt;
+$$I(X;Y)=H(X)+H(Y)-H(X,Y).$$&lt;p&gt;
+Then the core principle is this: if we want to maximize the mutual information between the two variables, we must minimize the joint entropy $H(X,Y)$. This is our only option since the marginal entropies $H(X)$ and $H(Y)$ are not modifiable.&lt;/p&gt;
+&lt;p&gt;In the context of steganography, to achieve maximal encoding efficiency, we aim to increase $I(M;S)$, where $M$ is the secret message and $S$ the stegotext; this will give us the best ratio of bits encoded per output token. In effect, this is a measure of compression. But how do we optimize it?&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-the-mec&#34;&gt;2. The MEC
+&lt;/h3&gt;&lt;p&gt;The point and crux of the algorithm we will examine is in the concept of &lt;em&gt;minimum-entropy coupling&lt;/em&gt; (MEC). In a sentence, it&amp;rsquo;s a constructed joint distribution with the lowest $H(\cdot,\cdot)$ measure. More concretely:
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Minimum entropy coupling&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $X\sim\mathcal{X}$ and $Y\sim\mathcal{Y}$. A &lt;em&gt;coupling&lt;/em&gt; of $\mathcal{X}$ and $\mathcal{Y}$ is a joint distribution $\gamma(\cdot,\cdot)$ that maintains the marginals of $X$ and $Y$. That means for all values $x$ of $X$
+&lt;/p&gt;
+$$\sum\limits_{y}\gamma(x,y)=\mathcal{X}(x),$$&lt;p&gt;
+and for all values $y$ of $Y$
+&lt;/p&gt;
+$$\sum\limits_{x}\gamma(x,y)=\mathcal{Y}(y).$$&lt;p&gt;
+Note that in general there are many coupling with set marginals; we use $\Gamma(\mathcal{X,Y})$ to denote their set. The &lt;em&gt;minimum-entropy coupling&lt;/em&gt; is the coupling $\gamma^{\star}\in\Gamma(\mathcal{X,Y})$ such that $\forall \gamma\neq \gamma^{\star}$, we have $H(\gamma^{\star})\leq H(\gamma)$. In other words, it is the coupling with the smallest joint entropy.&lt;/p&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s see an example. Here are two variables $X$ and $Y$ with their corresponding marginal distributions:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_2.png&#34;
+	width=&#34;689&#34;
+	height=&#34;340&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;202&#34;
+		data-flex-basis=&#34;486px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;A trivial example of coupling is the &lt;em&gt;independent coupling&lt;/em&gt;, defined as $\gamma(x,y):=\mathcal{X}(x)\cdot\mathcal{Y}(y).$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_3.png&#34;
+	width=&#34;1047&#34;
+	height=&#34;594&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;176&#34;
+		data-flex-basis=&#34;423px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;For both of these produced couplings, the sum along each axis is the corresponding marginal. However, the right one is &amp;ldquo;packed more tightly&amp;rdquo; and has far less noise. The coupling minimizes the mutual information between $X$ and $Y$ by more than 3 bits over the independent.&lt;/p&gt;
+&lt;p&gt;Where did I get this second joint distribution? The underlying MEC algorithm I used here is developed in (Kocaoglu et al, 2016). This algorithm is actually approximate as this problem is considered NP-hard. The actual implementation of it is beyond the scope of this post, but one element of note is that this paper considers this task is a completely different context - it is about the problem of inferring causal relationship between random variables based on observed data.&lt;/p&gt;
+&lt;p&gt;But what does this have to do with steganography?&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-first-of-its-kind&#34;&gt;3. First of its kind
+&lt;/h3&gt;&lt;p&gt;Here we arrive at the first key contribution of (Schroeder de Witt, 2023).
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Encoding induced by coupling&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;A steganographic encoding procedure $f:\mathbb{M}\leadsto\mathbb{C}$ is induced by a coupling $\gamma\in\Gamma(\mathcal{M},\mathcal{C})$, where $\mathcal{M,C}$  are respectively the distributions of messages and covertext, if for all $m\in\mathbb{M}$ and $c\in\mathbb{C}$
+&lt;/p&gt;
+$$P(f(M)=c)=\gamma(C=c\mid M=m).$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A note on what $\gamma(C=c\mid M=m)$ means: since $\gamma$ is a joint distribution of $(M,C)$, this can be visualized as taking row $m$ of the joint matrix, normalizing it to a probability distribution, and finding the probability value at index $c$.&lt;/p&gt;
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;ol&gt;
+&lt;li&gt;A steganographic encoding procedure is perfectly secure if and only if it is induced by a coupling.&lt;/li&gt;
+&lt;li&gt;Among encoding procedures that are perfectly secure, a procedure maximizes the mutual information $I(M;S)$ if and only if it is induced by a minimum-entropy coupling.&lt;/li&gt;
+&lt;/ol&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;These two proofs in the paper are remarkably concise. The best way I could show them would be to copy it line for line, but I will not do that.&lt;/p&gt;
+&lt;p&gt;So this is what we want - a way to produce a coupling between the distributions of covertext and the message space (for the moment, both of them being natural language). However&amp;hellip; this is somewhat tricky. The MEC algorithm can couple two explicitly-defined discrete distributions with relatively small supports, but $\mathcal{C}$ and $\mathcal{M}$ are incredibly complex. How does one couple the distributions over all sequences of natural text?&lt;/p&gt;
+&lt;p&gt;The second contribution the authors present is the algorithm to produce an implicit coupling between a &lt;strong&gt;factorable uniform distribution&lt;/strong&gt; and a &lt;strong&gt;distribution specified autoregressively&lt;/strong&gt;. The trick is this: given a message $m$, we XOR it with a random key to obtain $X:=m\oplus K$, which is distributed uniformly. We then partition it into $n$ blocks of $b$ bits each, so $X=(X_{1},...,X_{n})$. Meanwhile, we take $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ as the distribution of the next token (word) conditioned on a context of length $j$; this distribution is specified by a large language model, which we will assume to accurately represent natural text. The greedy algorithm, called Iterative MEC, is this:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_4.png&#34;
+	width=&#34;923&#34;
+	height=&#34;305&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;302&#34;
+		data-flex-basis=&#34;726px&#34;
+	
+&gt;
+Here&amp;rsquo;s what this does in plain terms. We maintain a list of distributions $\mu_{1},...,\mu_{n}$, each for a block $X_{i}$. At each iteration, we fetch the block with the highest entropy, couple it to the distribution of the next token $\mathcal{C}(C_{j}\mid \;...)$ using the simple MEC procedure, and emit the next stegotext token conditional on the actual value of $X_{{i}^{*}}$, and finally update the corresponding distribution. This procedure ends when all $\mu_{i}$ collapse to the deterministic single-point distribution $\delta_{x_{i}}$ - as they are initialized to uniform, observe that they transform from the highest- to the lowest-entropy distribution. At the end, we receive a sequence of stegotext tokens $(S_{1},...,S_{m})$; the length $m$ is exactly how many iterations it takes to eliminate all uncertainty from all the blocks $\set{\mu_{i}}_{n}$. In essence, this algorithm manipulates the choice of tokens at each step, but the actual distribution of the generated text is not changed as it is an encoding induced by a coupling.&lt;/p&gt;
+&lt;p&gt;To decode, essentially the exact same algorithm is run - the tokens $\set{S_{j}}_{m}$ are consumed to similarly update the block distributions $\set{\mu_{i}}_{n}$ until they converge to the zero entropy Dirac deltas. Then, we simply sample from them in order to reconstruct $\set{\hat{x}_{i}}_{n}$, the estimation of the keyed message, and finally XOR with the key again to recover $m$.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;4-other-applications&#34;&gt;4. Other applications
+&lt;/h3&gt;&lt;p&gt;The iMEC method is not limited to text data. In place of the LLM-given $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ next-token-based-on-context distribution, one could similarly encode data within audio and images. A particularly cool medium expplored in (Sokota et al., 2022) is encoding a message within the sample trajectory of a reinforcement learning agent in a Markovian decision process:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_5.png&#34;
+	width=&#34;1507&#34;
+	height=&#34;655&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;230&#34;
+		data-flex-basis=&#34;552px&#34;
+	
+&gt;
+A more LLM-oriented application is watermarking: certifying that a piece of data was generated artificially by embedding a signature in the tokens themselves. In this case, the performance of the model will provably be unaffected.&lt;/p&gt;
+&lt;p&gt;More broadly, MEC is applied in entropic causal inference: given two random variables $X,Y$, determining whether there exists an outside variable $E$ such that $Y=f(X,E)$, i.e. there exists a deterministic function implying causal direction from $X$ to $Y$. It is intuitive that if this is so, the entropy in the true causal direction will be small. Furthermore, the optimal coupling should be able to identify $E$. The authors of (Cicalese at el, 2019) explore some other applications of this method, as well as develop a MEC algorithm that approximates the true minimum-entropy coupling with error margin of 1 bit.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;Schroeder de Witt et al., 2023: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2210.14889&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2210.14889&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;Sokota et al., 2022: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2107.08295&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2107.08295&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;Cicalese et al., 2019: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/1901.07530&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/1901.07530&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:4&#34;&gt;
+&lt;p&gt;Kocaoglu et al., 2016: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/1611.04035v2&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/1611.04035v2&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
+        <title>Graph Coloring via Rings IRL (II)</title>
+        <link>http://localhost:1313/post/graph_col_irl/</link>
+        <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/graph_col_irl/</guid>
+        <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals:
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem: &lt;em&gt;Theorem 1&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\prod_{ij\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\langle x_{1}^{k}-1,...,x_{n}^{k}-1\rangle$ for some integer $k$ in the ring $\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\in I_{k}$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is &amp;ldquo;does this make this problem any easier to solve?&amp;rdquo; I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;1-smooth-sailing&#34;&gt;1. Smooth sailing
+&lt;/h3&gt;&lt;p&gt;&lt;em&gt;Disclaimer: this section covers mathematical background that I hope is accessible, but it is not strictly necessary to understand the implementation. At the end of the section, I outline the actual thing that needs to be computed, you may skip to it directly.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s the nice thing. In general, to solve an ideal membership problem, we have to compute a &lt;em&gt;Gröbner basis&lt;/em&gt; of said ideal. An ideal can be represented with many bases (generating sets), but some of them are much more amenable to doing any sort of computation, and Gröbner bases are the best of them. The downside is that computing such a basis is really hard by itself (at least as hard as graph coloring, for certain). The upside is that we don&amp;rsquo;t need to, and I will give a brief overview to explain this.&lt;/p&gt;
+&lt;p&gt;We begin with polynomial division. In a univariate polynomial ring, such as $\mathbb{R}[x]$, we have what is called the &amp;ldquo;division algorithm&amp;rdquo;: for any polynomials $f$ and $g$, we can find polynomials $q,r$ such that $f=qg+r$, where $\deg(r)&lt;\deg(g)$, that is, we divide $f$ by $g$ with remainder. This works always because a univariate ring is a lovely and handsome Principal Ideal Domain, which means that any ideal $I$ can be generated by only one element, like $I=\langle x\rangle$; this is like how the set of even numbers in $\mathbb{Z}$ can be represented by $\langle 2\rangle$, i.e. all multiples of 2. But a multivariate ring, like $\mathbb{R}[x,y]$, does not have this property. So how do we divide polynomials in 2 variables?&lt;/p&gt;
+&lt;p&gt;When we divide $f$ by $g$, what we actually do is divide by the ideal $\langle g\rangle$. If you&amp;rsquo;ve taken any sort of abstract algebra, you may be familiar with this action as the canonical homomorphism $R\rightarrow R/\langle g\rangle$ sending each element of the ring to the coset of the ideal to which it belongs (the remainder is the coset representative). But in $\mathbb{R}[x,y]$, some (most) ideals are not principal; we have to write them as $I=\langle g_{1},g_{2}\rangle$. If you attempt to run the standard division algorithm to divide by $g_{1}$ and $g_{2}$ trying to find the quotients and the remainder in $f=q_{1}g_{1}+q_{2}g_{2}+r$, you may find that the order of $g_{1}$ and $g_{2}$ affects not only the quotients, but also the value of the remainder itself, so the &amp;ldquo;canonical homomorphism&amp;rdquo; is actually not a function at all.&lt;/p&gt;
+&lt;p&gt;A Gröbner basis is what lets us fix this, since their essential property is that they always produce the same minimal remainder $r$ when used as a divisor, regardless of the permutation of elements within. Thus we can actually compute $(f\mod I)$ when $I$ is expressed as a Gröbner basis $\langle g_{1},...,g_{n}\rangle$.&lt;/p&gt;
+&lt;p&gt;I haven&amp;rsquo;t really defined what constitutes a Gröbner basis, and actually I&amp;rsquo;m not gonna do that here at all, because the main takeaway that matters is that $I_{k}=\langle x_{i}^{k}-1\mid i\in[n]\rangle$ is already Gröbner. In particular, reducing a polynomial $f\mod I_{k}$ is simply reducing its every exponent mod $k$.
+Thus our problem is:
+&lt;div class=&#34;callout callout-problem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;▲&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Problem: &lt;em&gt;The Big Thing&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    For a given graph $G=(V,E)$ and integer $k$, compute the adjacency polynomial $f_{G}=\prod_{ij\in E}(x_{i}-x_{j})$ and reduce every exponent mod $k$. $G$ is $k$-colorable if and only if the result is $0$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;examples&#34;&gt;Examples
+&lt;/h4&gt;&lt;p&gt;Before we begin, here are some examples of graphs and their corresponding polynomials, just to get a feel for it:
+&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol1.png&#34;
+	width=&#34;1189&#34;
+	height=&#34;790&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;150&#34;
+		data-flex-basis=&#34;361px&#34;
+	
+&gt;&lt;/p&gt;
+$$\begin{align}
+&amp;P_{2}\rightarrow \quad x_{1}-x_{2}.\\
+&amp;P_{3}\rightarrow \quad x_{1}x_{2}-x_{1}x_{3}-x_{2}^{2}+x_{2}x_{3}.\\
+&amp;C_{3}\rightarrow \quad -x_1^2 x_2 + x_1 x_2^2 + x_1^2 x_3 - x_2^2 x_3 - x_1 x_3^2 + x_2 x_3^2.\\
+&amp;S_{4}\rightarrow \quad x_1^4 - x_1^3 x_2 - x_1^3 x_3 + x_1^2 x_2 x_3 - x_1^3 x_4 + x_1^2 x_2 x_4 + x_1^2 x_3 x_4 - x_1 x_2 x_3 x_4 \\&amp;- x_1^3 x_5 + x_1^2 x_2 x_5 + x_1^2 x_3 x_5 - x_1 x_2 x_3 x_5 + x_1^2 x_4 x_5 - x_1 x_2 x_4 x_5 \\&amp;- x_1 x_3 x_4 x_5 + x_2 x_3 x_4 x_5.\\
+&amp;C_{4}\rightarrow \quad x_1^2 x_2 x_3 - x_1 x_2^2 x_3 - x_1^2 x_3^2 + x_1 x_2 x_3^2 - x_1^2 x_2 x_4 + x_1 x_2^2 x_4 + x_1^2 x_3 x_4 \\&amp;-2 x_1 x_2 x_3 x_4 + x_2^2 x_3 x_4 + x_1 x_3^2 x_4 - x_2 x_3^2 x_4 + x_1 x_2 x_4^2 - x_2^2 x_4^2 \\&amp;- x_1 x_3 x_4^2 + x_2 x_3 x_4^2.\\
+&amp;K_{4}\rightarrow \quad x_1^3 x_2^2 x_3 - x_1^2 x_2^3 x_3 - x_1^3 x_2 x_3^2 + x_1 x_2^3 x_3^2 + x_1^2 x_2 x_3^3 - x_1 x_2^2 x_3^3 \\&amp;- x_1^3 x_2^2 x_4 + x_1^2 x_2^3 x_4 + x_1^3 x_3^2 x_4 - x_2^3 x_3^2 x_4 - x_1^2 x_3^3 x_4 + x_2^2 x_3^3 x_4 + x_1^3 x_2 x_4^2\\&amp; - x_1 x_2^3 x_4^2 - x_1^3 x_3 x_4^2 + x_2^3 x_3 x_4^2 + x_1 x_3^3 x_4^2 - x_2 x_3^3 x_4^2 - x_1^2 x_2 x_4^3 \\&amp;+ x_1 x_2^2 x_4^3 + x_1^2 x_3 x_4^3 - x_2^2 x_3 x_4^3 - x_1 x_3^2 x_4^3 + x_2 x_3^2 x_4^3.
+\end{align}$$&lt;p&gt;As you can see, these get large rather quickly.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-the-first-look&#34;&gt;2. The First Look
+&lt;/h3&gt;&lt;p&gt;Since have a (theoretical, at this point) algorithm for checking whether $G$ is $k$-colorable, to find the minimum such $k$, or the chromatic number $\chi(G)$, we will simply run binary search; this works because &lt;code&gt;is_colorable(G,k)&lt;/code&gt; is a monotonic function with respect to $k$.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;chromatic_number&lt;/span&gt;(G, k):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	low, high &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, maxdegree(G)&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# assume |E| &amp;gt; 0.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	med &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (low&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;high)&lt;span style=&#34;color:#f92672&#34;&gt;//&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; low &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; high:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		bool k_valid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; is_colorable(G, med)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; k_valid:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			low, high &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; low, med
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			low, high &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; med&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, high
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; med
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This solves for $\chi(G)$ using $O(\log_{2}(\max\deg(G)-1))$ queries. We use $\max\deg(G)+1$ as that is the upper bound on $\chi(G)$ by Brooks&amp;rsquo; theorem (and unless $G$ is $K_{n}$ or $C_{n}$ with $n$ odd, you can drop the +1). So going forward, all focus is on optimizing the query &lt;code&gt;is_colorable&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The task therefore is repeated multiplication of $n$-variate polynomials. The main bottleneck here is storing and updating terms. My first choice here is processing the edges one by one and reducing exponents mod $k$ at each step, since that caps the number of possible terms to $k^{n}$ (an astronomical number, but at least it&amp;rsquo;s not unbounded). At each step we multiply the previous iteration of the polynomial $f_{t}$ by some $(x_{i}-x_{j})$:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;f_0 = 1
+for (i, j) in E:
+	f_{t+1} = (f_t * x_i) - (f_t * x_j)
+	f_{t+1} %= I_k
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The second line in the loop reduces each exponent in each term mod $k$.
+A polynomial has the following expanded form:
+&lt;/p&gt;
+$$f_{t}=(c_{1}\cdot x_{1}^{e_{1}^{(1)}}...x_{n}^{e_{n}^{(1)}})\;+ \;(c_{2}\cdot x_{1}^{e_{1}^{(2)}}...x_{n}^{e_{n}^{(2)}})\;+\;...$$&lt;p&gt;
+We can represent it as a list of terms, each term consisting of a coefficient and a monomial, and each monomial is a list $[e_{1}^{(i)},...,e_{n}^{(i)}]$ of exponents for each $x_{j}$.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;f_t = [
+	(c1, [e11, e12, ..., e1n]),
+	(c2, [e21, e22, ..., e2n]),
+	...,
+]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We multiply $f_{t}\cdot x_{j} \mod I_{k}$ by incrementing $j$th exponent in each term of $f_{t}$ (modulo $k$).&lt;/p&gt;
+&lt;p&gt;This is&amp;hellip; less than ideal. First, while the updates themselves are fast, the memory footprint is atrocious, since we must allocate a vector for each term. Second, to simplify the polynomial (when we do the subtraction at each step), we want to combine like terms. To do this, we must iterate by pairs of terms in $f_{t}\cdot x_{i}$ and $f_{t}\cdot x_{j}$, which is $O(n^{2})$. Vector comparison is another $O(n)$ factor.&lt;/p&gt;
+&lt;p&gt;The natural two improvements are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hash the monomial exponent vectors into single integers for $O(1)$ comparison&lt;/li&gt;
+&lt;li&gt;Use a hashmap $\text{monomial exponent vector hash }\mapsto \text{ coefficient}$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;exp_list = [
+	(hash1, [e11, e12, ..., e1n]),
+	(hash2, [e21, e22, ..., e2n]),
+	...,
+]
+
+coeffs_map = {
+	hash1 -&amp;gt; c1,
+	hash2 -&amp;gt; c2,
+	...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now the algorithm can do this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# input: edge ij, previous-step polynomial f_t&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;new_exps &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;new_coeffs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; exp_hash, exp_vec &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; exp_list:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	exp_vec_i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; copy(exp_vec)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	exp_vec_i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (exp_vec_i[i] &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; k
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_hash_i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hash(exp_vec_i) &lt;span style=&#34;color:#75715e&#34;&gt;# O(?)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	exp_vec_j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; copy(exp_vec)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	exp_vec_j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (exp_vec_j[j] &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; k
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_hash_j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hash(exp_vec_j)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_coeffs[new_hash_i] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; coeffs[exp_hash]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_coeffs[new_hash_j] &lt;span style=&#34;color:#f92672&#34;&gt;-=&lt;/span&gt; coeffs[exp_hash]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_exps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;insert( (new_hash_i, exp_vec_i) )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	new_exps&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;insert( (new_hash_j, exp_vec_j) )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;exp_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; new_exps
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;coeffs_map &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; new_coeffs
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Okay, now assume &lt;code&gt;hash()&lt;/code&gt; is constant time. This works nicely because combining like terms occurs naturally as we simply update coefficient values indexed by hashes of the exponent vectors. This doesn&amp;rsquo;t solve the storage problem, but the loop is certainly faster.&lt;/p&gt;
+&lt;p&gt;Okay, now un-assume &lt;code&gt;hash()&lt;/code&gt; is constant time, because you cannot, in fact, process a length-$n$ vector in $O(1)$. You can do something else, though: make the hash incremental, i.e., homomorphic with respect to coordinate-wise incrementation, so we can compute &lt;code&gt;new_hash_i&lt;/code&gt; from &lt;code&gt;exp_hash&lt;/code&gt; and &lt;code&gt;i&lt;/code&gt; in constant time. The rest of this section is dedicated to this problem.&lt;/p&gt;
+&lt;p&gt;There are two kinds of modifiable hashes that I considered for this: polynomial rolling hash and Zobrist hash. The former hashes a vector $A=[a_{1},...,a_{n}]$ as
+&lt;/p&gt;
+$$h(A)=\sum_{i=0}^{n-1}a_{i}\cdot B^{i} \mod P,$$&lt;p&gt;
+where $B$ and $P$ are pre-determined (prime) constants. This hash is widely used in competitive programming for processing strings, since it has nice properties for when you want to compare prefixes and suffixes. For our purposes, defining $A&#39;$ to be the vector identical to $A$ except in the $j$th coordinate, for which the value is $b\neq a_{j}$, we write:
+&lt;/p&gt;
+$$h(A&#39;)\equiv h(A)-a_{j}B^{j}+bB^{j} \pmod P.$$&lt;p&gt;
+So we undo the $j$th coordinate in the original hash and replace it with the desired value $b$, which in our case would be $a_{j}+1 \mod k$.&lt;/p&gt;
+&lt;p&gt;The Zobrist hash is quite different; it is incremental by design and was invented to store games like chess - when a move is made, the state of the board changes only slightly, and you&amp;rsquo;d not want to recompute the hash from scratch when only two squares change.&lt;/p&gt;
+&lt;p&gt;Generate a $n\times k$ table of random values, call it $Z$. Define &lt;/p&gt;
+$$h(A)=\bigoplus_{i=1}^{n}Z[i, a_{i}],$$&lt;p&gt;where $\oplus$ is bitwise XOR. Now to modify the $j$th coordinate, we again undo the current value and replace it with another:&lt;/p&gt;
+$$h(A&#39;)=h(A)\oplus Z[j,a_{j}]\oplus Z[j,b].$$&lt;p&gt;
+Both of these hashes work, but for this task I went with Zobrist, since it doesn&amp;rsquo;t require finding suitable constants, XOR is faster than mod-multiplication, and overall it&amp;rsquo;s just cleaner.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;an-aside-about-benchmarking&#34;&gt;An aside about benchmarking
+&lt;/h4&gt;&lt;p&gt;When I began this project, I wanted to put together some graphs for testing accuracy and speed. Initially I drew a few up by hand, and tested my results against the symbolic computation done by SageMath. For a graph on more than $10$ vertices, SageMath took too long, though, and I didn&amp;rsquo;t want to generate random graphs and run actually practical coloring algorithms on them to figure out the true $\chi(G)$. For this reason I turned to two known graph families: the Mycielski and the Turán graphs. The point is that both of them are easily constructible and have a regular structure that makes the chromatic number a fundamental property, without needing any computation.&lt;/p&gt;
+&lt;p&gt;The Mycielski graph $M_{k}$ is specifically designed to have chromatic number $k$, with each successive $M_{k}$ being constructed iteratively from $M_{k-1}$. The special property is that it has no triangle subgraphs, making it quite sparse. The Turán graph $T_{n,r}$ is the opposite - it is the $r$-partite complete graph, having chromatic number $r$ and as many edges as possible.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-eliminating-exponent-vector-storage&#34;&gt;3. Eliminating Exponent Vector Storage
+&lt;/h3&gt;&lt;p&gt;The Zobrist hash trick allows us to compare monomials&amp;rsquo; exponent vectors via their hashes, as well as update these hashes incrementally. However, the memory footprint remains: to update a hash by incrementing $a_{j}$, we actually have to know the current value, because the value we set is $a_{j}+1$ if $a_{j} &lt; k$ and $0$ otherwise; there is a branch involved. We cannot perform a &amp;ldquo;blind&amp;rdquo; incrementation mod $k$ on the hash, so we must store the entire vector.&lt;/p&gt;
+&lt;p&gt;This was a glaring inefficiency that didn&amp;rsquo;t let me sleep at night for some time.
+&lt;div class=&#34;callout callout-problem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;▲&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Problem: &lt;em&gt;Cyclic Incremental Hash&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $A=[a_{1},...,a_{n}]$ be an $n$-vector with $a_{i}\in\set{0,...,k-1}$, and let $A&#39;$ be the same vector in all coordinates except $j$, where it is $a&#39;_{j}=a_{j}+1 \mod k$. Find a hash $h:\mathbb{Z}_{k}^{n}\rightarrow \set{0,1}^{128}$ such that $h(A&#39;)=f(h(A),j)$ for some computable function $f$, that is, $h(A&#39;)$ can be computed directly knowing only $h(A)$ and $j$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Okay, so the &amp;ldquo;blind&amp;rdquo; wrap-around mod $k$ should point to a cyclic representation of some kind.
+Suppose $G$ is a group of prime order $p$, so every non-identity element is a generator. If we pick $n$ such elements $g_{1},...,g_{n}$ and define $h(A)=\prod_{i\in n}g_{i}^{a_{i}}$, then we will see that we can change the $j$th element to some arbitrary element $b$ with:
+&lt;/p&gt;
+$$h(A&#39;)=h(A)\cdot g_{j}^{-a_{i}}\cdot g_{j}^{b}.$$&lt;p&gt;
+This idea I found in Bellare et al. (2021)&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. The group here would be a multiplicative group mod $p$, where $p$ is be chosen to satisfy $p=2q+1$ for another prime $q$; this ensures $\mathbb{Z}_{p}^{\times}$ has prime order. However, this does not yet give us the cyclic effect mod $k$. For that, we can use a trick: choose $p$ to instead satisfy $p\equiv 1\pmod k$. Since it no longer has prime order, not every element is a generator, but nevertheless there are $\varphi(p-1)$ of them&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. We need $n$ elements $g_{1},...,g_{n}$ with order $k$, for which we can take a generator $g$ and raise it to power $(p-1)/k$. Once again let $h(A)=\prod_{i\in[n]}g_{i}^{a_{i}}$ but now, to increment the $j$th coordinate we simply multiply $h(A&#39;)=h(A)\cdot g_{j}$. This works because we&amp;rsquo;ve made it so $g_{j}^{k}=e$, which gives us the desired modulo effect.&lt;/p&gt;
+&lt;p&gt;However, there&amp;rsquo;s a significant problem with this approach (see if you can find it). Because we take a product over elements with $g_{i}^{k}=e$, the set of outputs is exactly the elements of the group which satisfy this. So what is the size of our hash&amp;rsquo;s image?&lt;/p&gt;
+&lt;div class=&#34;callout callout-lemma&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Lemma: &lt;em&gt;Hash Output Space&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $G(k)=\set{g\in\mathbb{Z}_{p}^{\times}\mid g^{k}=e}$. Then $|G(k)|=k$.
+&lt;em&gt;Proof:&lt;/em&gt; $\mathbb{Z}_{p}^{\times}$ is a cyclic group, so $\exists x\text{ s.t. }\langle x\rangle=\mathbb{Z}_{p}^{\times}$. Then $x^{(p-1)/k}$ has order $k$, and subsequently $y_{t}:=x^{t(p-1)/k}$ satisfies $y_{t}^{k}=e$ for $t\in 1,...,k$. This means $|G(k)|\geq k$.
+On the other hand, we can note that $\mathbb{Z}_{p}$ is a field and the elements of $G(k)$ are $k$-th roots of unity in it, in other words, the roots of $x^{k}-1$. A degree $k$ polynomial has at most $k$ roots. Having bounded above and below, we get $|G(k)|=k$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;So while the hash function thus constructed satisfies our original requirements, it can only ever output $k$ distinct values&amp;hellip; This is far too few to ever be useful. My solution here was to extend this idea - rather than have only one $k$-cyclic subgroup which hard-caps our outputs to a small number, we embed multiple.&lt;/p&gt;
+&lt;p&gt;Let $p$ and $q$ be prime, and $N:=pq$. Recall that $\mathbb{Z}^{\times}_{N}\cong \mathbb{Z}^{\times}_{p}\times \mathbb{Z}^{\times}_{q}$ and that each of the groups on the right side are cyclic. Choosing again $p$ such that $|\mathbb{Z}^{\times}_{p} |=p-1$ is divisible by $k$, we guarantee the group contains a cyclic subgroup of order $k$ (isomorphic to the cyclic group $C_{k}$). We choose $q$ likewise, with the only added constraint of $p\neq q$. Applying the isomorphism above, we&amp;rsquo;ve ensured that $C_{k}\times C_{k}$ is isomorphic to a subgroup of $\mathbb{Z}_{N}^{\times}$. If $\langle g\rangle=C_{k}$, then $C_{k}^{2}=C_{k} \times C_{k}=\langle (g,e), (e,g)\rangle$. In other words, if we can find the elements corresponding to $(g,e)$ and $(e,g)$ in $\mathbb{Z}_{N}^{\times}$, we can add an extra dimension to our hash image!&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s do this concretely. The Chinese Remainder theorem gives us $\mathbb{Z}^{\times}_{p}\times \mathbb{Z}^{\times}_{q}\cong \mathbb{Z}^{\times}_{N}$, let $\phi$ be this isomorphism, and suppose we&amp;rsquo;ve found the elements $h_{p}\in\mathbb{Z}^{\times}_{q}$ and $h_{q}\in\mathbb{Z}^{\times}_{q}$ as above, so the $\text{ord}(h)=k$. The basis $\set{ (h_{p},e),(e,h_{q})}$ generates $C_{k}^{2}$ and we can lift it to $\mathbb{Z}^{\times}_{N}$: define $g_{1}:=\phi(h_{p},e)$ and $g_{2}:=\phi(e,h_{q})$. Restating above, we get:
+&lt;/p&gt;
+$$C_{k}^{2}\cong \langle g_{1},g_{2}\rangle\leq \mathbb{Z}^{\times}_{N}.$$&lt;p&gt;
+The point is that the size of $\text{span}\set{g_{1},g_{2}}$ in $\mathbb{Z}^{\times}_{N}$ is $k^{2}$ and we can find these elements very easily using a CRT solver (essentially the implementation of $\phi$) for the systems
+&lt;/p&gt;
+$$\begin{cases} g_{1}\equiv h_{p}\pmod p \\
+g_{1}\equiv 1 \pmod q\end{cases}
+ \qquad\begin{cases} g_{2}\equiv 1 \pmod p \\
+g_{2}\equiv h_{q}\pmod q.
+\end{cases}$$&lt;p&gt;
+Lastly, we choose $s_{1},s_{2}$ from $0,...,k-1$ randomly, and define $w=g_{1}^{s_{1}}g_{2}^{s_{2}}$. Since $g_{i}^{k}=e$, we know also that $w^{k}=e$. Now rather than just one, generate $n$ pairs $(s_{1}^{(i)},s_{2}^{(i)})$, and for each of them let $w_{i}$ be defined likewise. What we have done at this point is construct $w_{1},...,w_{n}\in \mathbb{Z}^{\times}_{N}$ which span the product cyclic subgroup and satisfy $w^{k}=e$, which is the exact condition we wanted. We formalize the hash function for $A=[a_{1},...,a_{n}]$ as
+&lt;/p&gt;
+$$h(A)=\prod_{i\in[n]}w_{i}^{a_{i}}$$&lt;p&gt;
+and verify that for $A&#39;$ defined as $A$ but with $j$th coordinate incremented mod $k$, it satisfies
+&lt;/p&gt;
+$$h(A&#39;)=h(A)\cdot w_{j}.$$&lt;p&gt;
+The order of each $w$ is $k$ (or, in rare cases, a divisor of $k$ if $gcd(k,s_{1},s_{2})&gt;1$), so $w^{k}$ cycles back to $e$, and $\text{span}\set{w_{1},...,w_{n}}=\text{span}\set{g_{1},g_{2}}$ with size $k^{2}$. Thus we have our magic hash!&lt;/p&gt;
+&lt;h4 id=&#34;asterisks&#34;&gt;Asterisks
+&lt;/h4&gt;&lt;p&gt;This yields a hash with image size $k^{2}$ but in practice this is still far too small. However, this method is entirely extendable: rather than use two primes, we use $N:=p_{1}p_{2}...p_{d}$, leverage $\mathbb{Z}_{p_{1}}^{\times}\times ... \times \mathbb{Z}_{p_{d}}^{\times}\cong \mathbb{Z}_{N}^{\times}$ and the generalization
+&lt;/p&gt;
+$$C_{k}^{d}=\langle h_{1}\rangle\times ...\times \langle h_{d}\rangle \cong \langle \phi(h_{1},e,e,...,e), \phi(e,h_{2},e,...,e),...\rangle\leq \mathbb{Z}_{N}^{\times}$$&lt;p&gt;
+to make $w_{1},...,w_{n}$ span $d$ dimensions, resulting in the image size $k^{d}$. Since the operations in $\mathbb{Z}_{N}^{\times}$ happen modulo $N$, this is the bottleneck - the product of our $d$ distinct special primes must fit in an (128-bit) integer data type. To maximize $d$, we choose the primes to be as small as possible, but on average, we can get $\approx 18$. Still, this gives us a very sizable output space.&lt;/p&gt;
+&lt;p&gt;A key step I&amp;rsquo;ve skipped is producing a generator $g$ of $\mathbb{Z}_{p}^{\times}$. There&amp;rsquo;s not a known closed form solution for this problem, but (for any $p$) on average about a third of the elements of $\mathbb{Z}_{p}^{\times}$ are generators, so a guess-and-check algorithm is actually quite efficient for this. We know by Lagrange&amp;rsquo;s theorem that if an element $g$ has order $m &lt; n:=p-1=|\mathbb{Z}_{p}^{\times}|$, then $m$ is a divisor of $n$. The contrapositive tells us that if for some $m\mid n,\; g^{m}=e$, then $g$ is not a generator; thus, we will pick a random element and go through all maximal divisors of $n$ to see if our candidate evaluates to $e$ with that exponent; if it doesn&amp;rsquo;t for any of them, we&amp;rsquo;ll have found our generator.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; randint(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;,p&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	failed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; q &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; prime_factors(n):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; pow(x, n&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;q, p) &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			failed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			&lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; failed:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For prime factorization I will precompute the SPF array (&lt;code&gt;spf[n] = smallest prime factor of n&lt;/code&gt;) up to a constant maximum; this needs only to be done once and allows $O(\log x)$ factorization. I use this method very often in competitive programming.&lt;/p&gt;
+&lt;p&gt;Now having found the generator of each $\mathbb{Z}_{p_{i}}^{\times}$, we let $h_{i}$ be it&amp;rsquo;s $((p_{i}-1)/k)^{\text{th}}$ power; observe that each $h_{i}$ has order $k$ and thus $C_{k}\cong \langle h_{i}\rangle \leq \mathbb{Z}_{p_{i}}^{\times}$.&lt;/p&gt;
+&lt;h4 id=&#34;summary&#34;&gt;Summary
+&lt;/h4&gt;&lt;p&gt;To recap, what we&amp;rsquo;ve done so far is construct a group $\mathbb{Z}_{N}^{\times}$ that contains as many embedded copies of the cyclic group $C_{k}$ in it as we could fit. We know that their product $C_{k}\times ... \times C_{k}\cong \langle h_{i}\rangle\times...\times\langle h_{d}\rangle$ is a group to which there exists an isomorphic subgroup in $\mathbb{Z}_{N}^{\times}$ by the Chinese remainder theorem. We find the vectors spanning $C_{k}^{d}$ and lift them to $\mathbb{Z}_{N}^{\times}$, and we generate weights which give us the cyclic incrementation property.&lt;/p&gt;
+&lt;p&gt;As a final note, solving a CRT modular system of $d$ equations in the standard way requires $O(d)$ time; as there are $d$ such systems, we&amp;rsquo;re looking at $O(d^{2})$. However, the systems are all vectors of the &amp;ldquo;standard basis&amp;rdquo;: in the $i$th vector, all elements but the $i$th are identity. We can use this to speed up the computation to $O(d)$ in total by doing it in a batch with $O(1)$ per system/vector with $N$ known.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;4-reduction-via-edge-ordering&#34;&gt;4. Reduction via Edge Ordering
+&lt;/h3&gt;&lt;p&gt;The algorithm can be viewed as a process that begins with an empty graph on $n$ vertices and adds an edge at each step. The revelation of each edge $(ij)$ corresponds to multiplying the previous step&amp;rsquo;s polynomial by $(x_{i}-x_{j})$. The number of terms in this polynomial grows very quickly (more or less exponentially, as you might imagine); the more terms we have at step $t$, the more we will have to process and insert at $t+1$. But not all edges give the same growth. Can we slow the term count growth by revealing edges in a clever order?&lt;/p&gt;
+&lt;p&gt;The answer is yes, and here&amp;rsquo;s a simple example:
+&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol2.png&#34;
+	width=&#34;1990&#34;
+	height=&#34;390&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;510&#34;
+		data-flex-basis=&#34;1224px&#34;
+	
+&gt;&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol3.png&#34;
+	width=&#34;1990&#34;
+	height=&#34;390&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;510&#34;
+		data-flex-basis=&#34;1224px&#34;
+	
+&gt;
+$f_{t}$ is the polynomial of the partial graph with edges $1,...,t$ (with respect to a particular ordering), and $\text{T}(f_{t})$ is the number of terms in the polynomial. Notice that the second ordering produces fewer terms at steps 3 and 4. Of course, the final result will be the same in any ordering as the final graph is fixed, but smaller intermediate results means less work at each subsequent step.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s a more noticeable difference:
+&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol4.png&#34;
+	width=&#34;3190&#34;
+	height=&#34;390&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;817&#34;
+		data-flex-basis=&#34;1963px&#34;
+	
+&gt;&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol5.png&#34;
+	width=&#34;3190&#34;
+	height=&#34;390&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;817&#34;
+		data-flex-basis=&#34;1963px&#34;
+	
+&gt;
+The second ordering processes, in total, 73 fewer terms than the first. Clearly, among all orderings of edges of the graph $G$, there must be an ordering which yields the fewest intermediate terms over the course of execution. So&amp;hellip; what is it?&lt;/p&gt;
+&lt;div class=&#34;callout callout-problem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;▲&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Problem: &lt;em&gt;Minimum Cost Edge Ordering&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    For a given graph $G$, we as usual define the polynomial $f=\prod_{ij\in E}(x_{i}-x_{j})$ and let $\text{T}(f)$  denote the number of terms in the expanded &amp;amp; simplified form of the polynomial. If $e_{1}\prec e_{2}\prec ...\prec e_{m}$ is any ordering of edges of $G$, we call $f_{t}^{\prec}$ the partial polynomial of the first $t$ edges: $\prod_{ij\in E \;:\; (ij)\preceq e_{t}}(x_{i}-x_{j})$; it is defined w.r.t. the ordering. Finally, define the cost of the ordering $c(\prec):=\sum_{t\in[m]}\text{T}(f_{t}^{\prec})$.&lt;br&gt;
+Find the optimal ordering $\prec^{\star}$ such that the cost $c(\prec^{\star})$ is minimum.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;This is a hard problem, I hate to say, and I don&amp;rsquo;t have a solution. But there are some heuristics which can give a &lt;em&gt;pretty good&lt;/em&gt; approximation. The main problem is the behavior of the function $\text{T}(\cdot)$ - I don&amp;rsquo;t have a simpler formula for the term count than its definition, even a recurrent one. However, observe that each time we introduce an edge containing an endpoint not already in the graph, the term count doubles. This should make sense: in the step $f_{t}\mapsto x_{i}f_{t}-x_{j}f_{t}$ the terms of our polynomial are duplicated, but a cancellation may occur when we combine like terms. However, if $x_{i}$ or $x_{j}$ is not in $f_{t}$ already, a term from $x_{i}f_{t}$ can never be equal to a term in $x_{j}f_{t}$. Thus, $\text{T}(f_{t+1})\leq2\text{T}(f_{t})$ with equality iff $x_{i}$ or $x_{j}$ are added for the first time. In a way, our task here is to maximize cancellation, which occurs when we link two vertices already connected; that is, close a cycle.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s the key to why the second ordering in the both above examples wins: we close cycles greedily, aiming to close the shortest cycle available at each step, as short cycles provide the largest cancellation effect. When no cycles can be closed immediately, we attempt to predict which vertex reveals would produce potential for shortest cycles in the future. This method allows us to maximize cancellation at each step, and thus reduce the number of intermediate terms.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s denote $G_{t}$ as the partial graph with the first $t$ edges revealed. Which edge should we pick next to maximize the closure of shortest cycles? A working strategy is to compute the distances $d_{t}(u,v)$ for all edges $uv$ remaining not revealed at step $t$ and pick the one that minimizes this distance, thereby closing a $d_{t}(u,v)+1$-long cycle. Naively this would require recomputing the distances in $G_{t}$ between the endpoints of all potential edges at every step; with BFS it comes out to $O((m+n)m^{2})$ where $m$ is the number of edges in $G$. Here, there&amp;rsquo;s a clever trick we can do: observe that if we insert an edge $uv$, the distance between any two other vertices $x$ and $y$ changes in a very predictable way.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/graph_col_irl/graphcol6.png&#34;
+	width=&#34;571&#34;
+	height=&#34;432&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;132&#34;
+		data-flex-basis=&#34;317px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;Here we plan to reveal the edge $uv$ and the black solid line is the shortest path between $u$ and $v$ in $G_{t}$ (prior to the insertion). What is the shortest path between $x$ and $y$ in $G_{t+1}$? There are two options: it either does not include the edge $uv$ at all (1) or includes it once (2). In the first case, $d_{t+1}(x,y)=d_{t}(x,y)$, and in the second, the route first takes the segment $x-u$, then the newly added shortcut edge, then the segment $v-y$, so $d_{t+1}(x,y)=d_{t}(x,u)+1+d_{t}(v,y)$. We also get a candidate path by swapping $u$ and $v$ in this expression. Thus, to update distances after the insertion of $uv$ we write:
+&lt;/p&gt;
+$$d_{t+1}(x,y)=\min\set{d_t(x,y),\;d_{t}(x,u)+1+d_{t}(y,v),\;d_{t}(y,u)+1+d_{t}(v,x)}.$$&lt;p&gt;
+We still need to know the distances to $u$ and $v$, so we will run BFS to get them. The algorithm looks like this and runs in $O((n+m)m)$:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;order &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;future_edges &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; edges
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;d &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {{a,b} : INF &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; {a,b} &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; edges} &lt;span style=&#34;color:#75715e&#34;&gt;# distances map for future edges&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; future_edges &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; empty:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; have_finite_distance: &lt;span style=&#34;color:#75715e&#34;&gt;# can close a cycle&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;# take shortest distance edge&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		uv &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; min(future_edges, key&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;d)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		future_edges&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;delete(uv)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		order&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(uv)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		u_dists &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bfs(u)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		v_dsists &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bfs(v)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;# update remaining distances&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; xy &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; future_edges:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			d[xy] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; min(d[xy], u_dists[x]&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;v_dists[y], u_dists[y]&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;v_dists[x])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; d[xy] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; INF:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;				have_finite_distance &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We want to defer the revealing of new vertices (revealing edges with a previously unseen endpoint) and prioritize adding edges between vertices already present. But If all distances on future edges are infinite, we can no longer close a cycle, so we must extend our graph to a new vertex. This cannot be done greedily and requires a certain prescience - it&amp;rsquo;s not clear which new vertex will lead to short cycles in the future. A heuristic can be used here: pick the vertex with the most back-edges to the discovered subgraph. The edge will be taken arbitrarily (though this can also be improved):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;future_vertices &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; vertices
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;revealed_neighbors &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {v : &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; v &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; vertices}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#75715e&#34;&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		v &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; max(future_vertices, key&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;revealed_neighbors)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		future_vertices&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;delete(v)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;# update futures and pick arbitrary back-edge from v&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; w &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; G&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;neighbors(v):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; w &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; future_vertices:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;				u &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; w
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			revealed_neighbors[w]&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		order&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(uv)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is not an exact solution to the ordering problem, but it performs decently well for slowing down growth of terms. Unfortunately, since every new vertex reveal doubles the term count with no chance for cancellation, we&amp;rsquo;re still looking at $\geq 2^{n}$ terms in the expression.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;5-a-faster-mod-multiplication&#34;&gt;5. A Faster Mod-Multiplication
+&lt;/h3&gt;&lt;p&gt;At this point, the algorithm clears Mycielski $M_{4}$ in a fraction of a second, but struggles to make it past the first ~25 edges of $M_{5}$. A closer look at performance reveals that over a third of the CPU cycles are spent on doing mod-multiplication to update the term hash entries. And no wonder, since my algorithm for doing that up to this point looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-C++&#34; data-lang=&#34;C++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ui128 &lt;span style=&#34;color:#a6e22e&#34;&gt;modmult&lt;/span&gt;(ui128 a, ui128 b, ui128 m) 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	ui128 result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			&lt;span style=&#34;color:#75715e&#34;&gt;// result = (result + a) % m;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;			result&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt;m&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;a) &lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt; result&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;(m&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;a) &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; reuslt &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; a
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#75715e&#34;&gt;//a = 2*a % m;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;		a &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (a&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt;m&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;a) &lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt; a&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;(m&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;a) &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;a;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		b &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; result;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is awful and is essentially naive multiplication through addition in $O(\log b)$. The reason I did this initially was because 128-bit ints are the largest int data type in C++, so I could not cast the intermediate result $a\cdot b$ (which is up to 256 bits) to a larger type before taking mod. This was my next challenge.
+&lt;div class=&#34;callout callout-problem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;▲&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Problem: &lt;em&gt;Max Precision Modular Multiplication&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Compute $(a\cdot b \mod m)$ as fast as possible given that all three integers are up to $B$ bits long, and no larger data type is available.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Fortunately for me, some clever people solved this problem back in the 80s. The method I went for is called Montgomery multiplication. I won&amp;rsquo;t go into the full detail; I think the &lt;a class=&#34;link&#34; href=&#34;https://en.wikipedia.org/wiki/Montgomery_modular_multiplication&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Wikipedia page&lt;/a&gt; explains it really well, it&amp;rsquo;s what I used to learn it. The base concept is this: we pick a radix base $r$ to be coprime to $m$, find the special &lt;em&gt;Montgomery form&lt;/em&gt; $a*b$ defined in relation to $m$ and $r$, and express our result as $x\equiv (a*b)r^{-1}\pmod m$. To find the remainder in constant time, we must use the division operation which is the most expensive arithmetic instruction; what this lets us do is push the division over to $r$ rather than an expression of $a$ or $b$. The twist here is that we pick $r$ to be a power of two, which makes division as simple as bit shifting.&lt;/p&gt;
+&lt;p&gt;Montgomery speeds up my &lt;code&gt;modmult&lt;/code&gt; by a factor of ~x15, from 0.00414 to 0.00026ms on average for 128-bit ints.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;6-last-ditch-efforts&#34;&gt;6. Last ditch efforts
+&lt;/h3&gt;&lt;p&gt;The Monty optimization pushes my CPU time spent on &lt;code&gt;modmult&lt;/code&gt; down to about 5%; most of the rest is the time spent on the methods of &lt;code&gt;unordered_map&lt;/code&gt; - allocation, the &lt;code&gt;[]&lt;/code&gt;get operator, &lt;code&gt;emplace&lt;/code&gt;, and a couple minor ones. My guess is that at this point the fault is in frequent cache misses - the STL hashmap allocates nodes on the heap scattered across memory. I switched to a flat, open addressing map from the &lt;a class=&#34;link&#34; href=&#34;https://github.com/greg7mdp/gtl&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;GTL&lt;/a&gt; library developed by Gregory Popovitch. It actually has a pretty cool parallel hashmap template that breaks the map into 16 submaps and leverages SIMD instructions to speed up search and resizing; however, it turned out that for my use case the standard flat map was faster. I attribute this to my never needing to resize - I reserve sufficient space at initialization.&lt;/p&gt;
+&lt;p&gt;Open addressing gives a nice bonus, but with all these optimizations I could not break Mycielski $M_{5}$ (23 vertices, 71 edges) or Turán $T_{15,3}$ (15 vertices, 75 edges). The space footprint still grows exponentially, and by 30-35 edges in my CPU begins stalling as most time is spent waiting for memory rather than actual computation.&lt;/p&gt;
+&lt;p&gt;A strange trick I discovered here: it turned out that the &lt;code&gt;map&amp;lt;ui128, int&amp;gt;&lt;/code&gt; was considerably slower than &lt;code&gt;map&amp;lt;ui128, int64_t&amp;gt;&lt;/code&gt; - running on $M_{5}$, the first 30 edges took about 20% less time to process. Initially I guessed this is due to memory alignment rules splitting the 20-byte pairs across different 64-byte memory segments, requiring two cache lines to get a single pair; but in hindsight I don&amp;rsquo;t believe this is right - both options should require a full 32 bytes with padding to store. This is something I might investigate further.&lt;/p&gt;
+&lt;p&gt;Another idea I spent considerable time on: one could discard the hashmap entirely and switch to simple vectors. The problem requires us to match terms with equal monomial hashes, so if $x_{i}f_{t}$ and $x_{j}f_{t}$ were both represented by sorted arrays, we could do a zip merge to combine them into one. This would have a benefit over the hashmap since it would give us better locality control and improve the cache hit rate. However, sorting the arrays would take a long time (I tried with radix sort, it&amp;rsquo;s theoretically $O(n)$ but still slower than the hashmap approach), so instead what would be nice to have is a sort order that would be invariant under the action of multiplying each element by $w_{j}$. That is, if $h_{1}\prec ... \prec h_{T}$ is the sorted array of hashes of terms of $f_{t}$, then for $x_{i}f_{t}$ we maintain $h_{1}w_{i}\prec ...\prec h_{T}w_{i}$ and likewise for $j$. Then we could simply perform a sorted merge. The problem is, such a total order is impossible in a finite group: suppose elements of $G$ are ordered as $g_{1}\prec ... \prec g_{n}$ and we scale by $w\in G\text{ with }w\neq e$, then $wg_{1}\neq g_{1}$ is out of order.&lt;/p&gt;
+&lt;p&gt;However, I&amp;rsquo;m not entirely convinced. For one, our condition is slightly weaker than this: not all elements can appear as $w$ and they are known in advance. For another, we don&amp;rsquo;t need to have a linear order - we could use a circular one. A circular order on a set $S$ is a trinary relation $[a,b,c]$ that indicates the order in which you&amp;rsquo;d see elements moving along the circle. For instance, if $S$ are hours of the clock, $[1,4,9]$ is true but $[4,8,5]$ is not. One could imagine the list of terms as a circular array (first and last elements are considered adjacent) sorted under a circular ordering, so a sorted merge could work much the same way.&lt;/p&gt;
+&lt;h4 id=&#34;conclusion&#34;&gt;Conclusion
+&lt;/h4&gt;&lt;p&gt;Ultimately, there&amp;rsquo;re many things left I could still investigate to improve performance, from high level mathematical representation to hardware optimization. This was an interesting experiment, and though I&amp;rsquo;ve learned some things I had not expected to even touch on, the practical results are&amp;hellip; meager - this method only works for very small graphs. I wouldn&amp;rsquo;t recommend it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;7-verdict&#34;&gt;7. Verdict
+&lt;/h3&gt;&lt;p&gt;If you need a graph colored, I advise using something less deranged.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://cseweb.ucsd.edu/~mihir/papers/inc1.pdf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Bellare et al.&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://crypto.stanford.edu/pbc/notes/numbertheory/gen.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://crypto.stanford.edu/pbc/notes/numbertheory/gen.html&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>Trace Reconstruction</title>
         <link>http://localhost:1313/post/trace-reconstruction/</link>
         <pubDate>Fri, 15 May 2026 00:00:00 +0000</pubDate>
@@ -164,14 +915,14 @@ Now $\mathbb{C}[V]/I_{k}=\mathbb{C}^{k}\otimes_\mathbb{C} ...\otimes_\mathbb{C} 
     &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Doob martingale&lt;/em&gt;&lt;/span&gt;
   &lt;/div&gt;
   &lt;div class=&#34;callout-content&#34;&gt;
-    Let $X$ be a random variable with $E(X)&lt;\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
-Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+    Let $X$ be a random variable with $E[X)]&lt;\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
+Define $(Y_{n})$ by $Y_{n}=E[X|\mathcal{F}_{n}]$.
   &lt;/div&gt;
 &lt;/div&gt;
 
 
 &lt;ul&gt;
-&lt;li&gt;$(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.&lt;/li&gt;
+&lt;li&gt;$(Y_{n})$ is a martingale: $$E[Y_{n+1}|\mathcal{F}_{n}]=E[E[X|\mathcal{F}_{n+1}]|\mathcal{F}_{n}]\overset{(*)}{=}E[X|\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.&lt;/li&gt;
 &lt;li&gt;This is also called an exposure martingale, since the filtration &amp;ldquo;exposes&amp;rdquo; information about $X$ sequentially.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$.
@@ -257,7 +1008,7 @@ Using $\varepsilon=\sqrt{(n/2)\ln n}$ gives us $P(\cdot &gt;\varepsilon)\leq 2\e
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201160934.png&#34;
 	width=&#34;1920&#34;
 	height=&#34;1080&#34;
-	srcset=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201160934_hu_576db34597b3cc60.png 480w, http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201160934_hu_686e53a04aab1d5d.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -274,7 +1025,7 @@ This is a puzzle on 3Blue1Brown&amp;rsquo;s talent page posted by Jane Street. I
 &lt;img src=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201164240.png&#34;
 	width=&#34;794&#34;
 	height=&#34;694&#34;
-	srcset=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201164240_hu_b4734e72f927b61b.png 480w, http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201164240_hu_963b7a8901c53830.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;The black dots are the hexagon vertices&#34;
@@ -293,7 +1044,7 @@ We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgr
 &lt;img src=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201170336.png&#34;
 	width=&#34;699&#34;
 	height=&#34;668&#34;
-	srcset=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201170336_hu_f6f60a80f389bce7.png 480w, http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201170336_hu_401f76d892fe65ed.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -307,7 +1058,7 @@ We will take $G_{0}=\text{stab(0)}\leq \text{Aut}(F)$ to be the stabilizer subgr
 &lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201171351.png&#34;
 	width=&#34;788&#34;
 	height=&#34;387&#34;
-	srcset=&#34;http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201171351_hu_6500a7f7e4fb5564.png 480w, http://localhost:1313/post/andy_the_ant_and_markov_chain_collapse/20260201171351_hu_e95b423114078ada.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;Markov chain on orbits&#34;
@@ -561,7 +1312,7 @@ Finally, $Q(A\mid B)= Q(A\cap B)/Q(B) =\alpha P(B)/P(B)=\alpha$ by definition.&l
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_desc.png&#34;
 	width=&#34;1032&#34;
 	height=&#34;850&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_desc_hu_1b3a90f033536a2b.png 480w, http://localhost:1313/post/hackmit_chess/chess_desc_hu_4812c656d10ebd0.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;Description&#34;
@@ -577,7 +1328,7 @@ Finally, $Q(A\mid B)= Q(A\cap B)/Q(B) =\alpha P(B)/P(B)=\alpha$ by definition.&l
 &lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_email.png&#34;
 	width=&#34;764&#34;
 	height=&#34;376&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_email_hu_3d394db5111a333f.png 480w, http://localhost:1313/post/hackmit_chess/chess_email_hu_e766b721e0a7b9fa.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -595,7 +1346,7 @@ $$ct_{i_{1}}[j] \oplus ct_{i_{2}}[j]=pt_{i_{1}}[j]\oplus pt_{i_{2}}[j]\in [\text
 &lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_xors1.png&#34;
 	width=&#34;765&#34;
 	height=&#34;363&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_xors1_hu_fdc34add29963334.png 480w, http://localhost:1313/post/hackmit_chess/chess_xors1_hu_4c45a0e0590bc902.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -610,7 +1361,7 @@ This limits the set of values from which $pt_{i}[j]$ bytes are drawn to 32. Next
 &lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_xors2.png&#34;
 	width=&#34;765&#34;
 	height=&#34;348&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_xors2_hu_251bc5c4fa4982f4.png 480w, http://localhost:1313/post/hackmit_chess/chess_xors2_hu_a3c9f8e1c1577d50.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -691,10 +1442,10 @@ $$&lt;p&gt;I used 30 ciphertexts to solve for the key, with $P(X&gt;30)\leq 0.03
         
         <guid>http://localhost:1313/page/about/</guid>
         <description>&lt;p&gt;Welcome to my page. I will get this place in order one day.&lt;/p&gt;
-&lt;p&gt;My name is Anton and I&amp;rsquo;m an undergrad studying math and compsci at Arizona State university. I focus broadly in probability theory and algorithms, but I like to learn about all sorts of things.&lt;/p&gt;
+&lt;p&gt;My name is Anton and I&amp;rsquo;m an &lt;del&gt;undergrad&lt;/del&gt; graduate in math and compsci from Arizona State university. I focus broadly in probability theory and algorithms, but I like to learn about all sorts of things.&lt;/p&gt;
 &lt;p&gt;I occasionally play CTF(Capture the Flag) competitions with our local uni team, CTF Academy, as well as with Shellphish.&lt;/p&gt;
 &lt;p&gt;I speak Russian and English and at some point have also studied Spanish and Mandarin (to varying degrees of success).&lt;/p&gt;
-&lt;h3 id=&#34;heres-some-stuff-i-like-in-no-particular-order&#34;&gt;Here&amp;rsquo;s some stuff I like, in no particular order:
+&lt;h3 id=&#34;heres-some-stuff-i-like-in-no-particular-order&#34;&gt;Here&amp;rsquo;s some stuff I like, in no particular order
 &lt;/h3&gt;&lt;p&gt;✶ Stochastic processes &amp;amp; models, statistical algos, information theory;&lt;/p&gt;
 &lt;p&gt;✶ Random, approximation, and reconstruction algorithms;&lt;/p&gt;
 &lt;p&gt;✶ Competitive programming (as of recently);&lt;/p&gt;
@@ -702,9 +1453,14 @@ $$&lt;p&gt;I used 30 ciphertexts to solve for the key, with $P(X&gt;30)\leq 0.03
 &lt;p&gt;✶ Diffusion models, reinforcement learning;&lt;/p&gt;
 &lt;p&gt;✶ Cryptography &amp;amp; cryptanalysis;&lt;/p&gt;
 &lt;p&gt;✶ Computational biology;&lt;/p&gt;
-&lt;h3 id=&#34;what-ive-worked-on-recently&#34;&gt;What I&amp;rsquo;ve worked on recently:
-&lt;/h3&gt;&lt;p&gt;✫ &lt;strong&gt;Trace reconstruction algorithms&lt;/strong&gt;: This is a project for my randomized algorithms class. The problem is to reconstruct a string $x=x_1,...,x_n$ given a set of traces, where a trace is a subsequence of $x$ in which each character is deleted randomly with fixed probability $p$. The main questions are: 1) how many traces does it take to rebuild $x$ with good accuracy, and 2) how to do it at all.&lt;/p&gt;
-&lt;p&gt;✫ &lt;strong&gt;Minimum entropy coupling algorithms&lt;/strong&gt;: this implements some techniques from a series of papers on algorithmic information theory; namely, how to construct a coupling between two probability distribution that has the smallest possible entropy, i.e., &amp;ldquo;most ordered&amp;rdquo;. In general, the problem is NP-hard, but there are approximation algorithms for different kinds of probability distributions. One interesting use case is in steganography, where you can construct a coupling with an LLM&amp;rsquo;s conditional token distribution and generate covertext that contains hidden data while maintaining provable perfect secrecy.&lt;/p&gt;
+&lt;h3 id=&#34;what-ive-worked-on-recently&#34;&gt;What I&amp;rsquo;ve worked on recently
+&lt;/h3&gt;&lt;p&gt;✫ &lt;strong&gt;Minimum entropy coupling steganography&lt;/strong&gt;: this is an algorithm that allows one to embed arbitrary data within the sample path of a random signal, such that the distribution of the signal remains unaffected. For example, one can encode a message within the choice of tokens of an LLM - we manipulate the token selection, but can guarantee that the quality of the output is not worsened by this.&lt;/p&gt;
+&lt;p&gt;→ I built a web demo that you can &lt;a class=&#34;link&#34; href=&#34;https://cover.markovian.net&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;try out here!&lt;/a&gt;, as well as an &lt;a class=&#34;link&#34; href=&#34;https://markovian.net/post/perfect_secrecy&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;introductory write-up you can read&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;✫ &lt;strong&gt;Trace reconstruction algorithms&lt;/strong&gt;: This is a project for my randomized algorithms class. The problem is to reconstruct a string $x=x_1,...,x_n$ given a set of traces, where a trace is a subsequence of $x$ in which each character is deleted randomly with fixed probability $p$. The main questions are: 1) how many traces does it take to rebuild $x$ with good accuracy, and 2) how to do it at all.&lt;/p&gt;
+&lt;p&gt;→ Read the complete write up &lt;a class=&#34;link&#34; href=&#34;https://markovian.net/post/trace-reconstruction&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;✫ &lt;strong&gt;DeepMapDB&lt;/strong&gt;: this has been a long-running on-and-off r&amp;amp;d project on the following question: How much data can you fit in a neural network? Put more specifically, given a dictionary-format database, what is the smallest NN that can &amp;ldquo;memorize it&amp;rdquo; under fixed train time constraints and up to near-perfect accuracy? This task has applications in scenarios in plain data compression, DMBS with high-volume querying requirements, and database deployment on space and memory-constrained hardware.&lt;/p&gt;
 &lt;p&gt;✫ &lt;strong&gt;crypto.college&lt;/strong&gt;: my university uses pwn.college, a platform for hosting CTF-style challenges to teach its cybersec classes. Check it out, it&amp;rsquo;s brilliant. Though security such as low-level exploitation is not really my forte, I have some knowledge of cryptography from playing CTFs and personal research. I&amp;rsquo;m currently working with a team on expanding pwn.college to include several modules of cryptography material &amp;amp; challenges, which will be hopefully used one day to teach classes at ASU!&lt;/p&gt;
 </description>

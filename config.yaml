@@ -1,10 +1,14 @@
-baseURL: "https://saan-volta.github.io/"
+baseURL: "https://markovian.net/"
 title: Saan
 theme: hugo-theme-stack
 
 
     
 markup:
+  tableOfContents:
+    startLevel: 2
+    endLevel: 5
+    ordered: false
   goldmark:
     extensions:
       passthrough:
@@ -32,7 +36,7 @@ params:
       enabled: false
 
   sidebar:
-    subtitle: « one plus one equals three for significantly large values of one. »
+    subtitle: « one plus one equals three for significantly large values of one. »
     compact: false
     avatar:
       enabled: true
@@ -41,3 +45,7 @@ params:
 
   article:
     readingTime: false
+
+  widgets:
+    page:
+      - type: toc

@@ -19,7 +19,7 @@
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_desc.png&#34;
 	width=&#34;1032&#34;
 	height=&#34;850&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_desc_hu_1b3a90f033536a2b.png 480w, http://localhost:1313/post/hackmit_chess/chess_desc_hu_4812c656d10ebd0.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;Description&#34;
@@ -35,7 +35,7 @@
 &lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_email.png&#34;
 	width=&#34;764&#34;
 	height=&#34;376&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_email_hu_3d394db5111a333f.png 480w, http://localhost:1313/post/hackmit_chess/chess_email_hu_e766b721e0a7b9fa.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -53,7 +53,7 @@ $$ct_{i_{1}}[j] \oplus ct_{i_{2}}[j]=pt_{i_{1}}[j]\oplus pt_{i_{2}}[j]\in [\text
 &lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_xors1.png&#34;
 	width=&#34;765&#34;
 	height=&#34;363&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_xors1_hu_fdc34add29963334.png 480w, http://localhost:1313/post/hackmit_chess/chess_xors1_hu_4c45a0e0590bc902.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	
@@ -68,7 +68,7 @@ This limits the set of values from which $pt_{i}[j]$ bytes are drawn to 32. Next
 &lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/hackmit_chess/chess_xors2.png&#34;
 	width=&#34;765&#34;
 	height=&#34;348&#34;
-	srcset=&#34;http://localhost:1313/post/hackmit_chess/chess_xors2_hu_251bc5c4fa4982f4.png 480w, http://localhost:1313/post/hackmit_chess/chess_xors2_hu_a3c9f8e1c1577d50.png 1024w&#34;
+	
 	loading=&#34;lazy&#34;
 	
 	

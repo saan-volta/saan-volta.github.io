@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Abstract This is the proof of correctness of the stenographic encoding algorithm described in 1. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.\nIntroduction The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \\ldots, X_{n}$. Each block is uniform $X_{i}\\sim\\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\\mathcal{C}(c\\mid c_{1},...,c_{m}):=P(C_{m+1}=c\\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &ldquo;context&rdquo; in the LLM sense and $C_{m+1}$ is the next generated &ldquo;token&rdquo;.\n">
+<title>Proof of Correctness of MEC Steganography</title>
+
+<link rel='canonical' href='http://localhost:1313/post/proof_of_perfect_secrecy/'>
+
+<link rel="stylesheet" href="/scss/style.min.fd1066026cc047b72e935d2e3e3e26d1c270d3bb1362e66cae86a6b804e3ad3f.css"><meta property='og:title' content="Proof of Correctness of MEC Steganography">
+<meta property='og:description' content="Abstract This is the proof of correctness of the stenographic encoding algorithm described in 1. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.\nIntroduction The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \\ldots, X_{n}$. Each block is uniform $X_{i}\\sim\\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\\mathcal{C}(c\\mid c_{1},...,c_{m}):=P(C_{m+1}=c\\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &ldquo;context&rdquo; in the LLM sense and $C_{m+1}$ is the next generated &ldquo;token&rdquo;.\n">
+<meta property='og:url' content='http://localhost:1313/post/proof_of_perfect_secrecy/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-30T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-08-30T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Proof of Correctness of MEC Steganography">
+<meta name="twitter:description" content="Abstract This is the proof of correctness of the stenographic encoding algorithm described in 1. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.\nIntroduction The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \\ldots, X_{n}$. Each block is uniform $X_{i}\\sim\\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\\mathcal{C}(c\\mid c_{1},...,c_{m}):=P(C_{m+1}=c\\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &ldquo;context&rdquo; in the LLM sense and $C_{m+1}$ is the next generated &ldquo;token&rdquo;.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/cat_hu_cd8598b6a0df9f32.png" width="300"
+                            height="249" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#proof">Proof</a></li>
+        <li><a href="#appendix">Appendix</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/algorithms/" style="background-color: #f48f13; color: #fff;">
+                Algorithms
+            </a>
+        
+            <a href="/categories/probability/" style="background-color: #752bba; color: #fff;">
+                Probability
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/proof_of_perfect_secrecy/">Proof of Correctness of MEC Steganography</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Aug 30, 2026</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="abstract">Abstract
+</h3><p>This is the proof of correctness of the stenographic encoding algorithm described in <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.</p>
+<hr>
+<h3 id="introduction">Introduction
+</h3><p>The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \ldots, X_{n}$. Each block is uniform $X_{i}\sim\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\mathcal{C}(c\mid c_{1},...,c_{m}):=P(C_{m+1}=c\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &ldquo;context&rdquo; in the LLM sense and $C_{m+1}$ is the next generated &ldquo;token&rdquo;.</p>
+<p>The algorithm proceeds as follows:</p>
+<ol start="0">
+<li>For $i\in 1\ldots n$, initialize $\mu_{i}$ to uniform distributions $\set{0,1}^{b}\rightarrow [0,1]$.</li>
+<li>For $j\in 1\ldots m$:
+<ol>
+<li>$i^{*}:=\arg\max_{i}H(\mu_{i})$</li>
+<li>$\gamma_{j}:=$ MEC of $\mu_{i^{*}}$ and $\mathcal{C}(C_{j}\mid C_{1:j-1}=S_{1:j-1})$, the autoregressive distribution of next token</li>
+<li>$S_{j}\sim \gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, the distribution of next token conditional on the $i^{*}$th block of ciphertext</li>
+<li>$\mu_{i^{*}}\leftarrow \gamma_{j}(X_{i^{*}}\mid C_{j}=S_{j})$</li>
+</ol>
+</li>
+</ol>
+<p>The objective is to show that $(C_{1},...,C_{m})\overset{D}{=}(S_{1},\ldots S_{m})$, that is, the random vectors of $m$-sequences of tokens produced naturally and those produced by the algorithm are equivalent in distribution, i.e., the encoding does not introduce any statistical bias.</p>
+<p>As a shorthand, I will write events $\set{S_{j}=s_{j}}$ as $\set{s_{j}}$ and $\set{S_{1:j-1}=s_{j-1}}$ as $\set{s_{1:j-1}}$. The notation $[n]$ denotes the set $\set{1,...,n}$.</p>
+<hr>
+<h3 id="proof">Proof
+</h3><p>The proof proceeds in two steps. First, we must show that at the beginning of each iteration $j$, for all $i\in[n]$ and all values of $x$, we have
+</p>
+$$P(X_{i}=x\mid s_{1:j-1} )=\mu_{i}(x)$$<p>
+that is, the $\mu_{i}$ distributions maintained by the algorithm are the accurate distributions of $X_{i}$ conditional on the previously produced tokens. This is not entirely trivial, since the $\mu_{i}$ are updated manually. Secondly, we show the equality in distributions between natural and encoded sequences of tokens.</p>
+<div class="callout callout-lemma">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Lemma</span>
+  </div>
+  <div class="callout-content">
+    <p>For each iteration $j$, for all $i\in[n]$ and values of $x$, the following hold:
+</p>
+$$\newcommand{\indep}{\mathrel{\perp\!\!\!\perp}}
+\begin{align*}
+&(i)\qquad P(X_{i}=x\mid s_{1:j-1})=\mu_{i}(x) \\
+&(ii)\qquad X_{1} \indep X_{2} \indep \ldots \indep X_{n}\;\mid s_{1:j-1}
+\end{align*}$$
+  </div>
+</div>
+
+
+<p>The second claim is that $\set{X_{i}}_{n}$ are mutually conditionally independent given $s_{1:j-1}$. We will use this statement as a sort of inventor&rsquo;s paradox to establish the first.</p>
+<p><em>Proof.</em> Proceed by induction on $j$. At the start of the first iteration, $X_{i}\sim\text{Unif}[2^{b}]=\mu_{i}$ by definition. All $X_{i}$ are mutually independent, so the claims hold trivially.</p>
+<p>In the inductive case, we assume the claims hold at the start of step $j$. The maximum entropy block $i^{*}$ is chosen.
+We prove $(i)$ first; the aim is to show that for all $i$, $\mu'_{i}$, defined to be the adjusted $\mu$ at the end of the step, satisfies
+</p>
+$$\mu'_{i}(x)=P(X_{i}=x\mid s_{1:j})\quad \forall x.$$<p>
+Note that only for $i=i^{*}$ does the distribution actually change; the rest are left untouched. We therefore consider two cases:</p>
+<p><!-- raw HTML omitted -->Case 1:<!-- raw HTML omitted --> $i=i^{*}$
+Breaking down the conditioning as $P(\ldots \mid s_{1:j-1}\cap s_{j})$ and rewriting, we get
+</p>
+$$\begin{align*}
+P(X_{i^{*}}=x\mid s_{1:j})&=\frac{P(X_{i^{*}}=x\mid s_{1:j-1})P(s_{j}\mid X_{i^{*}}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{j-1})}\\
+&= \frac{\mu_{i^{*}}(x)\gamma_{j}(s_{j}\mid x)}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&= \frac{\gamma_{j}(x,s_{j})}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&=\gamma_{j}(x\mid s_{j})= \mu'_{i^{*}}(x).
+\end{align*}$$<p>
+In the above derivation, the coupling $\gamma_{j}$ twice allows us to change conditioning via chain rule with its marginal (respectively $\mu_{i^{*}}$ and $\mathcal{C}$).</p>
+<p><!-- raw HTML omitted -->Case 2:<!-- raw HTML omitted --> $i\neq i^{*}$
+Similarly, we write
+</p>
+$$P(X_{i}=x\mid s_{1:j})=\frac{P(X_{i}=x\mid s_{1:j-1})P(S_{j}=s_{j}\mid X_{i}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{1:j-1})}$$<p>
+Since $S_{j}\sim\gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, where the next token $C_{j}\sim\mathcal{C}(\cdot \mid s_{1:j-1})$ is independent of $X_{i}$ trivially and $X_{i^{*}}$ is conditionally independent of $X_{i}$ by the inductive hypothesis, $S_{j}$ is also conditionally independent of $X_{i}$. Thus the second term in the numerator can drop the conditioning on $X_{i}=x$, simplifying to
+</p>
+$$P(X_{i}=x\mid s_{1:j}) = \frac{\mu_{i}(x)\mathcal{C}(s_{j}\mid s_{j-1})}{\mathcal{C}(s_{j}\mid s_{j-1})}=\mu_{i}(x)=\mu'_{i}(x).$$<p>Lastly, we show that $(ii)$ holds at the end of each step. Using the same identity and the conditional independence given $s_{1:j-1}$:
+</p>
+$$\begin{align*}
+P\bigg(\bigcap_{i\in[n]}X_{i}=x_{i}\mid s_{1:j}\bigg) &=\frac{P(s_{j}\mid s_{1:j-1}\cap  \bigcap_{i}X_{i}=x_{i})}{\mathcal{C}(s_{j}\mid s_{j-1})} \prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})
+\end{align*}$$<p>
+Once again the independence of $S_{j}$ allows us to drop the conditioning on all $X_{i}$ except $X_{i^{*}}$ and simplify:
+</p>
+$$\begin{align*}
+\ldots \;&= \frac{\gamma_{j}(s_{j}\mid x_{i^{*}})}{\mathcal{C}(s_{j}\mid s_{j-1})}\prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})\\
+&= \frac{\gamma_{j}(x_{i^{*}}\mid s_{j})}{\mu_{i^{*}}(x_{i^{*}})}\prod_{i\in[n]}\mu_{i}(x_{i})\\
+&= \mu'_{i^{*}}(x_{i^{*}})\prod_{i\in[n]\setminus\set{i^{*}}} \mu'_{i}(x_{i})\\
+&= \prod_{i\in[n]} \mu'_{i}(x_{i}) \\
+&=\prod_{i\in[n]}P(X_{i}=x_{i}\mid s_{1:j}).
+\end{align*}$$<p>
+This concludes the proof of $(i)$ and $(ii)$ at the beginning of step $j+1$.</p>
+<div class="callout callout-theorem">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Theorem</span>
+  </div>
+  <div class="callout-content">
+    <p>Let $(S_{1},...,S_{m})$ be the random sequence of tokens produced by the algorithm (stegotext), and let $(C_{1},...,C_{m})$ be the random sequence of tokens generated naturally (covertext) in an autoregressive manner, i.e. $C_{j}\sim\mathcal{C}(\cdot \mid C_{1:j-1}=c_{1:j-1})$. Then:
+</p>
+$$(S_{1},...,S_{m})\overset{D}{=}(C_{1},...,C_{m}).$$
+  </div>
+</div>
+
+
+<p><em>Proof.</em>
+Let $j$ be fixed and consider some value $s$ of the next token $S_{j}$.
+</p>
+$$P(S_{j}=s\mid s_{1:j-1})=\sum\limits_{x}\gamma_{j}(X_{i^{*}}=x,s)=\sum\limits_{x}\gamma_{j}(s\mid x)\mu_{i^{*}}(x)=\mathcal{C}(s\mid s_{1:j-1})$$<p>
+The first equality averages over all possible values of $X_{i^{*}}$ and the rest follows by definition of coupling. Now, taking the product over all $j$ with the chain rule:
+</p>
+$$\begin{align*}
+P(S_{1:m}=s_{1:m})&= \prod_{j\in[m]}P(S_{j}=s_{j}\mid s_{1:j-1}) \\
+&= \prod_{j\in[m]}\mathcal{C}(s_{j}\mid s_{1:j-1})\\
+&= P(C_{1:m}=s_{1:m}).
+\end{align*}$$<p>
+Thus, the random vectors have equal distribution.</p>
+<div class="callout callout-corollary">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Corollary</span>
+  </div>
+  <div class="callout-content">
+    The algorithm constructs a coupling between a factorable uniform distribution and the autoregressive conditional $\mathcal{C}(\cdot\mid\cdot)$.
+  </div>
+</div>
+
+
+<p>Let $\text{A}(\mathbf{x}, \mathbf{s})$ be the joint distribution induced by the algorithm between the space of $n$-block ciphertexts and $m$-token text samples, writing $\text{A}(\mathbf{x},\mathbf{s}):=P(\mathbf{X}=\mathbf{x},\;\mathbf{S}=\mathbf{s})$ and $\text{A}(\mathbf{s}\mid \mathbf{x})$ for probability of outputting stegotext $\mathbf{s}$ given input ciphertext $\mathbf{x}$, where $\mathbf{X}=(X_{1},...,X_{n})$  and $\mathbf{S}=(S_{1},...,S_{m})$.</p>
+<p>Observe that for any $\mathbf{x}$ and $\mathbf{s}$, we have $\text{A}(\mathbf{x},\mathbf{s})=\text{A}(\mathbf{s}\mid \mathbf{x})P(\mathbf{X}=\mathbf{x})=\mathcal{C}(\mathbf{s})P(\mathbf{X}=\mathbf{x})$ by above. Now fixing $\mathbf{x}$ and summing over $\mathbf{s}$ yields $P(\mathbf{X}=\mathbf{x})$, and likewise fixing $\mathbf{s}$ and summing over $\mathbf{x}$ gives $\mathcal{C}(\mathbf{s})$, which are the exact marginals, showing $\text{A}(\cdot\mid \cdot)$ is a coupling.</p>
+<hr>
+<h3 id="appendix">Appendix
+</h3><p>The proof makes repeated use of this basic identity:
+</p>
+$$P(A\mid B\cap C)=\frac{P(A\mid B)P(C\mid A\cap  B)}{P(C\mid B)}$$<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a class="link" href="https://arxiv.org/abs/2210.14889"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/2210.14889</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

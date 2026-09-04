@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Introduction A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals: ◆ Theorem: Theorem 1 For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\\prod_{ij\\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\\langle x_{1}^{k}-1,...,x_{n}^{k}-1\\rangle$ for some integer $k$ in the ring $\\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\\in I_{k}$. Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is &ldquo;does this make this problem any easier to solve?&rdquo; I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.\n">
+<title>Graph Coloring via Rings IRL (II)</title>
+
+<link rel='canonical' href='http://localhost:1313/post/graph_col_irl/'>
+
+<link rel="stylesheet" href="/scss/style.min.fd1066026cc047b72e935d2e3e3e26d1c270d3bb1362e66cae86a6b804e3ad3f.css"><meta property='og:title' content="Graph Coloring via Rings IRL (II)">
+<meta property='og:description' content="Introduction A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals: ◆ Theorem: Theorem 1 For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\\prod_{ij\\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\\langle x_{1}^{k}-1,...,x_{n}^{k}-1\\rangle$ for some integer $k$ in the ring $\\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\\in I_{k}$. Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is &ldquo;does this make this problem any easier to solve?&rdquo; I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.\n">
+<meta property='og:url' content='http://localhost:1313/post/graph_col_irl/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-07-15T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-15T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Graph Coloring via Rings IRL (II)">
+<meta name="twitter:description" content="Introduction A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals: ◆ Theorem: Theorem 1 For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\\prod_{ij\\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\\langle x_{1}^{k}-1,...,x_{n}^{k}-1\\rangle$ for some integer $k$ in the ring $\\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\\in I_{k}$. Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is &ldquo;does this make this problem any easier to solve?&rdquo; I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/cat_hu_cd8598b6a0df9f32.png" width="300"
+                            height="249" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#1-smooth-sailing">1. Smooth sailing</a>
+          <ul>
+            <li><a href="#examples">Examples</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-the-first-look">2. The First Look</a>
+          <ul>
+            <li><a href="#an-aside-about-benchmarking">An aside about benchmarking</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-eliminating-exponent-vector-storage">3. Eliminating Exponent Vector Storage</a>
+          <ul>
+            <li><a href="#asterisks">Asterisks</a></li>
+            <li><a href="#summary">Summary</a></li>
+          </ul>
+        </li>
+        <li><a href="#4-reduction-via-edge-ordering">4. Reduction via Edge Ordering</a></li>
+        <li><a href="#5-a-faster-mod-multiplication">5. A Faster Mod-Multiplication</a></li>
+        <li><a href="#6-last-ditch-efforts">6. Last ditch efforts</a>
+          <ul>
+            <li><a href="#conclusion">Conclusion</a></li>
+          </ul>
+        </li>
+        <li><a href="#7-verdict">7. Verdict</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/project/" style="background-color: #fa0606; color: #fff;">
+                Project
+            </a>
+        
+            <a href="/categories/algorithms/" style="background-color: #f48f13; color: #fff;">
+                Algorithms
+            </a>
+        
+            <a href="/categories/math/" style="background-color: #4a92ff; color: #fff;">
+                Math
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/graph_col_irl/">Graph Coloring via Rings IRL (II)</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 15, 2026</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="introduction">Introduction
+</h3><p>A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals:
+<div class="callout callout-theorem">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Theorem: <em>Theorem 1</em></span>
+  </div>
+  <div class="callout-content">
+    For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\prod_{ij\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\langle x_{1}^{k}-1,...,x_{n}^{k}-1\rangle$ for some integer $k$ in the ring $\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\in I_{k}$.
+  </div>
+</div>
+
+</p>
+<p>Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is &ldquo;does this make this problem any easier to solve?&rdquo; I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.</p>
+<hr>
+<h3 id="1-smooth-sailing">1. Smooth sailing
+</h3><p><em>Disclaimer: this section covers mathematical background that I hope is accessible, but it is not strictly necessary to understand the implementation. At the end of the section, I outline the actual thing that needs to be computed, you may skip to it directly.</em></p>
+<p>Here&rsquo;s the nice thing. In general, to solve an ideal membership problem, we have to compute a <em>Gröbner basis</em> of said ideal. An ideal can be represented with many bases (generating sets), but some of them are much more amenable to doing any sort of computation, and Gröbner bases are the best of them. The downside is that computing such a basis is really hard by itself (at least as hard as graph coloring, for certain). The upside is that we don&rsquo;t need to, and I will give a brief overview to explain this.</p>
+<p>We begin with polynomial division. In a univariate polynomial ring, such as $\mathbb{R}[x]$, we have what is called the &ldquo;division algorithm&rdquo;: for any polynomials $f$ and $g$, we can find polynomials $q,r$ such that $f=qg+r$, where $\deg(r)<\deg(g)$, that is, we divide $f$ by $g$ with remainder. This works always because a univariate ring is a lovely and handsome Principal Ideal Domain, which means that any ideal $I$ can be generated by only one element, like $I=\langle x\rangle$; this is like how the set of even numbers in $\mathbb{Z}$ can be represented by $\langle 2\rangle$, i.e. all multiples of 2. But a multivariate ring, like $\mathbb{R}[x,y]$, does not have this property. So how do we divide polynomials in 2 variables?</p>
+<p>When we divide $f$ by $g$, what we actually do is divide by the ideal $\langle g\rangle$. If you&rsquo;ve taken any sort of abstract algebra, you may be familiar with this action as the canonical homomorphism $R\rightarrow R/\langle g\rangle$ sending each element of the ring to the coset of the ideal to which it belongs (the remainder is the coset representative). But in $\mathbb{R}[x,y]$, some (most) ideals are not principal; we have to write them as $I=\langle g_{1},g_{2}\rangle$. If you attempt to run the standard division algorithm to divide by $g_{1}$ and $g_{2}$ trying to find the quotients and the remainder in $f=q_{1}g_{1}+q_{2}g_{2}+r$, you may find that the order of $g_{1}$ and $g_{2}$ affects not only the quotients, but also the value of the remainder itself, so the &ldquo;canonical homomorphism&rdquo; is actually not a function at all.</p>
+<p>A Gröbner basis is what lets us fix this, since their essential property is that they always produce the same minimal remainder $r$ when used as a divisor, regardless of the permutation of elements within. Thus we can actually compute $(f\mod I)$ when $I$ is expressed as a Gröbner basis $\langle g_{1},...,g_{n}\rangle$.</p>
+<p>I haven&rsquo;t really defined what constitutes a Gröbner basis, and actually I&rsquo;m not gonna do that here at all, because the main takeaway that matters is that $I_{k}=\langle x_{i}^{k}-1\mid i\in[n]\rangle$ is already Gröbner. In particular, reducing a polynomial $f\mod I_{k}$ is simply reducing its every exponent mod $k$.
+Thus our problem is:
+<div class="callout callout-problem">
+  <div class="callout-title">
+    <span class="callout-icon">▲</span>
+    <span class="callout-label">Problem: <em>The Big Thing</em></span>
+  </div>
+  <div class="callout-content">
+    For a given graph $G=(V,E)$ and integer $k$, compute the adjacency polynomial $f_{G}=\prod_{ij\in E}(x_{i}-x_{j})$ and reduce every exponent mod $k$. $G$ is $k$-colorable if and only if the result is $0$.
+  </div>
+</div>
+
+</p>
+<hr>
+<h4 id="examples">Examples
+</h4><p>Before we begin, here are some examples of graphs and their corresponding polynomials, just to get a feel for it:
+<img src="/post/graph_col_irl/graphcol1.png"
+	width="1189"
+	height="790"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="150"
+		data-flex-basis="361px"
+	
+></p>
+$$\begin{align}
+&P_{2}\rightarrow \quad x_{1}-x_{2}.\\
+&P_{3}\rightarrow \quad x_{1}x_{2}-x_{1}x_{3}-x_{2}^{2}+x_{2}x_{3}.\\
+&C_{3}\rightarrow \quad -x_1^2 x_2 + x_1 x_2^2 + x_1^2 x_3 - x_2^2 x_3 - x_1 x_3^2 + x_2 x_3^2.\\
+&S_{4}\rightarrow \quad x_1^4 - x_1^3 x_2 - x_1^3 x_3 + x_1^2 x_2 x_3 - x_1^3 x_4 + x_1^2 x_2 x_4 + x_1^2 x_3 x_4 - x_1 x_2 x_3 x_4 \\&- x_1^3 x_5 + x_1^2 x_2 x_5 + x_1^2 x_3 x_5 - x_1 x_2 x_3 x_5 + x_1^2 x_4 x_5 - x_1 x_2 x_4 x_5 \\&- x_1 x_3 x_4 x_5 + x_2 x_3 x_4 x_5.\\
+&C_{4}\rightarrow \quad x_1^2 x_2 x_3 - x_1 x_2^2 x_3 - x_1^2 x_3^2 + x_1 x_2 x_3^2 - x_1^2 x_2 x_4 + x_1 x_2^2 x_4 + x_1^2 x_3 x_4 \\&-2 x_1 x_2 x_3 x_4 + x_2^2 x_3 x_4 + x_1 x_3^2 x_4 - x_2 x_3^2 x_4 + x_1 x_2 x_4^2 - x_2^2 x_4^2 \\&- x_1 x_3 x_4^2 + x_2 x_3 x_4^2.\\
+&K_{4}\rightarrow \quad x_1^3 x_2^2 x_3 - x_1^2 x_2^3 x_3 - x_1^3 x_2 x_3^2 + x_1 x_2^3 x_3^2 + x_1^2 x_2 x_3^3 - x_1 x_2^2 x_3^3 \\&- x_1^3 x_2^2 x_4 + x_1^2 x_2^3 x_4 + x_1^3 x_3^2 x_4 - x_2^3 x_3^2 x_4 - x_1^2 x_3^3 x_4 + x_2^2 x_3^3 x_4 + x_1^3 x_2 x_4^2\\& - x_1 x_2^3 x_4^2 - x_1^3 x_3 x_4^2 + x_2^3 x_3 x_4^2 + x_1 x_3^3 x_4^2 - x_2 x_3^3 x_4^2 - x_1^2 x_2 x_4^3 \\&+ x_1 x_2^2 x_4^3 + x_1^2 x_3 x_4^3 - x_2^2 x_3 x_4^3 - x_1 x_3^2 x_4^3 + x_2 x_3^2 x_4^3.
+\end{align}$$<p>As you can see, these get large rather quickly.</p>
+<hr>
+<h3 id="2-the-first-look">2. The First Look
+</h3><p>Since have a (theoretical, at this point) algorithm for checking whether $G$ is $k$-colorable, to find the minimum such $k$, or the chromatic number $\chi(G)$, we will simply run binary search; this works because <code>is_colorable(G,k)</code> is a monotonic function with respect to $k$.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">chromatic_number</span>(G, k):
+</span></span><span style="display:flex;"><span>	low, high <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, maxdegree(G)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> <span style="color:#75715e"># assume |E| &gt; 0.</span>
+</span></span><span style="display:flex;"><span>	med <span style="color:#f92672">=</span> (low<span style="color:#f92672">+</span>high)<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">while</span> low <span style="color:#f92672">&lt;</span> high:
+</span></span><span style="display:flex;"><span>		bool k_valid <span style="color:#f92672">=</span> is_colorable(G, med)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> k_valid:
+</span></span><span style="display:flex;"><span>			low, high <span style="color:#f92672">=</span> low, med
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>			low, high <span style="color:#f92672">=</span> med<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, high
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> med
+</span></span></code></pre></div><p>This solves for $\chi(G)$ using $O(\log_{2}(\max\deg(G)-1))$ queries. We use $\max\deg(G)+1$ as that is the upper bound on $\chi(G)$ by Brooks&rsquo; theorem (and unless $G$ is $K_{n}$ or $C_{n}$ with $n$ odd, you can drop the +1). So going forward, all focus is on optimizing the query <code>is_colorable</code>.</p>
+<p>The task therefore is repeated multiplication of $n$-variate polynomials. The main bottleneck here is storing and updating terms. My first choice here is processing the edges one by one and reducing exponents mod $k$ at each step, since that caps the number of possible terms to $k^{n}$ (an astronomical number, but at least it&rsquo;s not unbounded). At each step we multiply the previous iteration of the polynomial $f_{t}$ by some $(x_{i}-x_{j})$:</p>
+<pre tabindex="0"><code>f_0 = 1
+for (i, j) in E:
+	f_{t+1} = (f_t * x_i) - (f_t * x_j)
+	f_{t+1} %= I_k
+</code></pre><p>The second line in the loop reduces each exponent in each term mod $k$.
+A polynomial has the following expanded form:
+</p>
+$$f_{t}=(c_{1}\cdot x_{1}^{e_{1}^{(1)}}...x_{n}^{e_{n}^{(1)}})\;+ \;(c_{2}\cdot x_{1}^{e_{1}^{(2)}}...x_{n}^{e_{n}^{(2)}})\;+\;...$$<p>
+We can represent it as a list of terms, each term consisting of a coefficient and a monomial, and each monomial is a list $[e_{1}^{(i)},...,e_{n}^{(i)}]$ of exponents for each $x_{j}$.</p>
+<pre tabindex="0"><code>f_t = [
+	(c1, [e11, e12, ..., e1n]),
+	(c2, [e21, e22, ..., e2n]),
+	...,
+]
+</code></pre><p>We multiply $f_{t}\cdot x_{j} \mod I_{k}$ by incrementing $j$th exponent in each term of $f_{t}$ (modulo $k$).</p>
+<p>This is&hellip; less than ideal. First, while the updates themselves are fast, the memory footprint is atrocious, since we must allocate a vector for each term. Second, to simplify the polynomial (when we do the subtraction at each step), we want to combine like terms. To do this, we must iterate by pairs of terms in $f_{t}\cdot x_{i}$ and $f_{t}\cdot x_{j}$, which is $O(n^{2})$. Vector comparison is another $O(n)$ factor.</p>
+<p>The natural two improvements are:</p>
+<ol>
+<li>Hash the monomial exponent vectors into single integers for $O(1)$ comparison</li>
+<li>Use a hashmap $\text{monomial exponent vector hash }\mapsto \text{ coefficient}$</li>
+</ol>
+<pre tabindex="0"><code>exp_list = [
+	(hash1, [e11, e12, ..., e1n]),
+	(hash2, [e21, e22, ..., e2n]),
+	...,
+]
+
+coeffs_map = {
+	hash1 -&gt; c1,
+	hash2 -&gt; c2,
+	...
+}
+</code></pre><p>Now the algorithm can do this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># input: edge ij, previous-step polynomial f_t</span>
+</span></span><span style="display:flex;"><span>new_exps <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>new_coeffs <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> exp_hash, exp_vec <span style="color:#f92672">in</span> exp_list:
+</span></span><span style="display:flex;"><span>	exp_vec_i <span style="color:#f92672">=</span> copy(exp_vec)
+</span></span><span style="display:flex;"><span>	exp_vec_i <span style="color:#f92672">=</span> (exp_vec_i[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> k
+</span></span><span style="display:flex;"><span>	new_hash_i <span style="color:#f92672">=</span> hash(exp_vec_i) <span style="color:#75715e"># O(?)</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	exp_vec_j <span style="color:#f92672">=</span> copy(exp_vec)
+</span></span><span style="display:flex;"><span>	exp_vec_j <span style="color:#f92672">=</span> (exp_vec_j[j] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> k
+</span></span><span style="display:flex;"><span>	new_hash_j <span style="color:#f92672">=</span> hash(exp_vec_j)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	new_coeffs[new_hash_i] <span style="color:#f92672">=</span> coeffs[exp_hash]
+</span></span><span style="display:flex;"><span>	new_coeffs[new_hash_j] <span style="color:#f92672">-=</span> coeffs[exp_hash]
+</span></span><span style="display:flex;"><span>	new_exps<span style="color:#f92672">.</span>insert( (new_hash_i, exp_vec_i) )
+</span></span><span style="display:flex;"><span>	new_exps<span style="color:#f92672">.</span>insert( (new_hash_j, exp_vec_j) )
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>exp_list <span style="color:#f92672">=</span> new_exps
+</span></span><span style="display:flex;"><span>coeffs_map <span style="color:#f92672">=</span> new_coeffs
+</span></span></code></pre></div><p>Okay, now assume <code>hash()</code> is constant time. This works nicely because combining like terms occurs naturally as we simply update coefficient values indexed by hashes of the exponent vectors. This doesn&rsquo;t solve the storage problem, but the loop is certainly faster.</p>
+<p>Okay, now un-assume <code>hash()</code> is constant time, because you cannot, in fact, process a length-$n$ vector in $O(1)$. You can do something else, though: make the hash incremental, i.e., homomorphic with respect to coordinate-wise incrementation, so we can compute <code>new_hash_i</code> from <code>exp_hash</code> and <code>i</code> in constant time. The rest of this section is dedicated to this problem.</p>
+<p>There are two kinds of modifiable hashes that I considered for this: polynomial rolling hash and Zobrist hash. The former hashes a vector $A=[a_{1},...,a_{n}]$ as
+</p>
+$$h(A)=\sum_{i=0}^{n-1}a_{i}\cdot B^{i} \mod P,$$<p>
+where $B$ and $P$ are pre-determined (prime) constants. This hash is widely used in competitive programming for processing strings, since it has nice properties for when you want to compare prefixes and suffixes. For our purposes, defining $A'$ to be the vector identical to $A$ except in the $j$th coordinate, for which the value is $b\neq a_{j}$, we write:
+</p>
+$$h(A')\equiv h(A)-a_{j}B^{j}+bB^{j} \pmod P.$$<p>
+So we undo the $j$th coordinate in the original hash and replace it with the desired value $b$, which in our case would be $a_{j}+1 \mod k$.</p>
+<p>The Zobrist hash is quite different; it is incremental by design and was invented to store games like chess - when a move is made, the state of the board changes only slightly, and you&rsquo;d not want to recompute the hash from scratch when only two squares change.</p>
+<p>Generate a $n\times k$ table of random values, call it $Z$. Define </p>
+$$h(A)=\bigoplus_{i=1}^{n}Z[i, a_{i}],$$<p>where $\oplus$ is bitwise XOR. Now to modify the $j$th coordinate, we again undo the current value and replace it with another:</p>
+$$h(A')=h(A)\oplus Z[j,a_{j}]\oplus Z[j,b].$$<p>
+Both of these hashes work, but for this task I went with Zobrist, since it doesn&rsquo;t require finding suitable constants, XOR is faster than mod-multiplication, and overall it&rsquo;s just cleaner.</p>
+<hr>
+<h4 id="an-aside-about-benchmarking">An aside about benchmarking
+</h4><p>When I began this project, I wanted to put together some graphs for testing accuracy and speed. Initially I drew a few up by hand, and tested my results against the symbolic computation done by SageMath. For a graph on more than $10$ vertices, SageMath took too long, though, and I didn&rsquo;t want to generate random graphs and run actually practical coloring algorithms on them to figure out the true $\chi(G)$. For this reason I turned to two known graph families: the Mycielski and the Turán graphs. The point is that both of them are easily constructible and have a regular structure that makes the chromatic number a fundamental property, without needing any computation.</p>
+<p>The Mycielski graph $M_{k}$ is specifically designed to have chromatic number $k$, with each successive $M_{k}$ being constructed iteratively from $M_{k-1}$. The special property is that it has no triangle subgraphs, making it quite sparse. The Turán graph $T_{n,r}$ is the opposite - it is the $r$-partite complete graph, having chromatic number $r$ and as many edges as possible.</p>
+<hr>
+<h3 id="3-eliminating-exponent-vector-storage">3. Eliminating Exponent Vector Storage
+</h3><p>The Zobrist hash trick allows us to compare monomials&rsquo; exponent vectors via their hashes, as well as update these hashes incrementally. However, the memory footprint remains: to update a hash by incrementing $a_{j}$, we actually have to know the current value, because the value we set is $a_{j}+1$ if $a_{j} < k$ and $0$ otherwise; there is a branch involved. We cannot perform a &ldquo;blind&rdquo; incrementation mod $k$ on the hash, so we must store the entire vector.</p>
+<p>This was a glaring inefficiency that didn&rsquo;t let me sleep at night for some time.
+<div class="callout callout-problem">
+  <div class="callout-title">
+    <span class="callout-icon">▲</span>
+    <span class="callout-label">Problem: <em>Cyclic Incremental Hash</em></span>
+  </div>
+  <div class="callout-content">
+    Let $A=[a_{1},...,a_{n}]$ be an $n$-vector with $a_{i}\in\set{0,...,k-1}$, and let $A'$ be the same vector in all coordinates except $j$, where it is $a'_{j}=a_{j}+1 \mod k$. Find a hash $h:\mathbb{Z}_{k}^{n}\rightarrow \set{0,1}^{128}$ such that $h(A')=f(h(A),j)$ for some computable function $f$, that is, $h(A')$ can be computed directly knowing only $h(A)$ and $j$.
+  </div>
+</div>
+
+</p>
+<p>Okay, so the &ldquo;blind&rdquo; wrap-around mod $k$ should point to a cyclic representation of some kind.
+Suppose $G$ is a group of prime order $p$, so every non-identity element is a generator. If we pick $n$ such elements $g_{1},...,g_{n}$ and define $h(A)=\prod_{i\in n}g_{i}^{a_{i}}$, then we will see that we can change the $j$th element to some arbitrary element $b$ with:
+</p>
+$$h(A')=h(A)\cdot g_{j}^{-a_{i}}\cdot g_{j}^{b}.$$<p>
+This idea I found in Bellare et al. (2021)<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. The group here would be a multiplicative group mod $p$, where $p$ is be chosen to satisfy $p=2q+1$ for another prime $q$; this ensures $\mathbb{Z}_{p}^{\times}$ has prime order. However, this does not yet give us the cyclic effect mod $k$. For that, we can use a trick: choose $p$ to instead satisfy $p\equiv 1\pmod k$. Since it no longer has prime order, not every element is a generator, but nevertheless there are $\varphi(p-1)$ of them<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>. We need $n$ elements $g_{1},...,g_{n}$ with order $k$, for which we can take a generator $g$ and raise it to power $(p-1)/k$. Once again let $h(A)=\prod_{i\in[n]}g_{i}^{a_{i}}$ but now, to increment the $j$th coordinate we simply multiply $h(A')=h(A)\cdot g_{j}$. This works because we&rsquo;ve made it so $g_{j}^{k}=e$, which gives us the desired modulo effect.</p>
+<p>However, there&rsquo;s a significant problem with this approach (see if you can find it). Because we take a product over elements with $g_{i}^{k}=e$, the set of outputs is exactly the elements of the group which satisfy this. So what is the size of our hash&rsquo;s image?</p>
+<div class="callout callout-lemma">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Lemma: <em>Hash Output Space</em></span>
+  </div>
+  <div class="callout-content">
+    Let $G(k)=\set{g\in\mathbb{Z}_{p}^{\times}\mid g^{k}=e}$. Then $|G(k)|=k$.
+<em>Proof:</em> $\mathbb{Z}_{p}^{\times}$ is a cyclic group, so $\exists x\text{ s.t. }\langle x\rangle=\mathbb{Z}_{p}^{\times}$. Then $x^{(p-1)/k}$ has order $k$, and subsequently $y_{t}:=x^{t(p-1)/k}$ satisfies $y_{t}^{k}=e$ for $t\in 1,...,k$. This means $|G(k)|\geq k$.
+On the other hand, we can note that $\mathbb{Z}_{p}$ is a field and the elements of $G(k)$ are $k$-th roots of unity in it, in other words, the roots of $x^{k}-1$. A degree $k$ polynomial has at most $k$ roots. Having bounded above and below, we get $|G(k)|=k$.
+  </div>
+</div>
+
+
+<p>So while the hash function thus constructed satisfies our original requirements, it can only ever output $k$ distinct values&hellip; This is far too few to ever be useful. My solution here was to extend this idea - rather than have only one $k$-cyclic subgroup which hard-caps our outputs to a small number, we embed multiple.</p>
+<p>Let $p$ and $q$ be prime, and $N:=pq$. Recall that $\mathbb{Z}^{\times}_{N}\cong \mathbb{Z}^{\times}_{p}\times \mathbb{Z}^{\times}_{q}$ and that each of the groups on the right side are cyclic. Choosing again $p$ such that $|\mathbb{Z}^{\times}_{p} |=p-1$ is divisible by $k$, we guarantee the group contains a cyclic subgroup of order $k$ (isomorphic to the cyclic group $C_{k}$). We choose $q$ likewise, with the only added constraint of $p\neq q$. Applying the isomorphism above, we&rsquo;ve ensured that $C_{k}\times C_{k}$ is isomorphic to a subgroup of $\mathbb{Z}_{N}^{\times}$. If $\langle g\rangle=C_{k}$, then $C_{k}^{2}=C_{k} \times C_{k}=\langle (g,e), (e,g)\rangle$. In other words, if we can find the elements corresponding to $(g,e)$ and $(e,g)$ in $\mathbb{Z}_{N}^{\times}$, we can add an extra dimension to our hash image!</p>
+<p>Let&rsquo;s do this concretely. The Chinese Remainder theorem gives us $\mathbb{Z}^{\times}_{p}\times \mathbb{Z}^{\times}_{q}\cong \mathbb{Z}^{\times}_{N}$, let $\phi$ be this isomorphism, and suppose we&rsquo;ve found the elements $h_{p}\in\mathbb{Z}^{\times}_{q}$ and $h_{q}\in\mathbb{Z}^{\times}_{q}$ as above, so the $\text{ord}(h)=k$. The basis $\set{ (h_{p},e),(e,h_{q})}$ generates $C_{k}^{2}$ and we can lift it to $\mathbb{Z}^{\times}_{N}$: define $g_{1}:=\phi(h_{p},e)$ and $g_{2}:=\phi(e,h_{q})$. Restating above, we get:
+</p>
+$$C_{k}^{2}\cong \langle g_{1},g_{2}\rangle\leq \mathbb{Z}^{\times}_{N}.$$<p>
+The point is that the size of $\text{span}\set{g_{1},g_{2}}$ in $\mathbb{Z}^{\times}_{N}$ is $k^{2}$ and we can find these elements very easily using a CRT solver (essentially the implementation of $\phi$) for the systems
+</p>
+$$\begin{cases} g_{1}\equiv h_{p}\pmod p \\
+g_{1}\equiv 1 \pmod q\end{cases}
+ \qquad\begin{cases} g_{2}\equiv 1 \pmod p \\
+g_{2}\equiv h_{q}\pmod q.
+\end{cases}$$<p>
+Lastly, we choose $s_{1},s_{2}$ from $0,...,k-1$ randomly, and define $w=g_{1}^{s_{1}}g_{2}^{s_{2}}$. Since $g_{i}^{k}=e$, we know also that $w^{k}=e$. Now rather than just one, generate $n$ pairs $(s_{1}^{(i)},s_{2}^{(i)})$, and for each of them let $w_{i}$ be defined likewise. What we have done at this point is construct $w_{1},...,w_{n}\in \mathbb{Z}^{\times}_{N}$ which span the product cyclic subgroup and satisfy $w^{k}=e$, which is the exact condition we wanted. We formalize the hash function for $A=[a_{1},...,a_{n}]$ as
+</p>
+$$h(A)=\prod_{i\in[n]}w_{i}^{a_{i}}$$<p>
+and verify that for $A'$ defined as $A$ but with $j$th coordinate incremented mod $k$, it satisfies
+</p>
+$$h(A')=h(A)\cdot w_{j}.$$<p>
+The order of each $w$ is $k$ (or, in rare cases, a divisor of $k$ if $gcd(k,s_{1},s_{2})>1$), so $w^{k}$ cycles back to $e$, and $\text{span}\set{w_{1},...,w_{n}}=\text{span}\set{g_{1},g_{2}}$ with size $k^{2}$. Thus we have our magic hash!</p>
+<h4 id="asterisks">Asterisks
+</h4><p>This yields a hash with image size $k^{2}$ but in practice this is still far too small. However, this method is entirely extendable: rather than use two primes, we use $N:=p_{1}p_{2}...p_{d}$, leverage $\mathbb{Z}_{p_{1}}^{\times}\times ... \times \mathbb{Z}_{p_{d}}^{\times}\cong \mathbb{Z}_{N}^{\times}$ and the generalization
+</p>
+$$C_{k}^{d}=\langle h_{1}\rangle\times ...\times \langle h_{d}\rangle \cong \langle \phi(h_{1},e,e,...,e), \phi(e,h_{2},e,...,e),...\rangle\leq \mathbb{Z}_{N}^{\times}$$<p>
+to make $w_{1},...,w_{n}$ span $d$ dimensions, resulting in the image size $k^{d}$. Since the operations in $\mathbb{Z}_{N}^{\times}$ happen modulo $N$, this is the bottleneck - the product of our $d$ distinct special primes must fit in an (128-bit) integer data type. To maximize $d$, we choose the primes to be as small as possible, but on average, we can get $\approx 18$. Still, this gives us a very sizable output space.</p>
+<p>A key step I&rsquo;ve skipped is producing a generator $g$ of $\mathbb{Z}_{p}^{\times}$. There&rsquo;s not a known closed form solution for this problem, but (for any $p$) on average about a third of the elements of $\mathbb{Z}_{p}^{\times}$ are generators, so a guess-and-check algorithm is actually quite efficient for this. We know by Lagrange&rsquo;s theorem that if an element $g$ has order $m < n:=p-1=|\mathbb{Z}_{p}^{\times}|$, then $m$ is a divisor of $n$. The contrapositive tells us that if for some $m\mid n,\; g^{m}=e$, then $g$ is not a generator; thus, we will pick a random element and go through all maximal divisors of $n$ to see if our candidate evaluates to $e$ with that exponent; if it doesn&rsquo;t for any of them, we&rsquo;ll have found our generator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> randint(<span style="color:#ae81ff">2</span>,p<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>	failed <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> q <span style="color:#f92672">in</span> prime_factors(n):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> pow(x, n<span style="color:#f92672">/</span>q, p) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>			failed <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> failed:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> x
+</span></span><span style="display:flex;"><span>	
+</span></span></code></pre></div><p>For prime factorization I will precompute the SPF array (<code>spf[n] = smallest prime factor of n</code>) up to a constant maximum; this needs only to be done once and allows $O(\log x)$ factorization. I use this method very often in competitive programming.</p>
+<p>Now having found the generator of each $\mathbb{Z}_{p_{i}}^{\times}$, we let $h_{i}$ be it&rsquo;s $((p_{i}-1)/k)^{\text{th}}$ power; observe that each $h_{i}$ has order $k$ and thus $C_{k}\cong \langle h_{i}\rangle \leq \mathbb{Z}_{p_{i}}^{\times}$.</p>
+<h4 id="summary">Summary
+</h4><p>To recap, what we&rsquo;ve done so far is construct a group $\mathbb{Z}_{N}^{\times}$ that contains as many embedded copies of the cyclic group $C_{k}$ in it as we could fit. We know that their product $C_{k}\times ... \times C_{k}\cong \langle h_{i}\rangle\times...\times\langle h_{d}\rangle$ is a group to which there exists an isomorphic subgroup in $\mathbb{Z}_{N}^{\times}$ by the Chinese remainder theorem. We find the vectors spanning $C_{k}^{d}$ and lift them to $\mathbb{Z}_{N}^{\times}$, and we generate weights which give us the cyclic incrementation property.</p>
+<p>As a final note, solving a CRT modular system of $d$ equations in the standard way requires $O(d)$ time; as there are $d$ such systems, we&rsquo;re looking at $O(d^{2})$. However, the systems are all vectors of the &ldquo;standard basis&rdquo;: in the $i$th vector, all elements but the $i$th are identity. We can use this to speed up the computation to $O(d)$ in total by doing it in a batch with $O(1)$ per system/vector with $N$ known.</p>
+<hr>
+<h3 id="4-reduction-via-edge-ordering">4. Reduction via Edge Ordering
+</h3><p>The algorithm can be viewed as a process that begins with an empty graph on $n$ vertices and adds an edge at each step. The revelation of each edge $(ij)$ corresponds to multiplying the previous step&rsquo;s polynomial by $(x_{i}-x_{j})$. The number of terms in this polynomial grows very quickly (more or less exponentially, as you might imagine); the more terms we have at step $t$, the more we will have to process and insert at $t+1$. But not all edges give the same growth. Can we slow the term count growth by revealing edges in a clever order?</p>
+<p>The answer is yes, and here&rsquo;s a simple example:
+<img src="/post/graph_col_irl/graphcol2.png"
+	width="1990"
+	height="390"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="510"
+		data-flex-basis="1224px"
+	
+><img src="/post/graph_col_irl/graphcol3.png"
+	width="1990"
+	height="390"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="510"
+		data-flex-basis="1224px"
+	
+>
+$f_{t}$ is the polynomial of the partial graph with edges $1,...,t$ (with respect to a particular ordering), and $\text{T}(f_{t})$ is the number of terms in the polynomial. Notice that the second ordering produces fewer terms at steps 3 and 4. Of course, the final result will be the same in any ordering as the final graph is fixed, but smaller intermediate results means less work at each subsequent step.</p>
+<p>Here&rsquo;s a more noticeable difference:
+<img src="/post/graph_col_irl/graphcol4.png"
+	width="3190"
+	height="390"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="817"
+		data-flex-basis="1963px"
+	
+><img src="/post/graph_col_irl/graphcol5.png"
+	width="3190"
+	height="390"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="817"
+		data-flex-basis="1963px"
+	
+>
+The second ordering processes, in total, 73 fewer terms than the first. Clearly, among all orderings of edges of the graph $G$, there must be an ordering which yields the fewest intermediate terms over the course of execution. So&hellip; what is it?</p>
+<div class="callout callout-problem">
+  <div class="callout-title">
+    <span class="callout-icon">▲</span>
+    <span class="callout-label">Problem: <em>Minimum Cost Edge Ordering</em></span>
+  </div>
+  <div class="callout-content">
+    For a given graph $G$, we as usual define the polynomial $f=\prod_{ij\in E}(x_{i}-x_{j})$ and let $\text{T}(f)$  denote the number of terms in the expanded &amp; simplified form of the polynomial. If $e_{1}\prec e_{2}\prec ...\prec e_{m}$ is any ordering of edges of $G$, we call $f_{t}^{\prec}$ the partial polynomial of the first $t$ edges: $\prod_{ij\in E \;:\; (ij)\preceq e_{t}}(x_{i}-x_{j})$; it is defined w.r.t. the ordering. Finally, define the cost of the ordering $c(\prec):=\sum_{t\in[m]}\text{T}(f_{t}^{\prec})$.<br>
+Find the optimal ordering $\prec^{\star}$ such that the cost $c(\prec^{\star})$ is minimum.
+  </div>
+</div>
+
+
+<p>This is a hard problem, I hate to say, and I don&rsquo;t have a solution. But there are some heuristics which can give a <em>pretty good</em> approximation. The main problem is the behavior of the function $\text{T}(\cdot)$ - I don&rsquo;t have a simpler formula for the term count than its definition, even a recurrent one. However, observe that each time we introduce an edge containing an endpoint not already in the graph, the term count doubles. This should make sense: in the step $f_{t}\mapsto x_{i}f_{t}-x_{j}f_{t}$ the terms of our polynomial are duplicated, but a cancellation may occur when we combine like terms. However, if $x_{i}$ or $x_{j}$ is not in $f_{t}$ already, a term from $x_{i}f_{t}$ can never be equal to a term in $x_{j}f_{t}$. Thus, $\text{T}(f_{t+1})\leq2\text{T}(f_{t})$ with equality iff $x_{i}$ or $x_{j}$ are added for the first time. In a way, our task here is to maximize cancellation, which occurs when we link two vertices already connected; that is, close a cycle.</p>
+<p>Here&rsquo;s the key to why the second ordering in the both above examples wins: we close cycles greedily, aiming to close the shortest cycle available at each step, as short cycles provide the largest cancellation effect. When no cycles can be closed immediately, we attempt to predict which vertex reveals would produce potential for shortest cycles in the future. This method allows us to maximize cancellation at each step, and thus reduce the number of intermediate terms.</p>
+<p>Let&rsquo;s denote $G_{t}$ as the partial graph with the first $t$ edges revealed. Which edge should we pick next to maximize the closure of shortest cycles? A working strategy is to compute the distances $d_{t}(u,v)$ for all edges $uv$ remaining not revealed at step $t$ and pick the one that minimizes this distance, thereby closing a $d_{t}(u,v)+1$-long cycle. Naively this would require recomputing the distances in $G_{t}$ between the endpoints of all potential edges at every step; with BFS it comes out to $O((m+n)m^{2})$ where $m$ is the number of edges in $G$. Here, there&rsquo;s a clever trick we can do: observe that if we insert an edge $uv$, the distance between any two other vertices $x$ and $y$ changes in a very predictable way.</p>
+<p><img src="/post/graph_col_irl/graphcol6.png"
+	width="571"
+	height="432"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="132"
+		data-flex-basis="317px"
+	
+></p>
+<p>Here we plan to reveal the edge $uv$ and the black solid line is the shortest path between $u$ and $v$ in $G_{t}$ (prior to the insertion). What is the shortest path between $x$ and $y$ in $G_{t+1}$? There are two options: it either does not include the edge $uv$ at all (1) or includes it once (2). In the first case, $d_{t+1}(x,y)=d_{t}(x,y)$, and in the second, the route first takes the segment $x-u$, then the newly added shortcut edge, then the segment $v-y$, so $d_{t+1}(x,y)=d_{t}(x,u)+1+d_{t}(v,y)$. We also get a candidate path by swapping $u$ and $v$ in this expression. Thus, to update distances after the insertion of $uv$ we write:
+</p>
+$$d_{t+1}(x,y)=\min\set{d_t(x,y),\;d_{t}(x,u)+1+d_{t}(y,v),\;d_{t}(y,u)+1+d_{t}(v,x)}.$$<p>
+We still need to know the distances to $u$ and $v$, so we will run BFS to get them. The algorithm looks like this and runs in $O((n+m)m)$:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>order <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>future_edges <span style="color:#f92672">=</span> edges
+</span></span><span style="display:flex;"><span>d <span style="color:#f92672">=</span> {{a,b} : INF <span style="color:#66d9ef">for</span> {a,b} <span style="color:#f92672">in</span> edges} <span style="color:#75715e"># distances map for future edges</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> future_edges <span style="color:#f92672">not</span> empty:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> have_finite_distance: <span style="color:#75715e"># can close a cycle</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># take shortest distance edge</span>
+</span></span><span style="display:flex;"><span>		uv <span style="color:#f92672">=</span> min(future_edges, key<span style="color:#f92672">=</span>d)
+</span></span><span style="display:flex;"><span>		future_edges<span style="color:#f92672">.</span>delete(uv)
+</span></span><span style="display:flex;"><span>		order<span style="color:#f92672">.</span>append(uv)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		u_dists <span style="color:#f92672">=</span> bfs(u)
+</span></span><span style="display:flex;"><span>		v_dsists <span style="color:#f92672">=</span> bfs(v)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># update remaining distances</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> xy <span style="color:#f92672">in</span> future_edges:
+</span></span><span style="display:flex;"><span>			d[xy] <span style="color:#f92672">=</span> min(d[xy], u_dists[x]<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">+</span>v_dists[y], u_dists[y]<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">+</span>v_dists[x])
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> d[xy] <span style="color:#f92672">&lt;</span> INF:
+</span></span><span style="display:flex;"><span>				have_finite_distance <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># ...</span>
+</span></span></code></pre></div><p>We want to defer the revealing of new vertices (revealing edges with a previously unseen endpoint) and prioritize adding edges between vertices already present. But If all distances on future edges are infinite, we can no longer close a cycle, so we must extend our graph to a new vertex. This cannot be done greedily and requires a certain prescience - it&rsquo;s not clear which new vertex will lead to short cycles in the future. A heuristic can be used here: pick the vertex with the most back-edges to the discovered subgraph. The edge will be taken arbitrarily (though this can also be improved):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>future_vertices <span style="color:#f92672">=</span> vertices
+</span></span><span style="display:flex;"><span>revealed_neighbors <span style="color:#f92672">=</span> {v : <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> vertices}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># ...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		v <span style="color:#f92672">=</span> max(future_vertices, key<span style="color:#f92672">=</span>revealed_neighbors)
+</span></span><span style="display:flex;"><span>		future_vertices<span style="color:#f92672">.</span>delete(v)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># update futures and pick arbitrary back-edge from v</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> w <span style="color:#f92672">in</span> G<span style="color:#f92672">.</span>neighbors(v):
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> w <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> future_vertices:
+</span></span><span style="display:flex;"><span>				u <span style="color:#f92672">=</span> w
+</span></span><span style="display:flex;"><span>			revealed_neighbors[w]<span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>		order<span style="color:#f92672">.</span>append(uv)
+</span></span></code></pre></div><p>This is not an exact solution to the ordering problem, but it performs decently well for slowing down growth of terms. Unfortunately, since every new vertex reveal doubles the term count with no chance for cancellation, we&rsquo;re still looking at $\geq 2^{n}$ terms in the expression.</p>
+<hr>
+<h3 id="5-a-faster-mod-multiplication">5. A Faster Mod-Multiplication
+</h3><p>At this point, the algorithm clears Mycielski $M_{4}$ in a fraction of a second, but struggles to make it past the first ~25 edges of $M_{5}$. A closer look at performance reveals that over a third of the CPU cycles are spent on doing mod-multiplication to update the term hash entries. And no wonder, since my algorithm for doing that up to this point looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span>ui128 <span style="color:#a6e22e">modmult</span>(ui128 a, ui128 b, ui128 m) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	ui128 result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">while</span> (b<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (b<span style="color:#f92672">&amp;</span><span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// result = (result + a) % m;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			result<span style="color:#f92672">=</span>(result<span style="color:#f92672">&gt;=</span>m<span style="color:#f92672">-</span>a) <span style="color:#f92672">?</span> result<span style="color:#f92672">-</span>(m<span style="color:#f92672">-</span>a) <span style="color:#f92672">:</span> reuslt <span style="color:#f92672">+</span> a
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">//a = 2*a % m;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		a <span style="color:#f92672">=</span> (a<span style="color:#f92672">&gt;=</span>m<span style="color:#f92672">-</span>a) <span style="color:#f92672">?</span> a<span style="color:#f92672">-</span>(m<span style="color:#f92672">-</span>a) <span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>a;
+</span></span><span style="display:flex;"><span>		b <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> result;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is awful and is essentially naive multiplication through addition in $O(\log b)$. The reason I did this initially was because 128-bit ints are the largest int data type in C++, so I could not cast the intermediate result $a\cdot b$ (which is up to 256 bits) to a larger type before taking mod. This was my next challenge.
+<div class="callout callout-problem">
+  <div class="callout-title">
+    <span class="callout-icon">▲</span>
+    <span class="callout-label">Problem: <em>Max Precision Modular Multiplication</em></span>
+  </div>
+  <div class="callout-content">
+    Compute $(a\cdot b \mod m)$ as fast as possible given that all three integers are up to $B$ bits long, and no larger data type is available.
+  </div>
+</div>
+
+</p>
+<p>Fortunately for me, some clever people solved this problem back in the 80s. The method I went for is called Montgomery multiplication. I won&rsquo;t go into the full detail; I think the <a class="link" href="https://en.wikipedia.org/wiki/Montgomery_modular_multiplication"  target="_blank" rel="noopener"
+    >Wikipedia page</a> explains it really well, it&rsquo;s what I used to learn it. The base concept is this: we pick a radix base $r$ to be coprime to $m$, find the special <em>Montgomery form</em> $a*b$ defined in relation to $m$ and $r$, and express our result as $x\equiv (a*b)r^{-1}\pmod m$. To find the remainder in constant time, we must use the division operation which is the most expensive arithmetic instruction; what this lets us do is push the division over to $r$ rather than an expression of $a$ or $b$. The twist here is that we pick $r$ to be a power of two, which makes division as simple as bit shifting.</p>
+<p>Montgomery speeds up my <code>modmult</code> by a factor of ~x15, from 0.00414 to 0.00026ms on average for 128-bit ints.</p>
+<hr>
+<h3 id="6-last-ditch-efforts">6. Last ditch efforts
+</h3><p>The Monty optimization pushes my CPU time spent on <code>modmult</code> down to about 5%; most of the rest is the time spent on the methods of <code>unordered_map</code> - allocation, the <code>[]</code>get operator, <code>emplace</code>, and a couple minor ones. My guess is that at this point the fault is in frequent cache misses - the STL hashmap allocates nodes on the heap scattered across memory. I switched to a flat, open addressing map from the <a class="link" href="https://github.com/greg7mdp/gtl"  target="_blank" rel="noopener"
+    >GTL</a> library developed by Gregory Popovitch. It actually has a pretty cool parallel hashmap template that breaks the map into 16 submaps and leverages SIMD instructions to speed up search and resizing; however, it turned out that for my use case the standard flat map was faster. I attribute this to my never needing to resize - I reserve sufficient space at initialization.</p>
+<p>Open addressing gives a nice bonus, but with all these optimizations I could not break Mycielski $M_{5}$ (23 vertices, 71 edges) or Turán $T_{15,3}$ (15 vertices, 75 edges). The space footprint still grows exponentially, and by 30-35 edges in my CPU begins stalling as most time is spent waiting for memory rather than actual computation.</p>
+<p>A strange trick I discovered here: it turned out that the <code>map&lt;ui128, int&gt;</code> was considerably slower than <code>map&lt;ui128, int64_t&gt;</code> - running on $M_{5}$, the first 30 edges took about 20% less time to process. Initially I guessed this is due to memory alignment rules splitting the 20-byte pairs across different 64-byte memory segments, requiring two cache lines to get a single pair; but in hindsight I don&rsquo;t believe this is right - both options should require a full 32 bytes with padding to store. This is something I might investigate further.</p>
+<p>Another idea I spent considerable time on: one could discard the hashmap entirely and switch to simple vectors. The problem requires us to match terms with equal monomial hashes, so if $x_{i}f_{t}$ and $x_{j}f_{t}$ were both represented by sorted arrays, we could do a zip merge to combine them into one. This would have a benefit over the hashmap since it would give us better locality control and improve the cache hit rate. However, sorting the arrays would take a long time (I tried with radix sort, it&rsquo;s theoretically $O(n)$ but still slower than the hashmap approach), so instead what would be nice to have is a sort order that would be invariant under the action of multiplying each element by $w_{j}$. That is, if $h_{1}\prec ... \prec h_{T}$ is the sorted array of hashes of terms of $f_{t}$, then for $x_{i}f_{t}$ we maintain $h_{1}w_{i}\prec ...\prec h_{T}w_{i}$ and likewise for $j$. Then we could simply perform a sorted merge. The problem is, such a total order is impossible in a finite group: suppose elements of $G$ are ordered as $g_{1}\prec ... \prec g_{n}$ and we scale by $w\in G\text{ with }w\neq e$, then $wg_{1}\neq g_{1}$ is out of order.</p>
+<p>However, I&rsquo;m not entirely convinced. For one, our condition is slightly weaker than this: not all elements can appear as $w$ and they are known in advance. For another, we don&rsquo;t need to have a linear order - we could use a circular one. A circular order on a set $S$ is a trinary relation $[a,b,c]$ that indicates the order in which you&rsquo;d see elements moving along the circle. For instance, if $S$ are hours of the clock, $[1,4,9]$ is true but $[4,8,5]$ is not. One could imagine the list of terms as a circular array (first and last elements are considered adjacent) sorted under a circular ordering, so a sorted merge could work much the same way.</p>
+<h4 id="conclusion">Conclusion
+</h4><p>Ultimately, there&rsquo;re many things left I could still investigate to improve performance, from high level mathematical representation to hardware optimization. This was an interesting experiment, and though I&rsquo;ve learned some things I had not expected to even touch on, the practical results are&hellip; meager - this method only works for very small graphs. I wouldn&rsquo;t recommend it.</p>
+<hr>
+<h3 id="7-verdict">7. Verdict
+</h3><p>If you need a graph colored, I advise using something less deranged.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a class="link" href="https://cseweb.ucsd.edu/~mihir/papers/inc1.pdf"  target="_blank" rel="noopener"
+    >Bellare et al.</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a class="link" href="https://crypto.stanford.edu/pbc/notes/numbertheory/gen.html"  target="_blank" rel="noopener"
+    >https://crypto.stanford.edu/pbc/notes/numbertheory/gen.html</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

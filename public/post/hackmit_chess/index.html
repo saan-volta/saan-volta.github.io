@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='http://localhost:1313/post/hackmit_chess/'>
 
-<link rel="stylesheet" href="/scss/style.min.747a28e82ef255add43973329a838befc820c75a5d3b65f7dec1c01026c93a06.css"><meta property='og:title' content="HackMIT_2025 Chess">
+<link rel="stylesheet" href="/scss/style.min.fd1066026cc047b72e935d2e3e3e26d1c270d3bb1362e66cae86a6b804e3ad3f.css"><meta property='og:title' content="HackMIT_2025 Chess">
 <meta property='og:description' content="Intro: This is a write-up of my solution to the Chess challenge from the HackMIT_2025 entry CTF contest. This challenge was the highlight of the contest for me, but not by design. The actual intended solution was fairly unremarkable and dull. What made this fun, however, was the fact that it did not work. I&rsquo;m serious, the challenge was broken. It took them about a week to review the complaints and drop a patch.\n">
 <meta property='og:url' content='http://localhost:1313/post/hackmit_chess/'>
 <meta property='og:site_name' content='Saan'>
@@ -59,7 +59,7 @@
         }
     })();
 </script>
-<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
     <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
         <span class="hamburger-box">
             <span class="hamburger-inner"></span>
@@ -88,7 +88,7 @@
         
         <div class="site-meta">
             <h1 class="site-name"><a href="/">Saan</a></h1>
-            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
         </div>
     </header><ol class="menu" id="main-menu">
         
@@ -180,7 +180,44 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#intro">Intro:</a></li>
+        <li><a href="#description">Description</a></li>
+        <li><a href="#solution">Solution:</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="main-article">
@@ -248,7 +285,7 @@
 </h3><p><img src="/post/hackmit_chess/chess_desc.png"
 	width="1032"
 	height="850"
-	srcset="/post/hackmit_chess/chess_desc_hu_1b3a90f033536a2b.png 480w, /post/hackmit_chess/chess_desc_hu_4812c656d10ebd0.png 1024w"
+	
 	loading="lazy"
 	
 		alt="Description"
@@ -264,7 +301,7 @@
 <p><img src="/post/hackmit_chess/chess_email.png"
 	width="764"
 	height="376"
-	srcset="/post/hackmit_chess/chess_email_hu_3d394db5111a333f.png 480w, /post/hackmit_chess/chess_email_hu_e766b721e0a7b9fa.png 1024w"
+	
 	loading="lazy"
 	
 	
@@ -282,7 +319,7 @@ $$ct_{i_{1}}[j] \oplus ct_{i_{2}}[j]=pt_{i_{1}}[j]\oplus pt_{i_{2}}[j]\in [\text
 <img src="/post/hackmit_chess/chess_xors1.png"
 	width="765"
 	height="363"
-	srcset="/post/hackmit_chess/chess_xors1_hu_fdc34add29963334.png 480w, /post/hackmit_chess/chess_xors1_hu_4c45a0e0590bc902.png 1024w"
+	
 	loading="lazy"
 	
 	
@@ -297,7 +334,7 @@ This limits the set of values from which $pt_{i}[j]$ bytes are drawn to 32. Next
 <p><img src="/post/hackmit_chess/chess_xors2.png"
 	width="765"
 	height="348"
-	srcset="/post/hackmit_chess/chess_xors2_hu_251bc5c4fa4982f4.png 480w, /post/hackmit_chess/chess_xors2_hu_a3c9f8e1c1577d50.png 1024w"
+	
 	loading="lazy"
 	
 	

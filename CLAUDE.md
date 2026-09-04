@@ -12,11 +12,13 @@ hugo server
 hugo --minify
 ```
 
-Deployment is automatic via GitHub Actions on push to `main` — no manual deploy step needed.
+Deployment is automatic on push to `main` — Cloudflare Pages builds markovian.net, and `.github/workflows/deploy.yml` builds the legacy GitHub Pages copy. No manual deploy step needed.
+
+Note: `baseURL` drives every absolute URL Hugo emits (canonical tags, OpenGraph, RSS, sitemap, and the search index's permalinks). Both deployments build from this one config, so both emit markovian.net links.
 
 ## Architecture
 
-This is a Hugo static site using the **hugo-theme-stack** theme (git submodule at `themes/hugo-theme-stack/`). The site is hosted on GitHub Pages at https://saan-volta.github.io/.
+This is a Hugo static site using the **hugo-theme-stack** theme (git submodule at `themes/hugo-theme-stack/`). The site is served by Cloudflare Pages at https://markovian.net/ (the canonical domain, set as `baseURL` in `config.yaml`). A legacy GitHub Pages deployment at https://saan-volta.github.io/ also builds from this repo.
 
 ### Configuration hierarchy
 

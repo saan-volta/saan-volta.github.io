@@ -187,7 +187,7 @@ and verify that for $A'$ defined as $A$ but with $j$th coordinate incremented mo
 $$h(A')=h(A)\cdot w_{j}.$$
 The order of each $w$ is $k$ (or, in rare cases, a divisor of $k$ if $gcd(k,s_{1},s_{2})>1$), so $w^{k}$ cycles back to $e$, and $\text{span}\set{w_{1},...,w_{n}}=\text{span}\set{g_{1},g_{2}}$ with size $k^{2}$. Thus we have our magic hash!
 
-##### Asterisks
+#### Asterisks
 This yields a hash with image size $k^{2}$ but in practice this is still far too small. However, this method is entirely extendable: rather than use two primes, we use $N:=p_{1}p_{2}...p_{d}$, leverage $\mathbb{Z}_{p_{1}}^{\times}\times ... \times \mathbb{Z}_{p_{d}}^{\times}\cong \mathbb{Z}_{N}^{\times}$ and the generalization
 $$C_{k}^{d}=\langle h_{1}\rangle\times ...\times \langle h_{d}\rangle \cong \langle \phi(h_{1},e,e,...,e), \phi(e,h_{2},e,...,e),...\rangle\leq \mathbb{Z}_{N}^{\times}$$
 to make $w_{1},...,w_{n}$ span $d$ dimensions, resulting in the image size $k^{d}$. Since the operations in $\mathbb{Z}_{N}^{\times}$ happen modulo $N$, this is the bottleneck - the product of our $d$ distinct special primes must fit in an (128-bit) integer data type. To maximize $d$, we choose the primes to be as small as possible, but on average, we can get $\approx 18$. Still, this gives us a very sizable output space.
@@ -209,7 +209,7 @@ For prime factorization I will precompute the SPF array (`spf[n] = smallest prim
 
 Now having found the generator of each $\mathbb{Z}_{p_{i}}^{\times}$, we let $h_{i}$ be it's $((p_{i}-1)/k)^{\text{th}}$ power; observe that each $h_{i}$ has order $k$ and thus $C_{k}\cong \langle h_{i}\rangle \leq \mathbb{Z}_{p_{i}}^{\times}$. 
 
-##### Summary
+#### Summary
 To recap, what we've done so far is construct a group $\mathbb{Z}_{N}^{\times}$ that contains as many embedded copies of the cyclic group $C_{k}$ in it as we could fit. We know that their product $C_{k}\times ... \times C_{k}\cong \langle h_{i}\rangle\times...\times\langle h_{d}\rangle$ is a group to which there exists an isomorphic subgroup in $\mathbb{Z}_{N}^{\times}$ by the Chinese remainder theorem. We find the vectors spanning $C_{k}^{d}$ and lift them to $\mathbb{Z}_{N}^{\times}$, and we generate weights which give us the cyclic incrementation property.
 
 As a final note, solving a CRT modular system of $d$ equations in the standard way requires $O(d)$ time; as there are $d$ such systems, we're looking at $O(d^{2})$. However, the systems are all vectors of the "standard basis": in the $i$th vector, all elements but the $i$th are identity. We can use this to speed up the computation to $O(d)$ in total by doing it in a batch with $O(1)$ per system/vector with $N$ known.
@@ -323,7 +323,7 @@ Another idea I spent considerable time on: one could discard the hashmap entirel
 
 However, I'm not entirely convinced. For one, our condition is slightly weaker than this: not all elements can appear as $w$ and they are known in advance. For another, we don't need to have a linear order - we could use a circular one. A circular order on a set $S$ is a trinary relation $[a,b,c]$ that indicates the order in which you'd see elements moving along the circle. For instance, if $S$ are hours of the clock, $[1,4,9]$ is true but $[4,8,5]$ is not. One could imagine the list of terms as a circular array (first and last elements are considered adjacent) sorted under a circular ordering, so a sorted merge could work much the same way.
 
-##### Conclusion
+#### Conclusion
 Ultimately, there're many things left I could still investigate to improve performance, from high level mathematical representation to hardware optimization. This was an interesting experiment, and though I've learned some things I had not expected to even touch on, the practical results are... meager - this method only works for very small graphs. I wouldn't recommend it.
 
 ---

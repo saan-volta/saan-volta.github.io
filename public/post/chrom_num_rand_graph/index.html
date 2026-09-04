@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E[X)]<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E[X|\\mathcal{F}_{n}]$. $(Y_{n})$ is a martingale: $$E[Y_{n+1}|\\mathcal{F}_{n}]=E[E[X|\\mathcal{F}_{n+1}]|\\mathcal{F}_{n}]\\overset{(*)}{=}E[X|\\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
 <title>Chromatic Number of a Random Graph</title>
 
 <link rel='canonical' href='http://localhost:1313/post/chrom_num_rand_graph/'>
 
-<link rel="stylesheet" href="/scss/style.min.747a28e82ef255add43973329a838befc820c75a5d3b65f7dec1c01026c93a06.css"><meta property='og:title' content="Chromatic Number of a Random Graph">
-<meta property='og:description' content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+<link rel="stylesheet" href="/scss/style.min.fd1066026cc047b72e935d2e3e3e26d1c270d3bb1362e66cae86a6b804e3ad3f.css"><meta property='og:title' content="Chromatic Number of a Random Graph">
+<meta property='og:description' content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E[X)]<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E[X|\\mathcal{F}_{n}]$. $(Y_{n})$ is a martingale: $$E[Y_{n+1}|\\mathcal{F}_{n}]=E[E[X|\\mathcal{F}_{n+1}]|\\mathcal{F}_{n}]\\overset{(*)}{=}E[X|\\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
 <meta property='og:url' content='http://localhost:1313/post/chrom_num_rand_graph/'>
 <meta property='og:site_name' content='Saan'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-14T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="Chromatic Number of a Random Graph">
-<meta name="twitter:description" content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E(X)<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E(X|\\mathcal{F}_{n})$. $(Y_{n})$ is a martingale: $$E(Y_{n+1}|\\mathcal{F}_{n})=E(E(X|\\mathcal{F}_{n+1})|\\mathcal{F}_{n})\\overset{(*)}{=}E(X|\\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
+<meta name="twitter:description" content="Introduction This is a really clean result I quite like about bounding the deviation of the chromatic number of a random graph. It seems like something that would be incredibly difficult to even argue about, but it only takes a mildly clever random process construction combined with a generic deviation bound inequality, and the answer comes out in two lines.\nThe Tricks ◇ Definition: Doob martingale Let $X$ be a random variable with $E[X)]<\\infty$ and let $(\\mathcal{F}_{n})$ be any filtration. Define $(Y_{n})$ by $Y_{n}=E[X|\\mathcal{F}_{n}]$. $(Y_{n})$ is a martingale: $$E[Y_{n+1}|\\mathcal{F}_{n}]=E[E[X|\\mathcal{F}_{n+1}]|\\mathcal{F}_{n}]\\overset{(*)}{=}E[X|\\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\\mathcal{F}_{n}\\subset \\mathcal{F}_{n+1}$. This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially. In this particular case, we will examine two examples below. Let $G\\sim\\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$. ◇ Definition: Edge exposure martingale Let $m=\\binom{n}{2}$, and fix an arbitrary ordering of possible edges $e_{1},e_{2},...,e_{m}$. Define events $A_{i}=\\mathbb{1}_{\\set{e_{i}\\in G}}$ and let $f$ be a real-valued function defined on $n$-vertex graphs, then: ">
     <link rel="shortcut icon" href="/favicon1.ico" />
 
 
@@ -59,7 +59,7 @@
         }
     })();
 </script>
-<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
     <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
         <span class="hamburger-box">
             <span class="hamburger-inner"></span>
@@ -88,7 +88,7 @@
         
         <div class="site-meta">
             <h1 class="site-name"><a href="/">Saan</a></h1>
-            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
         </div>
     </header><ol class="menu" id="main-menu">
         
@@ -180,7 +180,44 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#the-tricks">The Tricks</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="main-article">
@@ -251,14 +288,14 @@
     <span class="callout-label">Definition: <em>Doob martingale</em></span>
   </div>
   <div class="callout-content">
-    Let $X$ be a random variable with $E(X)<\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
-Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+    Let $X$ be a random variable with $E[X)]<\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
+Define $(Y_{n})$ by $Y_{n}=E[X|\mathcal{F}_{n}]$.
   </div>
 </div>
 
 
 <ul>
-<li>$(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.</li>
+<li>$(Y_{n})$ is a martingale: $$E[Y_{n+1}|\mathcal{F}_{n}]=E[E[X|\mathcal{F}_{n+1}]|\mathcal{F}_{n}]\overset{(*)}{=}E[X|\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.</li>
 <li>This is also called an exposure martingale, since the filtration &ldquo;exposes&rdquo; information about $X$ sequentially.</li>
 </ul>
 <p>In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$.

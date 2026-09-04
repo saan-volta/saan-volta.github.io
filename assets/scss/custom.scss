@@ -105,3 +105,28 @@
     .callout-example   { --callout-color-dark: #5eead4; }
     .callout-note      { --callout-color-dark: #fde047; }
 }
+
+/* Table of contents — no bullet markers */
+
+.widget--toc #TableOfContents {
+    ul {
+        list-style: none;
+    }
+
+    li {
+        margin-left: 0;
+    }
+}
+
+/* Left sidebar width — restore the pre-widget width.
+   Enabling any widget flips the container to .extended, which drops the
+   left sidebar to 15% of a wider container (192px at 1280, 230px at 1536+).
+   It was 20% of 1280 = 256px before. Pin it back so the sidebar text lays
+   out as it did, and let the extended container's extra width go to the
+   article and the TOC instead. */
+
+.main-container.extended {
+    @media (min-width: 1280px) {
+        --left-sidebar-max-width: 256px;
+    }
+}

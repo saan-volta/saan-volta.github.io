@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Introduction The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.\n">
+<title>Perfect Secrecy and Entropy Minimization</title>
+
+<link rel='canonical' href='http://localhost:1313/post/perfect_secrecy/'>
+
+<link rel="stylesheet" href="/scss/style.min.fd1066026cc047b72e935d2e3e3e26d1c270d3bb1362e66cae86a6b804e3ad3f.css"><meta property='og:title' content="Perfect Secrecy and Entropy Minimization">
+<meta property='og:description' content="Introduction The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.\n">
+<meta property='og:url' content='http://localhost:1313/post/perfect_secrecy/'>
+<meta property='og:site_name' content='Saan'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-26T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-08-26T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Perfect Secrecy and Entropy Minimization">
+<meta name="twitter:description" content="Introduction The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.\n">
+    <link rel="shortcut icon" href="/favicon1.ico" />
+
+
+        
+            
+
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)'], ['$', '$']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+        
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/cat_hu_cd8598b6a0df9f32.png" width="300"
+                            height="249" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Saan</a></h1>
+            <h2 class="site-description">« one plus one equals three for significantly large values of one. »</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About Me</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#1-the-problem-setting">1. The problem setting</a>
+          <ul>
+            <li><a href="#what-is-perfect-secrecy">What is perfect secrecy?</a></li>
+            <li><a href="#information-and-uncertainty">Information and uncertainty</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-the-mec">2. The MEC</a></li>
+        <li><a href="#3-first-of-its-kind">3. First of its kind</a></li>
+        <li><a href="#4-other-applications">4. Other applications</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/project/" style="background-color: #fa0606; color: #fff;">
+                Project
+            </a>
+        
+            <a href="/categories/algorithms/" style="background-color: #f48f13; color: #fff;">
+                Algorithms
+            </a>
+        
+            <a href="/categories/probability/" style="background-color: #752bba; color: #fff;">
+                Probability
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/perfect_secrecy/">Perfect Secrecy and Entropy Minimization</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Aug 26, 2026</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="introduction">Introduction
+</h3><p>The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.</p>
+<p>This technique can also be used for the inverse task - marking LLM-generated text with a watermark embedded in the tokens themselves, rather than any metadata. Not too long ago, Anthropic introduced this feature into their models. If they relied on this algorithm, they can provably claim this will not affect their models&rsquo; performance.</p>
+<p>Another property of this encoding is that it is maximally efficient from the perspective of information theory: it takes the fewest tokens per bit of information. And more broadly, this algorithm can be used to encode data efficiently in other mediums, such as images and sample paths of RL agents.</p>
+<p>This post is an overview of this idea, its applications, and some of the implementation logic. It is partially technical but not fully rigorous; my aim is to give an actionable introduction. Material from the following papers is adapted here: <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> | <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> | <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> | <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup> |.</p>
+<p>Finally, I built a live demo you can use to try this method out: <a class="link" href="https://cover.markovian.net"  target="_blank" rel="noopener"
+    >https://cover.markovian.net</a>! Here&rsquo;s also my implementation of the algorithms described in this post: <a class="link" href="https://github.com/saan-volta/Cover"  target="_blank" rel="noopener"
+    >https://github.com/saan-volta/Cover</a>.</p>
+<hr>
+<h3 id="1-the-problem-setting">1. The problem setting
+</h3><h4 id="what-is-perfect-secrecy">What is perfect secrecy?
+</h4><p>Our task is to embed a message within a random signal without disturbing its statistical properties. We define $\mathbb{C}$ to be the space of <em>covertexts</em> - data which we will use for, well, cover, and $\mathbb{M}$ is the space of messages which we might want to encode. To reason about statistical properties, we define $\mathcal{M}$ to be the distribution of messages and $\mathcal{C}$ to be the distribution of true covertexts (over $\mathbb{C}$). For example, if we want to embed a message within text data, we&rsquo;ll use a cover distribution that captures typical patterns of natural language. Meanwhile, we denote with $\mathcal{S}$ the distribution (also over $\mathbb{C}$) of <em>stegotexts</em>: pieces of data which appear as covertexts, but in fact contain a hidden message. So the encoding is is a (randomized) map $f:\mathbb{M}\leadsto \mathbb{C}$, converting a message into a piece of stegotext (existing in the space of covertexts).</p>
+<p>Intuitively, we achieve perfect secrecy when $\mathcal{C}$ and $\mathcal{S}$ are identical, i.e. have KL-divergence zero. Another, more technical way of saying it is when
+</p>
+$$E_{M\sim\mathcal{M}}\bigg[P(f(M)=c)\bigg]=\mathcal{C}(c).$$<p>
+This says that on average, the probability that the random message $M$ encodes to stegotext $c$ is equivalent to the probability of $c$ appearing as an innocuous covertext.</p>
+<h4 id="information-and-uncertainty">Information and uncertainty
+</h4><p>We are also concerned with the <em>encoding efficiency</em> of our scheme: the amount of covertext data needed to embed our message. To quantify this, we introduce several definitions from information theory.
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Entropy</em></span>
+  </div>
+  <div class="callout-content">
+    Let $X$ be a random variable. Then its entropy is $H(X)=-E[\log p_{X}(X)]$, where $p_{X}(x)=P(X=x)$.
+If $X$ is discrete, this is equivalently $H(X)=-\sum_{x}p_{X}(x)\log p_{X}(x)$.
+  </div>
+</div>
+
+</p>
+<p>Entropy is the measure of chaos of a random variable; it is increased with the unpredictability of its outcome.
+<img src="/post/perfect_secrecy/perf_steg_1.png"
+	width="1039"
+	height="340"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="305"
+		data-flex-basis="733px"
+	
+>
+The highest entropy is achieved in the uniform distribution (any outcome is equally likely), and the lowest (zero) in the Dirac delta distribution $\delta_{x}$, where the entire mass is concentrated on the single point $x$ (the outcome is fully predictable).</p>
+<p>We consider similarly the <em>joint entropy</em> on a vector of random variables
+</p>
+$$H(X,Y)=-E[\log p_{X,Y}(X,Y)]$$<p>
+and the <em>conditional entropy</em> $H(X\mid Y)$ as the uncertainty of $X$ conditioned on the realization of $Y$. These two forms are tied by the identity
+</p>
+$$H(X,Y)=H(X)+H(Y\mid X)=H(Y)+H(X\mid Y).$$<p>
+There&rsquo;s one more definition we need to state our objective.
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Mutual information</em></span>
+  </div>
+  <div class="callout-content">
+    Let $X,Y$ be random variables. Then $I(X;Y)=H(X)-H(X\mid Y)$ is the mutual information between $X$ and $Y$, and the expected amount of uncertainty about $X$ eliminated by knowing $Y$.
+  </div>
+</div>
+
+</p>
+<p>Combining these formulae, we get
+</p>
+$$I(X;Y)=H(X)+H(Y)-H(X,Y).$$<p>
+Then the core principle is this: if we want to maximize the mutual information between the two variables, we must minimize the joint entropy $H(X,Y)$. This is our only option since the marginal entropies $H(X)$ and $H(Y)$ are not modifiable.</p>
+<p>In the context of steganography, to achieve maximal encoding efficiency, we aim to increase $I(M;S)$, where $M$ is the secret message and $S$ the stegotext; this will give us the best ratio of bits encoded per output token. In effect, this is a measure of compression. But how do we optimize it?</p>
+<hr>
+<h3 id="2-the-mec">2. The MEC
+</h3><p>The point and crux of the algorithm we will examine is in the concept of <em>minimum-entropy coupling</em> (MEC). In a sentence, it&rsquo;s a constructed joint distribution with the lowest $H(\cdot,\cdot)$ measure. More concretely:
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Minimum entropy coupling</em></span>
+  </div>
+  <div class="callout-content">
+    <p>Let $X\sim\mathcal{X}$ and $Y\sim\mathcal{Y}$. A <em>coupling</em> of $\mathcal{X}$ and $\mathcal{Y}$ is a joint distribution $\gamma(\cdot,\cdot)$ that maintains the marginals of $X$ and $Y$. That means for all values $x$ of $X$
+</p>
+$$\sum\limits_{y}\gamma(x,y)=\mathcal{X}(x),$$<p>
+and for all values $y$ of $Y$
+</p>
+$$\sum\limits_{x}\gamma(x,y)=\mathcal{Y}(y).$$<p>
+Note that in general there are many coupling with set marginals; we use $\Gamma(\mathcal{X,Y})$ to denote their set. The <em>minimum-entropy coupling</em> is the coupling $\gamma^{\star}\in\Gamma(\mathcal{X,Y})$ such that $\forall \gamma\neq \gamma^{\star}$, we have $H(\gamma^{\star})\leq H(\gamma)$. In other words, it is the coupling with the smallest joint entropy.</p>
+
+  </div>
+</div>
+
+</p>
+<p>Let&rsquo;s see an example. Here are two variables $X$ and $Y$ with their corresponding marginal distributions:
+<img src="/post/perfect_secrecy/perf_steg_2.png"
+	width="689"
+	height="340"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="202"
+		data-flex-basis="486px"
+	
+></p>
+<p>A trivial example of coupling is the <em>independent coupling</em>, defined as $\gamma(x,y):=\mathcal{X}(x)\cdot\mathcal{Y}(y).$</p>
+<p><img src="/post/perfect_secrecy/perf_steg_3.png"
+	width="1047"
+	height="594"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="176"
+		data-flex-basis="423px"
+	
+></p>
+<p>For both of these produced couplings, the sum along each axis is the corresponding marginal. However, the right one is &ldquo;packed more tightly&rdquo; and has far less noise. The coupling minimizes the mutual information between $X$ and $Y$ by more than 3 bits over the independent.</p>
+<p>Where did I get this second joint distribution? The underlying MEC algorithm I used here is developed in (Kocaoglu et al, 2016). This algorithm is actually approximate as this problem is considered NP-hard. The actual implementation of it is beyond the scope of this post, but one element of note is that this paper considers this task is a completely different context - it is about the problem of inferring causal relationship between random variables based on observed data.</p>
+<p>But what does this have to do with steganography?</p>
+<hr>
+<h3 id="3-first-of-its-kind">3. First of its kind
+</h3><p>Here we arrive at the first key contribution of (Schroeder de Witt, 2023).
+<div class="callout callout-definition">
+  <div class="callout-title">
+    <span class="callout-icon">◇</span>
+    <span class="callout-label">Definition: <em>Encoding induced by coupling</em></span>
+  </div>
+  <div class="callout-content">
+    <p>A steganographic encoding procedure $f:\mathbb{M}\leadsto\mathbb{C}$ is induced by a coupling $\gamma\in\Gamma(\mathcal{M},\mathcal{C})$, where $\mathcal{M,C}$  are respectively the distributions of messages and covertext, if for all $m\in\mathbb{M}$ and $c\in\mathbb{C}$
+</p>
+$$P(f(M)=c)=\gamma(C=c\mid M=m).$$
+  </div>
+</div>
+
+</p>
+<p>A note on what $\gamma(C=c\mid M=m)$ means: since $\gamma$ is a joint distribution of $(M,C)$, this can be visualized as taking row $m$ of the joint matrix, normalizing it to a probability distribution, and finding the probability value at index $c$.</p>
+<div class="callout callout-theorem">
+  <div class="callout-title">
+    <span class="callout-icon">◆</span>
+    <span class="callout-label">Theorem</span>
+  </div>
+  <div class="callout-content">
+    <ol>
+<li>A steganographic encoding procedure is perfectly secure if and only if it is induced by a coupling.</li>
+<li>Among encoding procedures that are perfectly secure, a procedure maximizes the mutual information $I(M;S)$ if and only if it is induced by a minimum-entropy coupling.</li>
+</ol>
+
+  </div>
+</div>
+
+
+<p>These two proofs in the paper are remarkably concise. The best way I could show them would be to copy it line for line, but I will not do that.</p>
+<p>So this is what we want - a way to produce a coupling between the distributions of covertext and the message space (for the moment, both of them being natural language). However&hellip; this is somewhat tricky. The MEC algorithm can couple two explicitly-defined discrete distributions with relatively small supports, but $\mathcal{C}$ and $\mathcal{M}$ are incredibly complex. How does one couple the distributions over all sequences of natural text?</p>
+<p>The second contribution the authors present is the algorithm to produce an implicit coupling between a <strong>factorable uniform distribution</strong> and a <strong>distribution specified autoregressively</strong>. The trick is this: given a message $m$, we XOR it with a random key to obtain $X:=m\oplus K$, which is distributed uniformly. We then partition it into $n$ blocks of $b$ bits each, so $X=(X_{1},...,X_{n})$. Meanwhile, we take $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ as the distribution of the next token (word) conditioned on a context of length $j$; this distribution is specified by a large language model, which we will assume to accurately represent natural text. The greedy algorithm, called Iterative MEC, is this:
+<img src="/post/perfect_secrecy/perf_steg_4.png"
+	width="923"
+	height="305"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="302"
+		data-flex-basis="726px"
+	
+>
+Here&rsquo;s what this does in plain terms. We maintain a list of distributions $\mu_{1},...,\mu_{n}$, each for a block $X_{i}$. At each iteration, we fetch the block with the highest entropy, couple it to the distribution of the next token $\mathcal{C}(C_{j}\mid \;...)$ using the simple MEC procedure, and emit the next stegotext token conditional on the actual value of $X_{{i}^{*}}$, and finally update the corresponding distribution. This procedure ends when all $\mu_{i}$ collapse to the deterministic single-point distribution $\delta_{x_{i}}$ - as they are initialized to uniform, observe that they transform from the highest- to the lowest-entropy distribution. At the end, we receive a sequence of stegotext tokens $(S_{1},...,S_{m})$; the length $m$ is exactly how many iterations it takes to eliminate all uncertainty from all the blocks $\set{\mu_{i}}_{n}$. In essence, this algorithm manipulates the choice of tokens at each step, but the actual distribution of the generated text is not changed as it is an encoding induced by a coupling.</p>
+<p>To decode, essentially the exact same algorithm is run - the tokens $\set{S_{j}}_{m}$ are consumed to similarly update the block distributions $\set{\mu_{i}}_{n}$ until they converge to the zero entropy Dirac deltas. Then, we simply sample from them in order to reconstruct $\set{\hat{x}_{i}}_{n}$, the estimation of the keyed message, and finally XOR with the key again to recover $m$.</p>
+<hr>
+<h3 id="4-other-applications">4. Other applications
+</h3><p>The iMEC method is not limited to text data. In place of the LLM-given $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ next-token-based-on-context distribution, one could similarly encode data within audio and images. A particularly cool medium expplored in (Sokota et al., 2022) is encoding a message within the sample trajectory of a reinforcement learning agent in a Markovian decision process:
+<img src="/post/perfect_secrecy/perf_steg_5.png"
+	width="1507"
+	height="655"
+	
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="230"
+		data-flex-basis="552px"
+	
+>
+A more LLM-oriented application is watermarking: certifying that a piece of data was generated artificially by embedding a signature in the tokens themselves. In this case, the performance of the model will provably be unaffected.</p>
+<p>More broadly, MEC is applied in entropic causal inference: given two random variables $X,Y$, determining whether there exists an outside variable $E$ such that $Y=f(X,E)$, i.e. there exists a deterministic function implying causal direction from $X$ to $Y$. It is intuitive that if this is so, the entropy in the true causal direction will be small. Furthermore, the optimal coupling should be able to identify $E$. The authors of (Cicalese at el, 2019) explore some other applications of this method, as well as develop a MEC algorithm that approximates the true minimum-entropy coupling with error margin of 1 bit.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Schroeder de Witt et al., 2023: <a class="link" href="https://arxiv.org/abs/2210.14889"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/2210.14889</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>Sokota et al., 2022: <a class="link" href="https://arxiv.org/abs/2107.08295"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/2107.08295</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>Cicalese et al., 2019: <a class="link" href="https://arxiv.org/abs/1901.07530"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/1901.07530</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p>Kocaoglu et al., 2016: <a class="link" href="https://arxiv.org/abs/1611.04035v2"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/1611.04035v2</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Saan
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.e9e1548a3420db322e6f3bcbbad855a3afff671f4b79cdaf1add1cfc9053e492.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

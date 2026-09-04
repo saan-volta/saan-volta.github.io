@@ -6,7 +6,358 @@
         <description>Recent content in Probability on Saan</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <lastBuildDate>Sat, 14 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/probability/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 30 Aug 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/probability/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Proof of Correctness of MEC Steganography</title>
+        <link>http://localhost:1313/post/proof_of_perfect_secrecy/</link>
+        <pubDate>Sun, 30 Aug 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/proof_of_perfect_secrecy/</guid>
+        <description>&lt;h3 id=&#34;abstract&#34;&gt;Abstract
+&lt;/h3&gt;&lt;p&gt;This is the proof of correctness of the stenographic encoding algorithm described in &lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. The paper provides empirical results to demonstrate the effectiveness, but not a full theoretical argument. I derived this to convince myself that it is indeed correct.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;The message is randomized with a key and partitioned into $n$ blocks: $X_{1}, \ldots, X_{n}$. Each block is uniform $X_{i}\sim\text{Unif}[2^{b}]$ where $b$ is the parameter block size. The covertext generator is a distribution $\mathcal{C}(c\mid c_{1},...,c_{m}):=P(C_{m+1}=c\mid C_{1}=c_{1},...,C_{m}=c_{m})$ specified autoregressively, where the random vector $(C_{1},...,C_{m})$ is the &amp;ldquo;context&amp;rdquo; in the LLM sense and $C_{m+1}$ is the next generated &amp;ldquo;token&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The algorithm proceeds as follows:&lt;/p&gt;
+&lt;ol start=&#34;0&#34;&gt;
+&lt;li&gt;For $i\in 1\ldots n$, initialize $\mu_{i}$ to uniform distributions $\set{0,1}^{b}\rightarrow [0,1]$.&lt;/li&gt;
+&lt;li&gt;For $j\in 1\ldots m$:
+&lt;ol&gt;
+&lt;li&gt;$i^{*}:=\arg\max_{i}H(\mu_{i})$&lt;/li&gt;
+&lt;li&gt;$\gamma_{j}:=$ MEC of $\mu_{i^{*}}$ and $\mathcal{C}(C_{j}\mid C_{1:j-1}=S_{1:j-1})$, the autoregressive distribution of next token&lt;/li&gt;
+&lt;li&gt;$S_{j}\sim \gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, the distribution of next token conditional on the $i^{*}$th block of ciphertext&lt;/li&gt;
+&lt;li&gt;$\mu_{i^{*}}\leftarrow \gamma_{j}(X_{i^{*}}\mid C_{j}=S_{j})$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The objective is to show that $(C_{1},...,C_{m})\overset{D}{=}(S_{1},\ldots S_{m})$, that is, the random vectors of $m$-sequences of tokens produced naturally and those produced by the algorithm are equivalent in distribution, i.e., the encoding does not introduce any statistical bias.&lt;/p&gt;
+&lt;p&gt;As a shorthand, I will write events $\set{S_{j}=s_{j}}$ as $\set{s_{j}}$ and $\set{S_{1:j-1}=s_{j-1}}$ as $\set{s_{1:j-1}}$. The notation $[n]$ denotes the set $\set{1,...,n}$.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;proof&#34;&gt;Proof
+&lt;/h3&gt;&lt;p&gt;The proof proceeds in two steps. First, we must show that at the beginning of each iteration $j$, for all $i\in[n]$ and all values of $x$, we have
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j-1} )=\mu_{i}(x)$$&lt;p&gt;
+that is, the $\mu_{i}$ distributions maintained by the algorithm are the accurate distributions of $X_{i}$ conditional on the previously produced tokens. This is not entirely trivial, since the $\mu_{i}$ are updated manually. Secondly, we show the equality in distributions between natural and encoded sequences of tokens.&lt;/p&gt;
+&lt;div class=&#34;callout callout-lemma&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Lemma&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;For each iteration $j$, for all $i\in[n]$ and values of $x$, the following hold:
+&lt;/p&gt;
+$$\newcommand{\indep}{\mathrel{\perp\!\!\!\perp}}
+\begin{align*}
+&amp;(i)\qquad P(X_{i}=x\mid s_{1:j-1})=\mu_{i}(x) \\
+&amp;(ii)\qquad X_{1} \indep X_{2} \indep \ldots \indep X_{n}\;\mid s_{1:j-1}
+\end{align*}$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;The second claim is that $\set{X_{i}}_{n}$ are mutually conditionally independent given $s_{1:j-1}$. We will use this statement as a sort of inventor&amp;rsquo;s paradox to establish the first.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Proof.&lt;/em&gt; Proceed by induction on $j$. At the start of the first iteration, $X_{i}\sim\text{Unif}[2^{b}]=\mu_{i}$ by definition. All $X_{i}$ are mutually independent, so the claims hold trivially.&lt;/p&gt;
+&lt;p&gt;In the inductive case, we assume the claims hold at the start of step $j$. The maximum entropy block $i^{*}$ is chosen.
+We prove $(i)$ first; the aim is to show that for all $i$, $\mu&#39;_{i}$, defined to be the adjusted $\mu$ at the end of the step, satisfies
+&lt;/p&gt;
+$$\mu&#39;_{i}(x)=P(X_{i}=x\mid s_{1:j})\quad \forall x.$$&lt;p&gt;
+Note that only for $i=i^{*}$ does the distribution actually change; the rest are left untouched. We therefore consider two cases:&lt;/p&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Case 1:&lt;!-- raw HTML omitted --&gt; $i=i^{*}$
+Breaking down the conditioning as $P(\ldots \mid s_{1:j-1}\cap s_{j})$ and rewriting, we get
+&lt;/p&gt;
+$$\begin{align*}
+P(X_{i^{*}}=x\mid s_{1:j})&amp;=\frac{P(X_{i^{*}}=x\mid s_{1:j-1})P(s_{j}\mid X_{i^{*}}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{j-1})}\\
+&amp;= \frac{\mu_{i^{*}}(x)\gamma_{j}(s_{j}\mid x)}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&amp;= \frac{\gamma_{j}(x,s_{j})}{\mathcal{C}(s_{j}\mid s_{j-1})}\\
+&amp;=\gamma_{j}(x\mid s_{j})= \mu&#39;_{i^{*}}(x).
+\end{align*}$$&lt;p&gt;
+In the above derivation, the coupling $\gamma_{j}$ twice allows us to change conditioning via chain rule with its marginal (respectively $\mu_{i^{*}}$ and $\mathcal{C}$).&lt;/p&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Case 2:&lt;!-- raw HTML omitted --&gt; $i\neq i^{*}$
+Similarly, we write
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j})=\frac{P(X_{i}=x\mid s_{1:j-1})P(S_{j}=s_{j}\mid X_{i}=x,\; s_{1:j-1})}{P(s_{j}\mid s_{1:j-1})}$$&lt;p&gt;
+Since $S_{j}\sim\gamma_{j}(C_{j}\mid X_{i^{*}}=x_{i^{*}})$, where the next token $C_{j}\sim\mathcal{C}(\cdot \mid s_{1:j-1})$ is independent of $X_{i}$ trivially and $X_{i^{*}}$ is conditionally independent of $X_{i}$ by the inductive hypothesis, $S_{j}$ is also conditionally independent of $X_{i}$. Thus the second term in the numerator can drop the conditioning on $X_{i}=x$, simplifying to
+&lt;/p&gt;
+$$P(X_{i}=x\mid s_{1:j}) = \frac{\mu_{i}(x)\mathcal{C}(s_{j}\mid s_{j-1})}{\mathcal{C}(s_{j}\mid s_{j-1})}=\mu_{i}(x)=\mu&#39;_{i}(x).$$&lt;p&gt;Lastly, we show that $(ii)$ holds at the end of each step. Using the same identity and the conditional independence given $s_{1:j-1}$:
+&lt;/p&gt;
+$$\begin{align*}
+P\bigg(\bigcap_{i\in[n]}X_{i}=x_{i}\mid s_{1:j}\bigg) &amp;=\frac{P(s_{j}\mid s_{1:j-1}\cap  \bigcap_{i}X_{i}=x_{i})}{\mathcal{C}(s_{j}\mid s_{j-1})} \prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})
+\end{align*}$$&lt;p&gt;
+Once again the independence of $S_{j}$ allows us to drop the conditioning on all $X_{i}$ except $X_{i^{*}}$ and simplify:
+&lt;/p&gt;
+$$\begin{align*}
+\ldots \;&amp;= \frac{\gamma_{j}(s_{j}\mid x_{i^{*}})}{\mathcal{C}(s_{j}\mid s_{j-1})}\prod_{i\in[n]} P(X_{i}=x_{i}\mid s_{1:j-1})\\
+&amp;= \frac{\gamma_{j}(x_{i^{*}}\mid s_{j})}{\mu_{i^{*}}(x_{i^{*}})}\prod_{i\in[n]}\mu_{i}(x_{i})\\
+&amp;= \mu&#39;_{i^{*}}(x_{i^{*}})\prod_{i\in[n]\setminus\set{i^{*}}} \mu&#39;_{i}(x_{i})\\
+&amp;= \prod_{i\in[n]} \mu&#39;_{i}(x_{i}) \\
+&amp;=\prod_{i\in[n]}P(X_{i}=x_{i}\mid s_{1:j}).
+\end{align*}$$&lt;p&gt;
+This concludes the proof of $(i)$ and $(ii)$ at the beginning of step $j+1$.&lt;/p&gt;
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $(S_{1},...,S_{m})$ be the random sequence of tokens produced by the algorithm (stegotext), and let $(C_{1},...,C_{m})$ be the random sequence of tokens generated naturally (covertext) in an autoregressive manner, i.e. $C_{j}\sim\mathcal{C}(\cdot \mid C_{1:j-1}=c_{1:j-1})$. Then:
+&lt;/p&gt;
+$$(S_{1},...,S_{m})\overset{D}{=}(C_{1},...,C_{m}).$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;&lt;em&gt;Proof.&lt;/em&gt;
+Let $j$ be fixed and consider some value $s$ of the next token $S_{j}$.
+&lt;/p&gt;
+$$P(S_{j}=s\mid s_{1:j-1})=\sum\limits_{x}\gamma_{j}(X_{i^{*}}=x,s)=\sum\limits_{x}\gamma_{j}(s\mid x)\mu_{i^{*}}(x)=\mathcal{C}(s\mid s_{1:j-1})$$&lt;p&gt;
+The first equality averages over all possible values of $X_{i^{*}}$ and the rest follows by definition of coupling. Now, taking the product over all $j$ with the chain rule:
+&lt;/p&gt;
+$$\begin{align*}
+P(S_{1:m}=s_{1:m})&amp;= \prod_{j\in[m]}P(S_{j}=s_{j}\mid s_{1:j-1}) \\
+&amp;= \prod_{j\in[m]}\mathcal{C}(s_{j}\mid s_{1:j-1})\\
+&amp;= P(C_{1:m}=s_{1:m}).
+\end{align*}$$&lt;p&gt;
+Thus, the random vectors have equal distribution.&lt;/p&gt;
+&lt;div class=&#34;callout callout-corollary&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Corollary&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    The algorithm constructs a coupling between a factorable uniform distribution and the autoregressive conditional $\mathcal{C}(\cdot\mid\cdot)$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Let $\text{A}(\mathbf{x}, \mathbf{s})$ be the joint distribution induced by the algorithm between the space of $n$-block ciphertexts and $m$-token text samples, writing $\text{A}(\mathbf{x},\mathbf{s}):=P(\mathbf{X}=\mathbf{x},\;\mathbf{S}=\mathbf{s})$ and $\text{A}(\mathbf{s}\mid \mathbf{x})$ for probability of outputting stegotext $\mathbf{s}$ given input ciphertext $\mathbf{x}$, where $\mathbf{X}=(X_{1},...,X_{n})$  and $\mathbf{S}=(S_{1},...,S_{m})$.&lt;/p&gt;
+&lt;p&gt;Observe that for any $\mathbf{x}$ and $\mathbf{s}$, we have $\text{A}(\mathbf{x},\mathbf{s})=\text{A}(\mathbf{s}\mid \mathbf{x})P(\mathbf{X}=\mathbf{x})=\mathcal{C}(\mathbf{s})P(\mathbf{X}=\mathbf{x})$ by above. Now fixing $\mathbf{x}$ and summing over $\mathbf{s}$ yields $P(\mathbf{X}=\mathbf{x})$, and likewise fixing $\mathbf{s}$ and summing over $\mathbf{x}$ gives $\mathcal{C}(\mathbf{s})$, which are the exact marginals, showing $\text{A}(\cdot\mid \cdot)$ is a coupling.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;appendix&#34;&gt;Appendix
+&lt;/h3&gt;&lt;p&gt;The proof makes repeated use of this basic identity:
+&lt;/p&gt;
+$$P(A\mid B\cap C)=\frac{P(A\mid B)P(C\mid A\cap  B)}{P(C\mid B)}$$&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2210.14889&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2210.14889&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
+        <title>Perfect Secrecy and Entropy Minimization</title>
+        <link>http://localhost:1313/post/perfect_secrecy/</link>
+        <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/post/perfect_secrecy/</guid>
+        <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction
+&lt;/h3&gt;&lt;p&gt;The field of steganography is concerned with hiding secret messages in innocuous-seeming data. It is a sort of dual to cryptography, but rather than encrypt the content of the message, one tries to conceal the message&amp;rsquo;s presence in the first place. The primary instrument for detecting such concealments is statistical analysis - looking for patterns within data that should not be there, if it contained no secrets. This post and project is about an algorithm that is impervious to such attacks - it leverages an LLM to embed the secret within the choice of tokens, but its output is statistically indistinguishable from naturally generated text.&lt;/p&gt;
+&lt;p&gt;This technique can also be used for the inverse task - marking LLM-generated text with a watermark embedded in the tokens themselves, rather than any metadata. Not too long ago, Anthropic introduced this feature into their models. If they relied on this algorithm, they can provably claim this will not affect their models&amp;rsquo; performance.&lt;/p&gt;
+&lt;p&gt;Another property of this encoding is that it is maximally efficient from the perspective of information theory: it takes the fewest tokens per bit of information. And more broadly, this algorithm can be used to encode data efficiently in other mediums, such as images and sample paths of RL agents.&lt;/p&gt;
+&lt;p&gt;This post is an overview of this idea, its applications, and some of the implementation logic. It is partially technical but not fully rigorous; my aim is to give an actionable introduction. Material from the following papers is adapted here: &lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; | &lt;sup id=&#34;fnref:4&#34;&gt;&lt;a href=&#34;#fn:4&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;4&lt;/a&gt;&lt;/sup&gt; |.&lt;/p&gt;
+&lt;p&gt;Finally, I built a live demo you can use to try this method out: &lt;a class=&#34;link&#34; href=&#34;https://cover.markovian.net&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://cover.markovian.net&lt;/a&gt;! Here&amp;rsquo;s also my implementation of the algorithms described in this post: &lt;a class=&#34;link&#34; href=&#34;https://github.com/saan-volta/Cover&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/saan-volta/Cover&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;1-the-problem-setting&#34;&gt;1. The problem setting
+&lt;/h3&gt;&lt;h4 id=&#34;what-is-perfect-secrecy&#34;&gt;What is perfect secrecy?
+&lt;/h4&gt;&lt;p&gt;Our task is to embed a message within a random signal without disturbing its statistical properties. We define $\mathbb{C}$ to be the space of &lt;em&gt;covertexts&lt;/em&gt; - data which we will use for, well, cover, and $\mathbb{M}$ is the space of messages which we might want to encode. To reason about statistical properties, we define $\mathcal{M}$ to be the distribution of messages and $\mathcal{C}$ to be the distribution of true covertexts (over $\mathbb{C}$). For example, if we want to embed a message within text data, we&amp;rsquo;ll use a cover distribution that captures typical patterns of natural language. Meanwhile, we denote with $\mathcal{S}$ the distribution (also over $\mathbb{C}$) of &lt;em&gt;stegotexts&lt;/em&gt;: pieces of data which appear as covertexts, but in fact contain a hidden message. So the encoding is is a (randomized) map $f:\mathbb{M}\leadsto \mathbb{C}$, converting a message into a piece of stegotext (existing in the space of covertexts).&lt;/p&gt;
+&lt;p&gt;Intuitively, we achieve perfect secrecy when $\mathcal{C}$ and $\mathcal{S}$ are identical, i.e. have KL-divergence zero. Another, more technical way of saying it is when
+&lt;/p&gt;
+$$E_{M\sim\mathcal{M}}\bigg[P(f(M)=c)\bigg]=\mathcal{C}(c).$$&lt;p&gt;
+This says that on average, the probability that the random message $M$ encodes to stegotext $c$ is equivalent to the probability of $c$ appearing as an innocuous covertext.&lt;/p&gt;
+&lt;h4 id=&#34;information-and-uncertainty&#34;&gt;Information and uncertainty
+&lt;/h4&gt;&lt;p&gt;We are also concerned with the &lt;em&gt;encoding efficiency&lt;/em&gt; of our scheme: the amount of covertext data needed to embed our message. To quantify this, we introduce several definitions from information theory.
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Entropy&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $X$ be a random variable. Then its entropy is $H(X)=-E[\log p_{X}(X)]$, where $p_{X}(x)=P(X=x)$.
+If $X$ is discrete, this is equivalently $H(X)=-\sum_{x}p_{X}(x)\log p_{X}(x)$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Entropy is the measure of chaos of a random variable; it is increased with the unpredictability of its outcome.
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_1.png&#34;
+	width=&#34;1039&#34;
+	height=&#34;340&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;305&#34;
+		data-flex-basis=&#34;733px&#34;
+	
+&gt;
+The highest entropy is achieved in the uniform distribution (any outcome is equally likely), and the lowest (zero) in the Dirac delta distribution $\delta_{x}$, where the entire mass is concentrated on the single point $x$ (the outcome is fully predictable).&lt;/p&gt;
+&lt;p&gt;We consider similarly the &lt;em&gt;joint entropy&lt;/em&gt; on a vector of random variables
+&lt;/p&gt;
+$$H(X,Y)=-E[\log p_{X,Y}(X,Y)]$$&lt;p&gt;
+and the &lt;em&gt;conditional entropy&lt;/em&gt; $H(X\mid Y)$ as the uncertainty of $X$ conditioned on the realization of $Y$. These two forms are tied by the identity
+&lt;/p&gt;
+$$H(X,Y)=H(X)+H(Y\mid X)=H(Y)+H(X\mid Y).$$&lt;p&gt;
+There&amp;rsquo;s one more definition we need to state our objective.
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Mutual information&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    Let $X,Y$ be random variables. Then $I(X;Y)=H(X)-H(X\mid Y)$ is the mutual information between $X$ and $Y$, and the expected amount of uncertainty about $X$ eliminated by knowing $Y$.
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Combining these formulae, we get
+&lt;/p&gt;
+$$I(X;Y)=H(X)+H(Y)-H(X,Y).$$&lt;p&gt;
+Then the core principle is this: if we want to maximize the mutual information between the two variables, we must minimize the joint entropy $H(X,Y)$. This is our only option since the marginal entropies $H(X)$ and $H(Y)$ are not modifiable.&lt;/p&gt;
+&lt;p&gt;In the context of steganography, to achieve maximal encoding efficiency, we aim to increase $I(M;S)$, where $M$ is the secret message and $S$ the stegotext; this will give us the best ratio of bits encoded per output token. In effect, this is a measure of compression. But how do we optimize it?&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-the-mec&#34;&gt;2. The MEC
+&lt;/h3&gt;&lt;p&gt;The point and crux of the algorithm we will examine is in the concept of &lt;em&gt;minimum-entropy coupling&lt;/em&gt; (MEC). In a sentence, it&amp;rsquo;s a constructed joint distribution with the lowest $H(\cdot,\cdot)$ measure. More concretely:
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Minimum entropy coupling&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;Let $X\sim\mathcal{X}$ and $Y\sim\mathcal{Y}$. A &lt;em&gt;coupling&lt;/em&gt; of $\mathcal{X}$ and $\mathcal{Y}$ is a joint distribution $\gamma(\cdot,\cdot)$ that maintains the marginals of $X$ and $Y$. That means for all values $x$ of $X$
+&lt;/p&gt;
+$$\sum\limits_{y}\gamma(x,y)=\mathcal{X}(x),$$&lt;p&gt;
+and for all values $y$ of $Y$
+&lt;/p&gt;
+$$\sum\limits_{x}\gamma(x,y)=\mathcal{Y}(y).$$&lt;p&gt;
+Note that in general there are many coupling with set marginals; we use $\Gamma(\mathcal{X,Y})$ to denote their set. The &lt;em&gt;minimum-entropy coupling&lt;/em&gt; is the coupling $\gamma^{\star}\in\Gamma(\mathcal{X,Y})$ such that $\forall \gamma\neq \gamma^{\star}$, we have $H(\gamma^{\star})\leq H(\gamma)$. In other words, it is the coupling with the smallest joint entropy.&lt;/p&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s see an example. Here are two variables $X$ and $Y$ with their corresponding marginal distributions:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_2.png&#34;
+	width=&#34;689&#34;
+	height=&#34;340&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;202&#34;
+		data-flex-basis=&#34;486px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;A trivial example of coupling is the &lt;em&gt;independent coupling&lt;/em&gt;, defined as $\gamma(x,y):=\mathcal{X}(x)\cdot\mathcal{Y}(y).$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_3.png&#34;
+	width=&#34;1047&#34;
+	height=&#34;594&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;176&#34;
+		data-flex-basis=&#34;423px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;For both of these produced couplings, the sum along each axis is the corresponding marginal. However, the right one is &amp;ldquo;packed more tightly&amp;rdquo; and has far less noise. The coupling minimizes the mutual information between $X$ and $Y$ by more than 3 bits over the independent.&lt;/p&gt;
+&lt;p&gt;Where did I get this second joint distribution? The underlying MEC algorithm I used here is developed in (Kocaoglu et al, 2016). This algorithm is actually approximate as this problem is considered NP-hard. The actual implementation of it is beyond the scope of this post, but one element of note is that this paper considers this task is a completely different context - it is about the problem of inferring causal relationship between random variables based on observed data.&lt;/p&gt;
+&lt;p&gt;But what does this have to do with steganography?&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-first-of-its-kind&#34;&gt;3. First of its kind
+&lt;/h3&gt;&lt;p&gt;Here we arrive at the first key contribution of (Schroeder de Witt, 2023).
+&lt;div class=&#34;callout callout-definition&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◇&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Encoding induced by coupling&lt;/em&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;p&gt;A steganographic encoding procedure $f:\mathbb{M}\leadsto\mathbb{C}$ is induced by a coupling $\gamma\in\Gamma(\mathcal{M},\mathcal{C})$, where $\mathcal{M,C}$  are respectively the distributions of messages and covertext, if for all $m\in\mathbb{M}$ and $c\in\mathbb{C}$
+&lt;/p&gt;
+$$P(f(M)=c)=\gamma(C=c\mid M=m).$$
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A note on what $\gamma(C=c\mid M=m)$ means: since $\gamma$ is a joint distribution of $(M,C)$, this can be visualized as taking row $m$ of the joint matrix, normalizing it to a probability distribution, and finding the probability value at index $c$.&lt;/p&gt;
+&lt;div class=&#34;callout callout-theorem&#34;&gt;
+  &lt;div class=&#34;callout-title&#34;&gt;
+    &lt;span class=&#34;callout-icon&#34;&gt;◆&lt;/span&gt;
+    &lt;span class=&#34;callout-label&#34;&gt;Theorem&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&#34;callout-content&#34;&gt;
+    &lt;ol&gt;
+&lt;li&gt;A steganographic encoding procedure is perfectly secure if and only if it is induced by a coupling.&lt;/li&gt;
+&lt;li&gt;Among encoding procedures that are perfectly secure, a procedure maximizes the mutual information $I(M;S)$ if and only if it is induced by a minimum-entropy coupling.&lt;/li&gt;
+&lt;/ol&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;These two proofs in the paper are remarkably concise. The best way I could show them would be to copy it line for line, but I will not do that.&lt;/p&gt;
+&lt;p&gt;So this is what we want - a way to produce a coupling between the distributions of covertext and the message space (for the moment, both of them being natural language). However&amp;hellip; this is somewhat tricky. The MEC algorithm can couple two explicitly-defined discrete distributions with relatively small supports, but $\mathcal{C}$ and $\mathcal{M}$ are incredibly complex. How does one couple the distributions over all sequences of natural text?&lt;/p&gt;
+&lt;p&gt;The second contribution the authors present is the algorithm to produce an implicit coupling between a &lt;strong&gt;factorable uniform distribution&lt;/strong&gt; and a &lt;strong&gt;distribution specified autoregressively&lt;/strong&gt;. The trick is this: given a message $m$, we XOR it with a random key to obtain $X:=m\oplus K$, which is distributed uniformly. We then partition it into $n$ blocks of $b$ bits each, so $X=(X_{1},...,X_{n})$. Meanwhile, we take $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ as the distribution of the next token (word) conditioned on a context of length $j$; this distribution is specified by a large language model, which we will assume to accurately represent natural text. The greedy algorithm, called Iterative MEC, is this:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_4.png&#34;
+	width=&#34;923&#34;
+	height=&#34;305&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;302&#34;
+		data-flex-basis=&#34;726px&#34;
+	
+&gt;
+Here&amp;rsquo;s what this does in plain terms. We maintain a list of distributions $\mu_{1},...,\mu_{n}$, each for a block $X_{i}$. At each iteration, we fetch the block with the highest entropy, couple it to the distribution of the next token $\mathcal{C}(C_{j}\mid \;...)$ using the simple MEC procedure, and emit the next stegotext token conditional on the actual value of $X_{{i}^{*}}$, and finally update the corresponding distribution. This procedure ends when all $\mu_{i}$ collapse to the deterministic single-point distribution $\delta_{x_{i}}$ - as they are initialized to uniform, observe that they transform from the highest- to the lowest-entropy distribution. At the end, we receive a sequence of stegotext tokens $(S_{1},...,S_{m})$; the length $m$ is exactly how many iterations it takes to eliminate all uncertainty from all the blocks $\set{\mu_{i}}_{n}$. In essence, this algorithm manipulates the choice of tokens at each step, but the actual distribution of the generated text is not changed as it is an encoding induced by a coupling.&lt;/p&gt;
+&lt;p&gt;To decode, essentially the exact same algorithm is run - the tokens $\set{S_{j}}_{m}$ are consumed to similarly update the block distributions $\set{\mu_{i}}_{n}$ until they converge to the zero entropy Dirac deltas. Then, we simply sample from them in order to reconstruct $\set{\hat{x}_{i}}_{n}$, the estimation of the keyed message, and finally XOR with the key again to recover $m$.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;4-other-applications&#34;&gt;4. Other applications
+&lt;/h3&gt;&lt;p&gt;The iMEC method is not limited to text data. In place of the LLM-given $\mathcal{C}(\cdot\mid c_{1},...,c_{j})$ next-token-based-on-context distribution, one could similarly encode data within audio and images. A particularly cool medium expplored in (Sokota et al., 2022) is encoding a message within the sample trajectory of a reinforcement learning agent in a Markovian decision process:
+&lt;img src=&#34;http://localhost:1313/post/perfect_secrecy/perf_steg_5.png&#34;
+	width=&#34;1507&#34;
+	height=&#34;655&#34;
+	
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;230&#34;
+		data-flex-basis=&#34;552px&#34;
+	
+&gt;
+A more LLM-oriented application is watermarking: certifying that a piece of data was generated artificially by embedding a signature in the tokens themselves. In this case, the performance of the model will provably be unaffected.&lt;/p&gt;
+&lt;p&gt;More broadly, MEC is applied in entropic causal inference: given two random variables $X,Y$, determining whether there exists an outside variable $E$ such that $Y=f(X,E)$, i.e. there exists a deterministic function implying causal direction from $X$ to $Y$. It is intuitive that if this is so, the entropy in the true causal direction will be small. Furthermore, the optimal coupling should be able to identify $E$. The authors of (Cicalese at el, 2019) explore some other applications of this method, as well as develop a MEC algorithm that approximates the true minimum-entropy coupling with error margin of 1 bit.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;Schroeder de Witt et al., 2023: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2210.14889&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2210.14889&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;Sokota et al., 2022: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2107.08295&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2107.08295&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;Cicalese et al., 2019: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/1901.07530&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/1901.07530&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:4&#34;&gt;
+&lt;p&gt;Kocaoglu et al., 2016: &lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/1611.04035v2&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/1611.04035v2&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>Chromatic Number of a Random Graph</title>
         <link>http://localhost:1313/post/chrom_num_rand_graph/</link>
         <pubDate>Sat, 14 Mar 2026 00:00:00 +0000</pubDate>
@@ -22,14 +373,14 @@
     &lt;span class=&#34;callout-label&#34;&gt;Definition: &lt;em&gt;Doob martingale&lt;/em&gt;&lt;/span&gt;
   &lt;/div&gt;
   &lt;div class=&#34;callout-content&#34;&gt;
-    Let $X$ be a random variable with $E(X)&lt;\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
-Define $(Y_{n})$ by $Y_{n}=E(X|\mathcal{F}_{n})$.
+    Let $X$ be a random variable with $E[X)]&lt;\infty$ and let $(\mathcal{F}_{n})$ be any filtration.
+Define $(Y_{n})$ by $Y_{n}=E[X|\mathcal{F}_{n}]$.
   &lt;/div&gt;
 &lt;/div&gt;
 
 
 &lt;ul&gt;
-&lt;li&gt;$(Y_{n})$ is a martingale: $$E(Y_{n+1}|\mathcal{F}_{n})=E(E(X|\mathcal{F}_{n+1})|\mathcal{F}_{n})\overset{(*)}{=}E(X|\mathcal{F}_{n})=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.&lt;/li&gt;
+&lt;li&gt;$(Y_{n})$ is a martingale: $$E[Y_{n+1}|\mathcal{F}_{n}]=E[E[X|\mathcal{F}_{n+1}]|\mathcal{F}_{n}]\overset{(*)}{=}E[X|\mathcal{F}_{n}]=Y_{n}$$$(*)$ follows from projection rule, since $\mathcal{F}_{n}\subset \mathcal{F}_{n+1}$.&lt;/li&gt;
 &lt;li&gt;This is also called an exposure martingale, since the filtration &amp;ldquo;exposes&amp;rdquo; information about $X$ sequentially.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;In this particular case, we will examine two examples below. Let $G\sim\mathcal{G}(n,p)$ be an Erdos random graph, that is, a graph on $n$ vertices where each edge has independent probability of appearing $p$.
@@ -74,7 +425,7 @@ Next, to bound the concentration of the chromatic number, we need, well, a conce
   &lt;div class=&#34;callout-content&#34;&gt;
     &lt;p&gt;For martingale $(X_{t})$ with bounded increments $|X_{t+1}-X_{t}|\leq c_{t}\text{ a.s.}$, time $T$, and any $\varepsilon&gt;0$:
 &lt;/p&gt;
-$$P\bigg(|X_{T}-X_{0}|&gt;\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{s\leq t}c_{s}^{2}}\right).$$
+$$P\bigg(|X_{T}-X_{0}|&gt;\varepsilon\bigg) \leq 2\exp\left(\frac{-2\varepsilon^{2}}{\sum_{t\leq T}c_{t}^{2}}\right).$$
   &lt;/div&gt;
 &lt;/div&gt;
 
