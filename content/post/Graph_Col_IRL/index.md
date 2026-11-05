@@ -10,7 +10,7 @@ categories:
 ### Introduction
 A bit ago, I made a post about a result characterizing $k$-colorability of a graph using ring theory of ideals:
 {{< theorem name="Theorem 1" >}}
-For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\prod_{ij\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\langle x_{1}^{k}-1,...,x_{n}^{k}-1\rangle$ for some integer $k$ in the ring $\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\in I_{k}$.
+For a graph $G=(V,E)$ with $|V|=n$, define its adjacency polynomial $f_{G}(x_{1},...,x_{n})=\prod_{ij\in E}(x_{i}-x_{j})$, and define the ideal $I_{k}=\langle x_{1}^{k}-1,...,x_{n}^{k}-1\rangle$ for some integer $k$ in the ring $\mathbb{C}[x_{1},...,x_{n}]$. Then $G$ is $k$-colorable if and only if $f_{G}\notin I_{k}$.
 {{< /theorem >}}
 
 Thus graph coloring problem is reduced to an ideal membership problem. I think this result is cool for its own sake, but the next natural question is "does this make this problem any easier to solve?" I spent quite a bit of time seeing if I could make it work as a computational task, and this post is a sort of journal covering the hoops I had to jump through to try and make it feasible.
