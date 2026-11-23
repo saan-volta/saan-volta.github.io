@@ -1,8 +1,8 @@
 ---
-title: 3SUM in O(nlogn) - A Simple Application of Fast Fourier Transform.md 
-date: 2000-01-01
+title: 3SUM in O(nlogn) - A Simple Application of Fast Fourier Transform 
+date: 2026-11-22
 categories:
-    - cat
+    - Algorithms
 ---
 Discrete Fourier transform and FFT are usually explained in the context of speeding up polynomial multiplication, which I've always thought as a bit lacking in motivation, since most people do not often find themselves lamenting the speed of computing product of their polynomials. I like this example for grounding it in a classical computational problem:
 
@@ -39,7 +39,7 @@ For each choice of $j/2$ and $k$, there're 3 ways of arranging them in an ordere
 $$p(x^{3})=\sum\limits_{i\geq0, \; i\in 3\mathbb{Z}} a_{i/3}x^{i}.$$
 Finally, putting it all together, the answer is
 $$p_{\text{3SUM}}(x)=\frac{p(x)^{3}-3p(x^{2})p(x)+2p(x^{3})}{6}.$$
-In this resultant polynomial, the coefficient of each $x^{i}$ is the number of distinct unordered triples of array elements summing to $i$. Importantly, it solves 3SUM not just for the given target $X$, but for all possible values. This requires 3 polynomial multiplications, which are log-linear[^see below] with FFT plus several linear scaling and addition operations.
+In this resultant polynomial, the coefficient of each $x^{i}$ is the number of distinct unordered triples of array elements summing to $i$. Importantly, it solves 3SUM not just for the given target $X$, but for all possible values. This requires 3 polynomial multiplications, which are log-linear (see below about this) with FFT plus several linear scaling and addition operations.
 
 ### Example
 {{< example >}}
