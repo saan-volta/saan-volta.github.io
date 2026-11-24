@@ -2,7 +2,7 @@
 title: "Andy the Ant and Markov Chain Collapse"
 
 date: 2026-01-31
-draft: false
+draft: true
 params:
     pinned: false
 categories:

@@ -10,7 +10,7 @@
 /* Callout boxes */
 
 .callout {
-    border-radius: 6px;
+    border-radius: 0;
     margin: 1.5em 0;
     overflow: hidden;
     border-inline-start: 4px solid var(--callout-color);
@@ -128,5 +128,47 @@
 .main-container.extended {
     @media (min-width: 1280px) {
         --left-sidebar-max-width: 256px;
+    }
+}
+
+/* ---------- Sharper look: serif, square corners, darker dark mode ---------- */
+
+:root {
+    --base-font-family: "Source Serif 4", Georgia, "Times New Roman", var(--zh-font-family), serif;
+    --article-font-family: var(--base-font-family);
+
+    --card-border-radius: 0;
+    --tag-border-radius: 0;
+
+    &[data-scheme="dark"] {
+        --body-background: #101012;
+        --card-background: #1e1e22;
+        --card-background-selected: rgba(255, 255, 255, 0.08);
+        --card-separator-color: rgba(255, 255, 255, 0.08);
+
+        --tr-even-background-color: #232327;
+        --blockquote-background-color: #222226;
+        --scrollbar-thumb: hsl(0, 0%, 28%);
+    }
+}
+
+.article-content kbd {
+    border-radius: 0;
+}
+
+/* Flat 1px borders instead of soft drop shadows.
+   The theme uses --shadow-l1 for resting cards and --shadow-l2 for hover,
+   so redefining them swaps every shadow for an outline. */
+
+:root {
+    --card-border-color: rgba(0, 0, 0, 0.12);
+    --card-border-color-hover: rgba(0, 0, 0, 0.35);
+
+    --shadow-l1: 0 0 0 1px var(--card-border-color);
+    --shadow-l2: 0 0 0 1px var(--card-border-color-hover);
+
+    &[data-scheme="dark"] {
+        --card-border-color: rgba(255, 255, 255, 0.12);
+        --card-border-color-hover: rgba(255, 255, 255, 0.30);
     }
 }

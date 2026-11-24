@@ -11,7 +11,7 @@ menu:
 
 Welcome to my page. I will get this place in order one day.
 
-My name is Anton and I'm an ~~undergrad~~ graduate in math and compsci from Arizona State university. I focus broadly in probability theory and algorithms, but I like to learn about all sorts of things.
+My name is Anton and I'm an ~~undergrad~~ graduate in math and compsci from Arizona State university. My academic focus has been in probability theory and algorithms, so a lot of the material I post here will be in those general areas.
 
 I occasionally play CTF(Capture the Flag) competitions with our local uni team, CTF Academy, as well as with Shellphish.
 
@@ -20,19 +20,16 @@ I speak Russian and English and at some point have also studied Spanish and Mand
 
 ### Here's some stuff I like, in no particular order
 
-✶ Stochastic processes & models, statistical algos, information theory;
+✶ Stochastic processes and information theory;
 
-✶ Random, approximation, and reconstruction algorithms;
+✶ Random and approximation algorithms;
 
-✶ Competitive programming (as of recently);
-
-✶ Graph theory;
-
-✶ Diffusion models, reinforcement learning;
+✶ Competitive programming (but I'm NOT waking up at 6 to do codeforces tournaments...);
 
 ✶ Cryptography & cryptanalysis;
 
-✶ Computational biology;
+✶ ML - reinforcement learning, diffusion;
+
 
 
 
@@ -48,7 +45,7 @@ I speak Russian and English and at some point have also studied Spanish and Mand
 
 ✫ **DeepMapDB**: this has been a long-running on-and-off r&d project on the following question: How much data can you fit in a neural network? Put more specifically, given a dictionary-format database, what is the smallest NN that can "memorize it" under fixed train time constraints and up to near-perfect accuracy? This task has applications in scenarios in plain data compression, DMBS with high-volume querying requirements, and database deployment on space and memory-constrained hardware. 
 
-✫ **crypto.college**: my university uses pwn.college, a platform for hosting CTF-style challenges to teach its cybersec classes. Check it out, it's brilliant. Though security such as low-level exploitation is not really my forte, I have some knowledge of cryptography from playing CTFs and personal research. I'm currently working with a team on expanding pwn.college to include several modules of cryptography material & challenges, which will be hopefully used one day to teach classes at ASU!
+<!-- ✫ **crypto.college**: my university uses pwn.college, a platform for hosting CTF-style challenges to teach its cybersec classes. Check it out, it's brilliant. Though security such as low-level exploitation is not really my forte, I have some knowledge of cryptography from playing CTFs and personal research. I'm currently working with a team on expanding pwn.college to include several modules of cryptography material & challenges, which will be hopefully used one day to teach classes at ASU! -->
 
 
 

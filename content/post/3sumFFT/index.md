@@ -3,6 +3,7 @@ title: 3SUM in O(nlogn) - A Simple Application of Fast Fourier Transform
 date: 2026-11-23
 categories:
     - Algorithms
+    - Featured
 ---
 Discrete Fourier transform and FFT are usually explained in the context of speeding up polynomial multiplication, which I've always thought as a bit lacking in motivation, since most people do not often find themselves lamenting the speed of computing product of their polynomials. I like this example for grounding it in a classical computational problem:
 

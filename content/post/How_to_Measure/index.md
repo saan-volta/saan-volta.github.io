@@ -2,7 +2,7 @@
 title: "How to Measure"
 
 date: 2025-12-30
-draft: false
+draft: true
 categories:
     - Math
 ---
