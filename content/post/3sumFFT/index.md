@@ -62,6 +62,26 @@ Build the polynomial with frequency coefficients
 $$p(x)=1x^{1}+3x^{2}+2x^{3}$$
 and proceed with the steps above to compute
 $$p_\text{3SUM}(x)=3x^{5}+7x^{6}+7x^{7}+3x^{8}.$$
+Here's what this looks like using scipy's `fftconvolve`:
+```python
+# p(x) -> p(x^k)
+shift = lambda p, k: np.array(
+	[p[i//k] if i%k==0 else 0 for i in range( (len(p)-1)*k+1)] )
+# p(x) -> p(x)^k
+poly_pow = lambda p, k: reduce(fftconvolve, [p]*k)
+
+# a0 = 0, a1 = 1, a2 = 3, a3 = 2
+px = [0, 1, 3, 2]; px = np.array(px)
+
+(
+ (poly_pow(px,3) - 3*fftconvolve(shift(px,2), px) + 2*shift(px,3))/6
+).round()
+
+>> array([-0., -0., -0.,  0.,  0.,  3.,  7.,  7.,  3.,  0.])
+```
+The output lists all coefficients from $a_{0}$ to $a_{9}$, which is why in this case you see the zeroes. 
+
+In practice, this method has a caveat: standard FFT implementations rely on floating-point arithmetic, which means that for large numbers, the coefficients may drift. To regain the guarantee of accuracy, one valid workaround is the number theoretic transform (NTT), which is computed over a finite field using modular integer arithmetic[^2].
 
 ### Strictly speaking, I clickbaited you
 The thing is, polynomial multiplication with FFT is indeed log-linear, but thus far I've neglected to mention that it's log-linear with respect to the degree (maximum exponent) of the polynomial, rather than $n$ (length of input array). In our case, the degree is the maximum element of the array. So this solution requires a bound $B\geq \max S$, and for the solution to be log-linear with respect to $n$, $B$ should grow (at worst) linearly in $n$. This requirement makes it not a truly general 3SUM solution - indeed, no $O(n\log n)$ algorithm for 3SUM without any restrictions is known to exist, and only very recently a refutation was published to the conjecture that no truly subquadratic solution is possible.
