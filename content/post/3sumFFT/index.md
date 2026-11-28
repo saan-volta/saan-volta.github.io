@@ -76,7 +76,8 @@ px = [0, 1, 3, 2]; px = np.array(px)
 (
  (poly_pow(px,3) - 3*fftconvolve(shift(px,2), px) + 2*shift(px,3))/6
 ).round()
-
+```
+```
 >> array([-0., -0., -0.,  0.,  0.,  3.,  7.,  7.,  3.,  0.])
 ```
 The output lists all coefficients from $a_{0}$ to $a_{9}$, which is why in this case you see the zeroes. 
