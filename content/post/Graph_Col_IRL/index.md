@@ -1,5 +1,5 @@
 ---
-title: Graph Coloring via Rings IRL (II)
+title: How Not To Color a Graph - Applied (?) Ring Theory II  
 date: 2026-07-15
 categories:
 - Project
